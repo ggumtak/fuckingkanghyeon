@@ -275,10 +275,10 @@ function setupResizeHandle() {
 function getWelcomeHTML() {
     return `
         <div class="chat-welcome">
-            <div class="welcome-icon">🤖</div>
+            <div class="welcome-icon">✨</div>
             <div class="welcome-text">
-                <strong>안녕하세요!</strong><br>
-                퀴즈에 대해 궁금한 게 있으면 물어보세요.
+                <strong>안녕! 나는 에일리야 😊</strong><br>
+                퀴즈 풀다가 막히면 언제든 물어봐! 힌트 줄게~
             </div>
         </div>
     `;
