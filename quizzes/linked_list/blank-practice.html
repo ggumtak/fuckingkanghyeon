@@ -7,7 +7,7 @@
     <title>백지복습 | 연결 리스트 코드 연습</title>
     <link rel="stylesheet" href="../../shared/styles.css">
 
-    <!-- Prism.js for reference code highlighting only -->
+    <!-- Prism for reference code only -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -34,7 +34,6 @@
             font-weight: 600;
         }
 
-        /* Simple editor without overlay complexity */
         .editor-container {
             background: #1e1e1e;
             border-radius: var(--radius-lg, 12px);
@@ -181,6 +180,20 @@
             font-size: 0.85em;
         }
 
+        /* Line highlight in reference */
+        .ref-line {
+            display: block;
+            padding: 0 8px;
+            margin: 0 -8px;
+            transition: background 0.15s;
+        }
+
+        .ref-line.active {
+            background: rgba(168, 199, 250, 0.15);
+            border-left: 3px solid var(--accent);
+            padding-left: 5px;
+        }
+
         @media (max-width: 900px) {
             .reference-panel {
                 width: 100%;
@@ -210,7 +223,7 @@
                 <li>빈 줄에서 Enter → 들여쓰기 한 단계 해제</li>
                 <li><kbd>Tab</kbd> → 들여쓰기 / <kbd>Shift+Tab</kbd> → 들여쓰기 제거</li>
                 <li><kbd>Backspace</kbd> (들여쓰기 영역) → 4칸 삭제</li>
-                <li>📖 참조 코드 버튼으로 정답 확인!</li>
+                <li>📖 참조 코드에서 하이라이팅 확인!</li>
             </ul>
         </div>
 
@@ -366,20 +379,20 @@ if __name__ == "__main__":
         const lineNumbers = document.getElementById('lineNumbers');
         const INDENT_SIZE = 4;
 
-        // Update line numbers
+        // Line number update
         function updateLineNumbers() {
             const lines = editor.value.split('\n').length;
             lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
         }
 
-        // Sync scroll
+        // Scroll sync
         editor.addEventListener('scroll', () => {
             lineNumbers.scrollTop = editor.scrollTop;
         });
 
         editor.addEventListener('input', updateLineNumbers);
 
-        // Helper: Insert text at cursor
+        // Insert text at cursor
         function insertAtCursor(text) {
             const start = editor.selectionStart;
             const end = editor.selectionEnd;
@@ -387,7 +400,7 @@ if __name__ == "__main__":
             editor.selectionStart = editor.selectionEnd = start + text.length;
         }
 
-        // Helper: Get current line indent
+        // Get current line indent
         function getCurrentLineIndent() {
             const text = editor.value;
             const cursorPos = editor.selectionStart;
@@ -397,7 +410,7 @@ if __name__ == "__main__":
             return indent;
         }
 
-        // Helper: Check if current line is empty/whitespace only
+        // Check if current line is empty
         function isCurrentLineEmpty() {
             const text = editor.value;
             const cursorPos = editor.selectionStart;
@@ -407,7 +420,7 @@ if __name__ == "__main__":
             return line.trim() === '';
         }
 
-        // Helper: Get text before cursor on current line
+        // Get line before cursor
         function getLineBeforeCursor() {
             const text = editor.value;
             const cursorPos = editor.selectionStart;
@@ -415,15 +428,19 @@ if __name__ == "__main__":
             return text.substring(lineStart, cursorPos);
         }
 
+        // Get current line number
+        function getCurrentLineNumber() {
+            const text = editor.value.substring(0, editor.selectionStart);
+            return text.split('\n').length;
+        }
+
         // Keyboard handling
         editor.addEventListener('keydown', function (e) {
-            // Enter key
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const lineBeforeCursor = getLineBeforeCursor();
                 const currentIndent = getCurrentLineIndent();
 
-                // VS Code style: empty line -> reduce indent
                 if (isCurrentLineEmpty() && currentIndent > 0) {
                     const cursorPos = editor.selectionStart;
                     const text = editor.value;
@@ -434,16 +451,15 @@ if __name__ == "__main__":
                     editor.selectionStart = editor.selectionEnd = lineStart + newIndent;
                     insertAtCursor('\n' + ' '.repeat(newIndent));
                 } else {
-                    // Check for colon -> increase indent
                     const shouldIndent = lineBeforeCursor.trim().endsWith(':');
                     let newIndent = currentIndent + (shouldIndent ? INDENT_SIZE : 0);
                     insertAtCursor('\n' + ' '.repeat(newIndent));
                 }
                 updateLineNumbers();
+                syncReferenceHighlight();
                 return;
             }
 
-            // Tab key
             if (e.key === 'Tab') {
                 e.preventDefault();
                 if (e.shiftKey) {
@@ -466,7 +482,6 @@ if __name__ == "__main__":
                 return;
             }
 
-            // Backspace - remove 4 spaces if in indent area
             if (e.key === 'Backspace') {
                 const cursorPos = editor.selectionStart;
                 const text = editor.value;
@@ -484,11 +499,32 @@ if __name__ == "__main__":
             }
         });
 
+        // Sync cursor with reference highlight
+        editor.addEventListener('keyup', syncReferenceHighlight);
+        editor.addEventListener('click', syncReferenceHighlight);
+
+        function syncReferenceHighlight() {
+            const lineNum = getCurrentLineNumber();
+            const refLines = document.querySelectorAll('.ref-line');
+            refLines.forEach((el, i) => {
+                el.classList.toggle('active', i + 1 === lineNum);
+            });
+
+            // Scroll reference to current line
+            const activeLine = document.querySelector('.ref-line.active');
+            if (activeLine) {
+                activeLine.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+
         // Reference panel
         function toggleReference() {
             const panel = document.getElementById('referencePanel');
             panel.classList.toggle('show');
             document.body.classList.toggle('reference-open', panel.classList.contains('show'));
+            if (panel.classList.contains('show')) {
+                setTimeout(syncReferenceHighlight, 100);
+            }
         }
 
         function clearEditor() {
@@ -505,14 +541,22 @@ if __name__ == "__main__":
             });
         }
 
-        // Initialize
+        // Initialize reference with line wrappers
         document.addEventListener('DOMContentLoaded', () => {
-            // Set reference code with syntax highlighting
-            document.getElementById('referenceCode').textContent = REFERENCE_CODE;
-            Prism.highlightAll();
+            const lines = REFERENCE_CODE.split('\n');
+            const codeEl = document.getElementById('referenceCode');
+            codeEl.innerHTML = lines.map((line, i) =>
+                `<span class="ref-line" data-line="${i + 1}">${Prism.highlight(line, Prism.languages.python, 'python') || ' '}</span>`
+            ).join('\n');
+
             updateLineNumbers();
             editor.focus();
         });
+
+        // Expose functions
+        window.toggleReference = toggleReference;
+        window.clearEditor = clearEditor;
+        window.copyToClipboard = copyToClipboard;
     </script>
 </body>
 
