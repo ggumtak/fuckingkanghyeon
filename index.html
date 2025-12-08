@@ -11,112 +11,355 @@
     <link rel="stylesheet" href="shared/styles.css">
     <style>
         .container {
-            max-width: 800px;
-            padding: 24px;
+            max-width: 1100px;
+            padding: 20px;
         }
 
-        /* 폴더 스타일 */
-        .folder-list {
+        /* 네비게이션 바 */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            background: #111827;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #6B7280;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(96, 165, 250, 0.15);
+            border-color: rgba(96, 165, 250, 0.4);
+            color: #60A5FA;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nav-path {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-left: 8px;
+        }
+
+        .nav-path-item {
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+
+        .nav-path-sep {
+            color: #4b5563;
+        }
+
+        .view-options {
+            margin-left: auto;
+            display: none;
+            gap: 3px;
+        }
+
+        .view-options.visible {
+            display: flex;
+        }
+
+        .view-btn {
+            padding: 5px 8px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: #6B7280;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #d1d5db;
+        }
+
+        .view-btn.active {
+            background: rgba(96, 165, 250, 0.15);
+            border-color: rgba(96, 165, 250, 0.4);
+            color: #60A5FA;
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            padding: 10px 0 24px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #60A5FA, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: #6B7280;
+            font-size: 0.8rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .stat {
+            background: #1e293b;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-size: 0.75rem;
+        }
+
+        .stat-label {
+            color: #6B7280;
+        }
+
+        .stat-value {
+            color: #60A5FA;
+            font-weight: 600;
+        }
+
+        /* 폴더 그리드 */
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .folder-card {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
             gap: 8px;
         }
 
-        .folder-item {
-            background: #1a1a1b;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .folder-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .folder-header:hover {
-            background: rgba(255, 255, 255, 0.04);
+        .folder-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(96, 165, 250, 0.4);
+            box-shadow: 0 8px 24px rgba(96, 165, 250, 0.12);
         }
 
         .folder-icon {
-            font-size: 1.3rem;
+            font-size: 2rem;
         }
 
         .folder-name {
-            flex: 1;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            text-align: center;
         }
 
-        .folder-count {
-            font-size: 0.75rem;
-            color: #6B7280;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3px 10px;
-            border-radius: 12px;
+        .folder-stats {
+            font-size: 0.6rem;
+            color: #64748b;
+            text-align: center;
         }
 
-        .folder-arrow {
-            color: #6B7280;
-            font-size: 0.7rem;
-            transition: transform 0.2s;
-        }
-
-        .folder-item.open .folder-arrow {
-            transform: rotate(180deg);
-        }
-
-        /* 파일 목록 (폴더 내부) */
-        .file-list {
+        /* 파일 뷰 */
+        .file-view {
             display: none;
-            padding: 4px 8px 8px 44px;
         }
 
-        .folder-item.open .file-list {
+        .file-view.active {
             display: block;
         }
 
-        .file-item {
-            display: flex;
-            align-items: center;
+        .file-grid {
+            display: grid;
             gap: 10px;
-            padding: 8px 12px;
-            margin: 2px 0;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #d1d5db;
-            font-size: 0.85rem;
-            transition: background 0.15s;
         }
 
-        .file-item:hover {
-            background: rgba(96, 165, 250, 0.1);
+        /* 보기 모드 */
+        .file-grid.view-small {
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+        }
+
+        .file-grid.view-medium {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+
+        .file-grid.view-large {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+
+        .file-grid.view-list {
+            grid-template-columns: 1fr;
+            gap: 2px;
+        }
+
+        .file-card {
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 12px;
+            text-decoration: none;
+            color: #d1d5db;
+            transition: all 0.15s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+        }
+
+        .file-card:hover {
+            background: rgba(96, 165, 250, 0.08);
+            border-color: rgba(96, 165, 250, 0.3);
             color: #60A5FA;
         }
 
         .file-icon {
-            font-size: 0.9rem;
-            opacity: 0.7;
+            font-size: 1.6rem;
         }
 
         .file-name {
-            flex: 1;
+            font-weight: 500;
+            font-size: 0.75rem;
+            word-break: break-word;
         }
 
         .file-meta {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             color: #6B7280;
         }
 
-        /* 난이도 뱃지 */
-        .badge {
-            font-size: 0.6rem;
-            padding: 2px 6px;
+        .file-progress {
+            font-size: 0.65rem;
+            color: #4ade80;
+            font-weight: 500;
+        }
+
+        /* 작은 아이콘 */
+        .view-small .file-card {
+            padding: 8px 6px;
+            gap: 3px;
+            border-radius: 8px;
+        }
+
+        .view-small .file-icon {
+            font-size: 1.2rem;
+        }
+
+        .view-small .file-name {
+            font-size: 0.65rem;
+        }
+
+        .view-small .file-meta,
+        .view-small .file-progress,
+        .view-small .badge {
+            display: none;
+        }
+
+        /* 중간 아이콘 */
+        .view-medium .file-card {
+            padding: 10px 8px;
+            gap: 5px;
+        }
+
+        .view-medium .file-icon {
+            font-size: 1.4rem;
+        }
+
+        .view-medium .file-name {
+            font-size: 0.7rem;
+        }
+
+        .view-medium .file-meta {
+            display: none;
+        }
+
+        /* 큰 아이콘 */
+        .view-large .file-card {
+            padding: 14px 10px;
+            gap: 6px;
+            aspect-ratio: 1;
+        }
+
+        .view-large .file-icon {
+            font-size: 1.8rem;
+        }
+
+        .view-large .file-name {
+            font-size: 0.8rem;
+        }
+
+        /* 리스트 - 매우 얇게 */
+        .view-list .file-card {
+            flex-direction: row;
+            justify-content: flex-start;
+            padding: 6px 10px;
+            gap: 8px;
+            text-align: left;
             border-radius: 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .view-list .file-card:hover {
+            background: rgba(96, 165, 250, 0.06);
+        }
+
+        .view-list .file-icon {
+            font-size: 0.9rem;
+        }
+
+        .view-list .file-name {
+            flex: 1;
+            font-size: 0.8rem;
+        }
+
+        .view-list .file-meta {
+            font-size: 0.65rem;
+            margin-left: auto;
+        }
+
+        .view-list .file-progress {
+            font-size: 0.7rem;
+        }
+
+        /* 뱃지 */
+        .badge {
+            font-size: 0.5rem;
+            padding: 1px 4px;
+            border-radius: 3px;
             font-weight: 600;
         }
 
@@ -135,113 +378,181 @@
             color: #ef4444;
         }
 
-        /* 헤더 */
-        .header {
-            text-align: center;
-            padding: 20px 0 30px;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #60A5FA, #A78BFA);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #6B7280;
-            font-size: 0.85rem;
-        }
-
-        /* 통계 */
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .stat {
-            background: #111827;
-            padding: 6px 14px;
-            border-radius: 16px;
-            font-size: 0.8rem;
-        }
-
-        .stat-label {
-            color: #6B7280;
-        }
-
-        .stat-value {
-            color: #60A5FA;
-            font-weight: 600;
+        .view-small .badge {
+            display: none;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="header">
+        <!-- 네비게이션 바 -->
+        <div class="nav-bar">
+            <button class="nav-btn" id="btnBack" onclick="goBack()" disabled title="뒤로">←</button>
+            <button class="nav-btn" id="btnForward" onclick="goForward()" disabled title="앞으로">→</button>
+            <div class="nav-path" id="navPath">
+                <span class="nav-path-item">📚 퀴즈 앱</span>
+            </div>
+            <div class="view-options" id="viewOptions">
+                <button class="view-btn" data-view="small" title="작은 아이콘">🔳</button>
+                <button class="view-btn active" data-view="medium" title="중간 아이콘">🔲</button>
+                <button class="view-btn" data-view="large" title="큰 아이콘">⬜</button>
+                <button class="view-btn" data-view="list" title="리스트">📋</button>
+            </div>
+        </div>
+
+        <!-- 헤더 -->
+        <div class="header" id="mainHeader">
             <h1>📚 퀴즈 앱</h1>
-            <p>과목 폴더를 클릭해서 퀴즈를 선택하세요</p>
+            <p>과목 폴더를 선택하세요</p>
             <div class="stats" id="stats"></div>
         </div>
 
-        <div class="folder-list" id="folderList"></div>
+        <!-- 폴더 그리드 -->
+        <div class="folder-grid" id="folderGrid"></div>
+
+        <!-- 파일 뷰 -->
+        <div class="file-view" id="fileView">
+            <div class="file-grid view-medium" id="fileGrid"></div>
+        </div>
     </div>
 
     <script src="shared/quiz-config.js"></script>
     <script>
         const diffLabels = { easy: '쉬움', medium: '보통', hard: '어려움' };
+        let currentModule = null;
+        let currentView = 'medium';
+        let historyStack = [];
+        let historyIndex = -1;
+
+        function getProgress(quizId) {
+            const data = localStorage.getItem(`quiz_progress_${quizId}`);
+            return data ? JSON.parse(data) : { solved: 0, total: 0 };
+        }
+
+        function updateNavButtons() {
+            document.getElementById('btnBack').disabled = historyIndex <= 0;
+            document.getElementById('btnForward').disabled = historyIndex >= historyStack.length - 1;
+        }
+
+        function navigateTo(moduleId, addToHistory = true) {
+            if (addToHistory) {
+                // 현재 위치 이후의 히스토리 제거
+                historyStack = historyStack.slice(0, historyIndex + 1);
+                historyStack.push(moduleId);
+                historyIndex = historyStack.length - 1;
+            }
+
+            if (moduleId === null) {
+                // 메인 화면
+                currentModule = null;
+                document.getElementById('viewOptions').classList.remove('visible');
+                document.getElementById('mainHeader').style.display = 'block';
+                document.getElementById('folderGrid').style.display = 'grid';
+                document.getElementById('fileView').classList.remove('active');
+                document.getElementById('navPath').innerHTML = '<span class="nav-path-item">📚 퀴즈 앱</span>';
+            } else {
+                // 폴더 내부
+                const m = QUIZ_CONFIG.modules.find(mod => mod.id === moduleId);
+                if (!m) return;
+                currentModule = m;
+                document.getElementById('viewOptions').classList.add('visible');
+                document.getElementById('mainHeader').style.display = 'none';
+                document.getElementById('folderGrid').style.display = 'none';
+                document.getElementById('fileView').classList.add('active');
+                document.getElementById('navPath').innerHTML = `
+                    <span class="nav-path-item" style="cursor:pointer" onclick="navigateTo(null)">📚 퀴즈 앱</span>
+                    <span class="nav-path-sep">›</span>
+                    <span class="nav-path-item">${m.icon} ${m.name}</span>
+                `;
+                renderFiles(m);
+            }
+            updateNavButtons();
+        }
+
+        function goBack() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                navigateTo(historyStack[historyIndex], false);
+            }
+        }
+
+        function goForward() {
+            if (historyIndex < historyStack.length - 1) {
+                historyIndex++;
+                navigateTo(historyStack[historyIndex], false);
+            }
+        }
+
+        function openFolder(moduleId) {
+            navigateTo(moduleId, true);
+        }
+
+        function renderFiles(m) {
+            const grid = document.getElementById('fileGrid');
+            grid.innerHTML = m.quizzes.map(q => {
+                const url = getQuizUrl(m, q);
+                const quizId = `${m.id}_${q.id}`;
+                const prog = getProgress(quizId);
+                const solved = prog.solved;
+                const total = q.count || prog.total || 0;
+                const badge = q.difficulty ? `<span class="badge badge-${q.difficulty}">${diffLabels[q.difficulty]}</span>` : '';
+
+                return `
+                    <a href="${url}" class="file-card">
+                        <span class="file-icon">${q.icon || '📄'}</span>
+                        <span class="file-name">${q.title}</span>
+                        ${badge}
+                        <span class="file-meta">${q.subtitle || ''}</span>
+                        <span class="file-progress">(${solved}/${total})</span>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        function setView(view) {
+            currentView = view;
+            const grid = document.getElementById('fileGrid');
+            grid.className = `file-grid view-${view}`;
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            localStorage.setItem('quiz_view_mode', view);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Stats
+            // 초기 상태를 히스토리에 추가
+            historyStack.push(null);
+            historyIndex = 0;
+
+            const savedView = localStorage.getItem('quiz_view_mode') || 'medium';
+            setView(savedView);
+
             document.getElementById('stats').innerHTML = `
                 <div class="stat"><span class="stat-label">과목</span> <span class="stat-value">${QUIZ_CONFIG.modules.length}</span></div>
                 <div class="stat"><span class="stat-label">세트</span> <span class="stat-value">${getTotalRounds()}</span></div>
                 <div class="stat"><span class="stat-label">문제</span> <span class="stat-value">${getTotalQuizCount()}+</span></div>
             `;
 
-            // Folders
-            const list = document.getElementById('folderList');
+            const grid = document.getElementById('folderGrid');
             QUIZ_CONFIG.modules.forEach(m => {
                 const totalCount = m.quizzes.reduce((sum, q) => sum + (q.count || 0), 0);
-                const folder = document.createElement('div');
-                folder.className = 'folder-item';
-                folder.innerHTML = `
-                    <div class="folder-header">
-                        <span class="folder-icon">${m.icon}</span>
-                        <span class="folder-name">${m.name}</span>
-                        <span class="folder-count">${m.quizzes.length}개 세트 · ${totalCount}문제</span>
-                        <span class="folder-arrow">▼</span>
-                    </div>
-                    <div class="file-list">
-                        ${m.quizzes.map(q => {
-                    const url = getQuizUrl(m, q);
-                    const badge = q.difficulty ? `<span class="badge badge-${q.difficulty}">${diffLabels[q.difficulty]}</span>` : '';
-                    return `
-                                <a href="${url}" class="file-item">
-                                    <span class="file-icon">${q.icon || '📄'}</span>
-                                    <span class="file-name">${q.title}</span>
-                                    ${badge}
-                                    <span class="file-meta">${q.subtitle}${q.count ? ` (${q.count})` : ''}</span>
-                                </a>
-                            `;
-                }).join('')}
-                    </div>
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                card.onclick = () => openFolder(m.id);
+                card.innerHTML = `
+                    <span class="folder-icon">${m.icon}</span>
+                    <span class="folder-name">${m.name}</span>
+                    <span class="folder-stats">${m.quizzes.length}개 세트 · ${totalCount}문제</span>
                 `;
-
-                folder.querySelector('.folder-header').onclick = () => {
-                    folder.classList.toggle('open');
-                };
-
-                list.appendChild(folder);
+                grid.appendChild(card);
             });
 
-            // Auto-open first folder
-            const first = document.querySelector('.folder-item');
-            if (first) first.classList.add('open');
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.onclick = () => setView(btn.dataset.view);
+            });
+
+            updateNavButtons();
         });
     </script>
     <script src="shared/nav-config.js"></script>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DB ?명듃 1 | ?댁쫰</title>
+    <title>DB 세트 12 | 퀴즈</title>
     <link rel="stylesheet" href="../../shared/styles.css">
     <link rel="stylesheet" href="../../shared/quiz-v2-styles.css">
 </head>
@@ -12,17 +12,17 @@
 <body>
     <div class="container">
         <header>
-            <h1>?뱤 ?명듃 1: 鍮덉뭏 梨꾩슦湲?/h1>
-            <p class="subtitle">INSERT, UPDATE, DELETE, ?⑥닔, ?곗씠?고??? JOIN</p>
+            <h1>DB 세트 12: 서술형 6</h1>
+            <p class="subtitle">INSERT, UPDATE, DELETE, 함수, 데이터타입, JOIN</p>
         </header>
-        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:20px;">??硫붿씤?쇰줈</a>
+        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
 
-        <!-- 李멸퀬 ?뚯씠釉?(?몃씪?? -->
+        <!-- 참고 테이블(접이식) -->
         <div class="reference-tables-inline" style="display:block; margin-bottom:24px;">
             <details open>
                 <summary
                     style="cursor:pointer; padding:12px; background:var(--bg-tertiary); border-radius:8px; font-weight:600;">
-                    ?뱥 李멸퀬 ?뚯씠釉?(?대┃?섏뿬 ?묎린/?쇱튂湲?</summary>
+                    ▼ 참고 테이블(클릭하여 열기/접기)</summary>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
                     <div class="table-wrapper">
                         <h4 style="color:var(--accent); margin-bottom:8px;">userTbl</h4>
@@ -42,9 +42,9 @@
                             <tbody>
                                 <tr>
                                     <td>LSG</td>
-                                    <td>?댁듅湲?/td>
+                                    <td>이승기</td>
                                     <td>1987</td>
-                                    <td>?쒖슱</td>
+                                    <td>서울</td>
                                     <td>11</td>
                                     <td>1111111</td>
                                     <td>182</td>
@@ -52,9 +52,9 @@
                                 </tr>
                                 <tr>
                                     <td>KBS</td>
-                                    <td>源踰붿닔</td>
+                                    <td>김범수</td>
                                     <td>1979</td>
-                                    <td>寃쎈궓</td>
+                                    <td>경남</td>
                                     <td>11</td>
                                     <td>2222222</td>
                                     <td>173</td>
@@ -62,9 +62,9 @@
                                 </tr>
                                 <tr>
                                     <td>KKH</td>
-                                    <td>源寃쏀샇</td>
+                                    <td>김경호</td>
                                     <td>1971</td>
-                                    <td>?꾨궓</td>
+                                    <td>전남</td>
                                     <td>19</td>
                                     <td>3333333</td>
                                     <td>177</td>
@@ -72,9 +72,9 @@
                                 </tr>
                                 <tr>
                                     <td>JYP</td>
-                                    <td>議곗슜??/td>
+                                    <td>조용필</td>
                                     <td>1950</td>
-                                    <td>寃쎄린</td>
+                                    <td>경기</td>
                                     <td>11</td>
                                     <td>4444444</td>
                                     <td>166</td>
@@ -82,9 +82,9 @@
                                 </tr>
                                 <tr>
                                     <td>SSK</td>
-                                    <td>?깆떆寃?/td>
+                                    <td>성시경</td>
                                     <td>1979</td>
-                                    <td>?쒖슱</td>
+                                    <td>서울</td>
                                     <td>NULL</td>
                                     <td>NULL</td>
                                     <td>186</td>
@@ -92,9 +92,9 @@
                                 </tr>
                                 <tr>
                                     <td>LJB</td>
-                                    <td>?꾩옱踰?/td>
+                                    <td>임재범</td>
                                     <td>1963</td>
-                                    <td>?쒖슱</td>
+                                    <td>서울</td>
                                     <td>16</td>
                                     <td>6666666</td>
                                     <td>182</td>
@@ -102,9 +102,9 @@
                                 </tr>
                                 <tr>
                                     <td>YJS</td>
-                                    <td>?ㅼ쥌??/td>
+                                    <td>윤종신</td>
                                     <td>1969</td>
-                                    <td>寃쎈궓</td>
+                                    <td>경남</td>
                                     <td>NULL</td>
                                     <td>NULL</td>
                                     <td>170</td>
@@ -112,9 +112,9 @@
                                 </tr>
                                 <tr>
                                     <td>EJW</td>
-                                    <td>?吏??/td>
+                                    <td>은지원</td>
                                     <td>1972</td>
-                                    <td>寃쎈턿</td>
+                                    <td>경북</td>
                                     <td>11</td>
                                     <td>8888888</td>
                                     <td>174</td>
@@ -122,9 +122,9 @@
                                 </tr>
                                 <tr>
                                     <td>JKW</td>
-                                    <td>議곌???/td>
+                                    <td>조관우</td>
                                     <td>1965</td>
-                                    <td>寃쎄린</td>
+                                    <td>경기</td>
                                     <td>18</td>
                                     <td>9999999</td>
                                     <td>172</td>
@@ -132,9 +132,9 @@
                                 </tr>
                                 <tr>
                                     <td>BBK</td>
-                                    <td>諛붾퉬??/td>
+                                    <td>바비킴</td>
                                     <td>1973</td>
-                                    <td>?쒖슱</td>
+                                    <td>서울</td>
                                     <td>10</td>
                                     <td>0</td>
                                     <td>176</td>
@@ -160,7 +160,7 @@
                                 <tr>
                                     <td>1</td>
                                     <td>KBS</td>
-                                    <td>?대룞??/td>
+                                    <td>운동화</td>
                                     <td>NULL</td>
                                     <td>30</td>
                                     <td>2</td>
@@ -168,71 +168,71 @@
                                 <tr>
                                     <td>2</td>
                                     <td>KBS</td>
-                                    <td>?명듃遺?/td>
-                                    <td>?꾩옄</td>
+                                    <td>노트북</td>
+                                    <td>전자</td>
                                     <td>1000</td>
                                     <td>1</td>
                                 </tr>
                                 <tr>
                                     <td>3</td>
                                     <td>JYP</td>
-                                    <td>紐⑤땲??/td>
-                                    <td>?꾩옄</td>
+                                    <td>모니터</td>
+                                    <td>전자</td>
                                     <td>200</td>
                                     <td>1</td>
                                 </tr>
                                 <tr>
                                     <td>4</td>
                                     <td>BBK</td>
-                                    <td>紐⑤땲??/td>
-                                    <td>?꾩옄</td>
+                                    <td>모니터</td>
+                                    <td>전자</td>
                                     <td>200</td>
                                     <td>5</td>
                                 </tr>
                                 <tr>
                                     <td>5</td>
                                     <td>KBS</td>
-                                    <td>泥?컮吏</td>
-                                    <td>?섎쪟</td>
+                                    <td>청바지</td>
+                                    <td>의류</td>
                                     <td>50</td>
                                     <td>3</td>
                                 </tr>
                                 <tr>
                                     <td>6</td>
                                     <td>BBK</td>
-                                    <td>硫붾え由?/td>
-                                    <td>?꾩옄</td>
+                                    <td>메모리</td>
+                                    <td>전자</td>
                                     <td>80</td>
                                     <td>10</td>
                                 </tr>
                                 <tr>
                                     <td>7</td>
                                     <td>SSK</td>
-                                    <td>梨?/td>
-                                    <td>?쒖쟻</td>
+                                    <td>책</td>
+                                    <td>서적</td>
                                     <td>15</td>
                                     <td>5</td>
                                 </tr>
                                 <tr>
                                     <td>8</td>
                                     <td>EJW</td>
-                                    <td>梨?/td>
-                                    <td>?쒖쟻</td>
+                                    <td>책</td>
+                                    <td>서적</td>
                                     <td>15</td>
                                     <td>2</td>
                                 </tr>
                                 <tr>
                                     <td>9</td>
                                     <td>EJW</td>
-                                    <td>泥?컮吏</td>
-                                    <td>?섎쪟</td>
+                                    <td>청바지</td>
+                                    <td>의류</td>
                                     <td>50</td>
                                     <td>1</td>
                                 </tr>
                                 <tr>
                                     <td>10</td>
                                     <td>BBK</td>
-                                    <td>?대룞??/td>
+                                    <td>운동화</td>
                                     <td>NULL</td>
                                     <td>30</td>
                                     <td>2</td>
@@ -240,15 +240,15 @@
                                 <tr>
                                     <td>11</td>
                                     <td>EJW</td>
-                                    <td>梨?/td>
-                                    <td>?쒖쟻</td>
+                                    <td>책</td>
+                                    <td>서적</td>
                                     <td>15</td>
                                     <td>1</td>
                                 </tr>
                                 <tr>
                                     <td>12</td>
                                     <td>BBK</td>
-                                    <td>?대룞??/td>
+                                    <td>운동화</td>
                                     <td>NULL</td>
                                     <td>30</td>
                                     <td>2</td>
@@ -262,13 +262,13 @@
 
         <div id="v2-quiz-container"></div>
         <div class="controls">
-            <button class="btn btn-primary" onclick="gradeAllV2()">???꾩껜 梨꾩젏</button>
-            <button class="btn btn-primary" onclick="showAllV2Answers()">?뱰 ?꾩껜 ?뺣떟</button>
-            <button class="btn btn-primary" onclick="reviewWrongV2()">?봽 ?由?臾몄젣 蹂듭뒿</button>
-            <button class="btn btn-secondary" onclick="resetV2Quiz()">?뿊截?珥덇린??/button>
+            <button class="btn btn-primary" onclick="gradeAllV2()">✅ 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllV2Answers()">💡 전체 정답</button>
+            <button class="btn btn-primary" onclick="reviewWrongV2()">🔄 틀린 문제 복습</button>
+            <button class="btn btn-secondary" onclick="resetV2Quiz()">🔃 초기화</button>
         </div>
         <div class="score-display">
-            <div class="score-label">?꾩옱 ?먯닔</div>
+            <div class="score-label">현재 점수</div>
             <div><span class="score-num" id="v2-score">0</span><span class="score-total"> / <span
                         id="v2-total">0</span></span></div>
         </div>
@@ -290,5 +290,3 @@
 </body>
 
 </html>
-
-
