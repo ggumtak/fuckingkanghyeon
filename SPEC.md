@@ -42,7 +42,7 @@
 
 ### 1.1 Current Features
 
-- **Python Linked List Code Fill-in-the-blank Quiz** (6+ rounds, 190+ questions)
+- **Python Linked List Code Fill-in-the-blank Quiz** (10+ rounds, 350+ questions)
 - **Individual/Batch Grading** (`Enter` = individual, `Ctrl+Enter` = batch)
 - **3-Level Feedback**:
   - 🟢 Green = Correct on first try (readOnly)
@@ -52,6 +52,14 @@
 - **Gemini-style Sidebar Navigation**
 - **AI Chat Panel** (`Ctrl+L`): Gemini 2.5 Flash API integration
 - **Blank Practice Mode** (`blank-practice.html`)
+- **PWA Support** (v2.1): Install as mobile app, offline caching via Service Worker
+- **Custom Dark Scrollbars**: Matches Gemini-style dark theme
+- **Smart Focus Navigation**: When solving backwards, jumps to closest unfilled blank instead of top
+- **Auto-scroll to Upper Center**: Focused blank automatically scrolls to ~35% from viewport top
+- **Progress Persistence**: LocalStorage saves quiz progress, restored on page reload
+- **Completion Modal**: Shows "Next / Retry / Home" buttons when all blanks filled correctly
+- **Floating Navigation Bar**: Quick quiz switching (1-10) at top of quiz pages
+- **Responsive Design**: Optimized for Galaxy S23 Ultra (phone) and Galaxy S7+ (tablet)
 
 ### 1.2 Long-term Goals
 

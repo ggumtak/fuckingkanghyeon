@@ -651,8 +651,34 @@
         let historyIndex = -1;
 
         function getProgress(quizId) {
-            const data = localStorage.getItem(`quiz_progress_${quizId}`);
-            return data ? JSON.parse(data) : { solved: 0, total: 0 };
+            // quiz-app.js uses format: quiz_progress_{quizNumber}
+            // Extract quiz number from quizId like "quiz-1" or just use "1"
+            const quizNum = quizId.replace(/[^0-9]/g, '') || quizId;
+            const data = localStorage.getItem(`quiz_progress_${quizNum}`);
+
+            if (!data) return { solved: 0, total: 0 };
+
+            try {
+                const progress = JSON.parse(data);
+                // Count correct answers from saved states
+                let solved = 0;
+                let total = 0;
+
+                if (progress.states) {
+                    for (const blankNum in progress.states) {
+                        total++;
+                        const state = progress.states[blankNum];
+                        // correct state with classList including 'correct' or 'retry' means solved
+                        if (state && state.state === 'correct') {
+                            solved++;
+                        }
+                    }
+                }
+
+                return { solved, total };
+            } catch (e) {
+                return { solved: 0, total: 0 };
+            }
         }
 
         function updateNavButtons() {

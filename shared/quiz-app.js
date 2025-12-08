@@ -638,17 +638,29 @@ function handleEnterKey(input, quizId, data) {
     checkCompletion(quizId, data);
 }
 
-// Move focus to next blank
+// Move focus to next blank (sequential navigation)
 function moveToNext(input, quizId) {
     const currentBlank = parseInt(input.dataset.blank);
-    const nextInput = document.querySelector(`input[data-quiz="${quizId}"][data-blank="${currentBlank + 1}"]:not([readonly])`);
+
+    // Try next blank first (current + 1)
+    const nextInput = document.querySelector(
+        `input[data-quiz="${quizId}"][data-blank="${currentBlank + 1}"]:not([readonly])`
+    );
     if (nextInput) {
         nextInput.focus();
-    } else {
-        // Find any non-readonly input
-        const anyNext = document.querySelector(`input[data-quiz="${quizId}"]:not([readonly])`);
-        if (anyNext) anyNext.focus();
+        return;
     }
+
+    // No next blank - try previous blank (current - 1) for backwards solving
+    const prevInput = document.querySelector(
+        `input[data-quiz="${quizId}"][data-blank="${currentBlank - 1}"]:not([readonly])`
+    );
+    if (prevInput) {
+        prevInput.focus();
+        return;
+    }
+
+    // Neither next nor previous available - all done or isolated, do nothing
 }
 
 // Update score display
