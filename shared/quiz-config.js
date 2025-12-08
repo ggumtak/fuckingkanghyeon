@@ -38,6 +38,8 @@ const QUIZ_CONFIG = {
                 { id: 8, title: '8회차', subtitle: '1줄 완성 B', count: 23, icon: '🎲', difficulty: 'medium' },
                 { id: 9, title: '9회차', subtitle: '핵심 로직', count: 30, icon: '👑', difficulty: 'hard' },
                 { id: 10, title: '10회차', subtitle: '백지 스켈레톤', count: 88, icon: '🏆', difficulty: 'hard' },
+                { id: 11, title: '11회차', subtitle: '12주차 종합', count: 59, icon: '🎓', difficulty: 'hard' },
+                { id: 12, title: '12회차', subtitle: '한 줄 완성', count: 53, icon: '💯', difficulty: 'hard' },
                 { id: 'linked-list-full', title: '전체 코드', subtitle: 'Set 1+2', count: 48, icon: '📚', file: 'linked-list-full.html' },
                 { id: 'blank-practice', title: '백지 복습', subtitle: '직접 코드 작성', count: 0, icon: '✍️', file: 'blank-practice.html' }
             ]
