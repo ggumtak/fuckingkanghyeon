@@ -129,7 +129,7 @@ function clearProgress(quizId) {
 
 // Create blank input field
 function createInput(quizId, blankNum) {
-    return `<input type="text" class="blank-input" data-quiz="${quizId}" data-blank="${blankNum}" placeholder="(${blankNum})">`;
+    return `<input type="text" class="blank-input" data-quiz="${quizId}" data-blank="${blankNum}" placeholder="(${blankNum})" enterkeyhint="go">`;
 }
 
 // Calculate blank width based on longest answer
