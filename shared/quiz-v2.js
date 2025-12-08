@@ -420,10 +420,12 @@ function moveToNextV2Blank(currentInput) {
     }
 }
 
+// Normalize answer for flexible comparison (ignore whitespace only, preserve case)
 function normalizeAnswer(str) {
     if (!str) return '';
     // Remove ALL whitespace for comparison (so "a = b" matches "a=b")
-    return str.toLowerCase().replace(/\s+/g, '').trim();
+    // Case is preserved! (None != none)
+    return str.replace(/\s+/g, '');
 }
 
 /**
@@ -439,7 +441,6 @@ function reviewWrongV2() {
             q.blanks?.forEach(blank => {
                 const key = `${q.id}-${blank.index}`;
                 const state = v2States.get(key);
-                // Reset if was ever wrong (shown or graded state with wasEverWrong)
                 if (v2WasEverWrong.has(key) || state === 'shown' || state === 'graded') {
                     const input = document.querySelector(`.v2-blank[data-question="${q.id}"][data-blank="${blank.index}"]`);
                     if (input) {
@@ -481,14 +482,12 @@ function reviewWrongV2() {
         }
     });
 
-    // Clear wasEverWrong for fresh start
     v2WasEverWrong.clear();
     updateV2Score();
 
     if (!hasWrong) {
         alert('복습할 문제가 없습니다! 🎉');
     } else {
-        // Focus first blank
         const firstBlank = document.querySelector('.v2-blank:not([readonly]), .v2-short:not([readonly])');
         if (firstBlank) firstBlank.focus();
     }
@@ -502,4 +501,3 @@ if (typeof window !== 'undefined') {
     window.showAllV2Answers = showAllV2Answers;
     window.reviewWrongV2 = reviewWrongV2;
 }
-

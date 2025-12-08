@@ -21,6 +21,14 @@ const wasEverWrong = new Set();
 // LocalStorage key prefix
 const STORAGE_PREFIX = 'quiz_progress_';
 
+// Normalize answer for flexible comparison (ignore whitespace only, preserve case)
+function normalizeAnswer(str) {
+    if (!str) return '';
+    // Remove all whitespace for comparison (so "a = b" matches "a=b")
+    // Case is preserved! (None != none)
+    return str.replace(/\s+/g, '');
+}
+
 // ========== Scroll Utility ==========
 /**
  * Scroll element to upper-center of viewport (about 35% from top)
@@ -387,7 +395,7 @@ function checkCompletion(quizId, data) {
         const state = inputStates.get(inputKey);
 
         // Check if this input is correctly answered (green or yellow, not shown/red)
-        if (input.value.trim() !== correctAnswer || state === 'shown') {
+        if (normalizeAnswer(input.value.trim()) !== normalizeAnswer(correctAnswer) || state === 'shown') {
             allCorrect = false;
         }
     });
@@ -593,6 +601,7 @@ function handleEnterKey(input, quizId, data) {
     if (state === 'graded' && input.classList.contains('wrong')) {
         // Second Enter on wrong: Show answer, lock it red
         input.value = correctAnswer;
+        input.readOnly = true;  // Lock the input!
         inputStates.set(inputKey, 'shown');
         // Keep it red (wrong class) - answer was revealed
         moveToNext(input, quizId);
@@ -601,7 +610,7 @@ function handleEnterKey(input, quizId, data) {
         moveToNext(input, quizId);
     } else {
         // First grade
-        const isCorrect = userAnswer === correctAnswer;
+        const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
         input.classList.remove('correct', 'wrong', 'retry');
 
         if (userAnswer) {
@@ -650,7 +659,7 @@ function updateScore(quizId, data) {
     inputs.forEach(input => {
         const blankNum = parseInt(input.dataset.blank);
         const correctAnswer = data.answers[blankNum - 1];
-        if (input.value.trim() === correctAnswer) score++;
+        if (normalizeAnswer(input.value.trim()) === normalizeAnswer(correctAnswer)) score++;
     });
 
     const scoreEl = document.getElementById(`score-${quizId}`);
@@ -668,7 +677,7 @@ function checkAnswers(quizId, data) {
         const blankNum = parseInt(input.dataset.blank);
         const correctAnswer = data.answers[blankNum - 1];
         const userAnswer = input.value.trim();
-        const isCorrect = userAnswer === correctAnswer;
+        const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
 
         input.classList.remove('correct', 'wrong', 'retry');
 
