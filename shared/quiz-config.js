@@ -113,3 +113,96 @@ if (typeof window !== 'undefined') {
     window.getTotalQuizCount = getTotalQuizCount;
     window.getTotalRounds = getTotalRounds;
 }
+
+/**
+ * Get current page info (module and quiz index)
+ */
+function getCurrentPageInfo() {
+    const path = window.location.pathname;
+    const filename = path.split('/').pop();
+
+    for (const module of QUIZ_CONFIG.modules) {
+        // Check if current path contains the module folder
+        if (path.includes(module.folder) || path.includes(module.id)) {
+            const quizzes = module.quizzes;
+            for (let i = 0; i < quizzes.length; i++) {
+                const quiz = quizzes[i];
+                const expectedFile = quiz.file || `quiz-${quiz.id}.html`;
+                if (filename === expectedFile) {
+                    return { module, quizIndex: i, quiz };
+                }
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Check if previous quiz exists
+ */
+function hasPrevQuiz() {
+    const info = getCurrentPageInfo();
+    return info && info.quizIndex > 0;
+}
+
+/**
+ * Check if next quiz exists
+ */
+function hasNextQuiz() {
+    const info = getCurrentPageInfo();
+    return info && info.quizIndex < info.module.quizzes.length - 1;
+}
+
+/**
+ * Get previous quiz URL
+ */
+function getPrevQuizUrl() {
+    const info = getCurrentPageInfo();
+    if (!info || info.quizIndex <= 0) return null;
+    const prevQuiz = info.module.quizzes[info.quizIndex - 1];
+    return prevQuiz.file || `quiz-${prevQuiz.id}.html`;
+}
+
+/**
+ * Get next quiz URL
+ */
+function getNextQuizUrl() {
+    const info = getCurrentPageInfo();
+    if (!info || info.quizIndex >= info.module.quizzes.length - 1) return null;
+    const nextQuiz = info.module.quizzes[info.quizIndex + 1];
+    return nextQuiz.file || `quiz-${nextQuiz.id}.html`;
+}
+
+/**
+ * Get home URL
+ */
+function getHomeUrl() {
+    return '../../index.html';
+}
+
+/**
+ * Get prev/next quiz info for display
+ */
+function getPrevQuizInfo() {
+    const info = getCurrentPageInfo();
+    if (!info || info.quizIndex <= 0) return null;
+    return info.module.quizzes[info.quizIndex - 1];
+}
+
+function getNextQuizInfo() {
+    const info = getCurrentPageInfo();
+    if (!info || info.quizIndex >= info.module.quizzes.length - 1) return null;
+    return info.module.quizzes[info.quizIndex + 1];
+}
+
+// Export navigation functions
+if (typeof window !== 'undefined') {
+    window.getCurrentPageInfo = getCurrentPageInfo;
+    window.hasPrevQuiz = hasPrevQuiz;
+    window.hasNextQuiz = hasNextQuiz;
+    window.getPrevQuizUrl = getPrevQuizUrl;
+    window.getNextQuizUrl = getNextQuizUrl;
+    window.getHomeUrl = getHomeUrl;
+    window.getPrevQuizInfo = getPrevQuizInfo;
+    window.getNextQuizInfo = getNextQuizInfo;
+}

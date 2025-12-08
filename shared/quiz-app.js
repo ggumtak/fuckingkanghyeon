@@ -204,6 +204,118 @@ function createReviewSection(quizId, data) {
 
     // Add floating scroll buttons only (nav bar removed - sidebar is enough)
     createFloatingScrollButtons();
+
+    // Add bottom prev/next navigation
+    createBottomNavigation();
+}
+
+// Create bottom prev/next navigation buttons
+function createBottomNavigation() {
+    if (document.getElementById('bottomNav')) return;
+
+    const prevInfo = typeof getPrevQuizInfo === 'function' ? getPrevQuizInfo() : null;
+    const nextInfo = typeof getNextQuizInfo === 'function' ? getNextQuizInfo() : null;
+
+    // Create navigation container
+    const nav = document.createElement('div');
+    nav.id = 'bottomNav';
+    nav.innerHTML = `
+        <a href="${prevInfo ? (prevInfo.file || `quiz-${prevInfo.id}.html`) : '#'}" 
+           class="bottom-nav-btn prev ${!prevInfo ? 'disabled' : ''}"
+           ${!prevInfo ? 'onclick="return false;"' : ''}>
+            <span class="nav-arrow">←</span>
+            <span class="nav-label">
+                <span class="nav-direction">이전</span>
+                <span class="nav-title">${prevInfo ? prevInfo.title : ''}</span>
+            </span>
+        </a>
+        <a href="${nextInfo ? (nextInfo.file || `quiz-${nextInfo.id}.html`) : '#'}" 
+           class="bottom-nav-btn next ${!nextInfo ? 'disabled' : ''}"
+           ${!nextInfo ? 'onclick="return false;"' : ''}>
+            <span class="nav-label">
+                <span class="nav-direction">다음</span>
+                <span class="nav-title">${nextInfo ? nextInfo.title : ''}</span>
+            </span>
+            <span class="nav-arrow">→</span>
+        </a>
+    `;
+
+    // Add styles
+    const style = document.createElement('style');
+    style.textContent = `
+        #bottomNav {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 32px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border, #444746);
+        }
+        .bottom-nav-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-card, #1E1F20);
+            border: 1px solid var(--border, #444746);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text, #E3E3E3);
+            transition: all 0.2s ease;
+        }
+        .bottom-nav-btn:hover:not(.disabled) {
+            background: var(--hover-bg, rgba(255,255,255,0.08));
+            border-color: var(--accent, #A8C7FA);
+            transform: translateY(-2px);
+        }
+        .bottom-nav-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .bottom-nav-btn.next {
+            justify-content: flex-end;
+            text-align: right;
+        }
+        .nav-arrow {
+            font-size: 1.5rem;
+            color: var(--accent, #A8C7FA);
+        }
+        .nav-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .nav-direction {
+            font-size: 0.8rem;
+            color: var(--text-muted, #7F848E);
+        }
+        .nav-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text, #E3E3E3);
+        }
+        @media (max-width: 480px) {
+            #bottomNav {
+                gap: 10px;
+            }
+            .bottom-nav-btn {
+                padding: 12px 14px;
+            }
+            .nav-arrow {
+                font-size: 1.2rem;
+            }
+            .nav-title {
+                font-size: 0.9rem;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Insert after main container
+    const container = document.querySelector('.container') || document.body;
+    container.appendChild(nav);
 }
 
 // ========== Completion Modal ==========
