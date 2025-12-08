@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>?곗씠?곕쿋?댁뒪 以묎컙怨좎궗 ?곗뒿 | ?댁쫰</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="../../shared/quiz-v2-styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>?곗씠?곕쿋?댁뒪: 以묎컙怨좎궗 ?곗뒿</h1>
+            <p class="subtitle">INSERT, UPDATE, DELETE, ?⑥닔, ?곗씠?고??? JOIN</p>
+        </header>
+
+        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:20px;">??硫붿씤?쇰줈</a>
+
+        <!-- 李멸퀬 ?뚯씠釉??좉? 踰꾪듉 -->
+        <button class="reference-toggle-btn" id="refToggleBtn" onclick="toggleReferencePanel()">?뱥 ?뚯씠釉?/button>
+
+        <!-- 李멸퀬???뚯씠釉?- ?ъ씠???⑤꼸 -->
+        <div class="reference-panel" id="referencePanel">
+            <div class="reference-panel-header">
+                <h3>?뱥 李멸퀬 ?뚯씠釉?/h3>
+                <button class="reference-panel-close" onclick="toggleReferencePanel()">횞</button>
+            </div>
+            <div class="reference-panel-content">
+                <div class="table-grid">
+                    <!-- userTbl -->
+                    <div class="table-wrapper">
+                        <h4>userTbl (?뚯썝 ?뚯씠釉?</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>userID</th>
+                                    <th>name</th>
+                                    <th>birthYear</th>
+                                    <th>addr</th>
+                                    <th>mobile1</th>
+                                    <th>mobile2</th>
+                                    <th>height</th>
+                                    <th>mDate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LSG</td>
+                                    <td>?댁듅湲?/td>
+                                    <td>1987</td>
+                                    <td>?쒖슱</td>
+                                    <td>11</td>
+                                    <td>1111111</td>
+                                    <td>182</td>
+                                    <td>2008-08-08</td>
+                                </tr>
+                                <tr>
+                                    <td>KBS</td>
+                                    <td>源踰붿닔</td>
+                                    <td>1979</td>
+                                    <td>寃쎈궓</td>
+                                    <td>11</td>
+                                    <td>2222222</td>
+                                    <td>173</td>
+                                    <td>2012-04-04</td>
+                                </tr>
+                                <tr>
+                                    <td>KKH</td>
+                                    <td>源寃쏀샇</td>
+                                    <td>1971</td>
+                                    <td>?꾨궓</td>
+                                    <td>19</td>
+                                    <td>3333333</td>
+                                    <td>177</td>
+                                    <td>2007-07-07</td>
+                                </tr>
+                                <tr>
+                                    <td>JYP</td>
+                                    <td>議곗슜??/td>
+                                    <td>1950</td>
+                                    <td>寃쎄린</td>
+                                    <td>11</td>
+                                    <td>4444444</td>
+                                    <td>166</td>
+                                    <td>2009-04-04</td>
+                                </tr>
+                                <tr>
+                                    <td>SSK</td>
+                                    <td>?깆떆寃?/td>
+                                    <td>1979</td>
+                                    <td>?쒖슱</td>
+                                    <td>NULL</td>
+                                    <td>NULL</td>
+                                    <td>186</td>
+                                    <td>2013-12-12</td>
+                                </tr>
+                                <tr>
+                                    <td>LJB</td>
+                                    <td>?꾩옱踰?/td>
+                                    <td>1963</td>
+                                    <td>?쒖슱</td>
+                                    <td>16</td>
+                                    <td>6666666</td>
+                                    <td>182</td>
+                                    <td>2009-09-09</td>
+                                </tr>
+                                <tr>
+                                    <td>YJS</td>
+                                    <td>?ㅼ쥌??/td>
+                                    <td>1969</td>
+                                    <td>寃쎈궓</td>
+                                    <td>NULL</td>
+                                    <td>NULL</td>
+                                    <td>170</td>
+                                    <td>2005-05-05</td>
+                                </tr>
+                                <tr>
+                                    <td>EJW</td>
+                                    <td>?吏??/td>
+                                    <td>1972</td>
+                                    <td>寃쎈턿</td>
+                                    <td>11</td>
+                                    <td>8888888</td>
+                                    <td>174</td>
+                                    <td>2014-03-03</td>
+                                </tr>
+                                <tr>
+                                    <td>JKW</td>
+                                    <td>議곌???/td>
+                                    <td>1965</td>
+                                    <td>寃쎄린</td>
+                                    <td>18</td>
+                                    <td>9999999</td>
+                                    <td>172</td>
+                                    <td>2010-10-10</td>
+                                </tr>
+                                <tr>
+                                    <td>BBK</td>
+                                    <td>諛붾퉬??/td>
+                                    <td>1973</td>
+                                    <td>?쒖슱</td>
+                                    <td>10</td>
+                                    <td>0</td>
+                                    <td>176</td>
+                                    <td>2013-05-05</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- buyTbl -->
+                    <div class="table-wrapper">
+                        <h4>buyTbl (援щℓ ?뚯씠釉?</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>num</th>
+                                    <th>userID</th>
+                                    <th>prodName</th>
+                                    <th>groupName</th>
+                                    <th>price</th>
+                                    <th>amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>KBS</td>
+                                    <td>?대룞??/td>
+                                    <td>NULL</td>
+                                    <td>30</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>KBS</td>
+                                    <td>?명듃遺?/td>
+                                    <td>?꾩옄</td>
+                                    <td>1000</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>JYP</td>
+                                    <td>紐⑤땲??/td>
+                                    <td>?꾩옄</td>
+                                    <td>200</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>BBK</td>
+                                    <td>紐⑤땲??/td>
+                                    <td>?꾩옄</td>
+                                    <td>200</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>KBS</td>
+                                    <td>泥?컮吏</td>
+                                    <td>?섎쪟</td>
+                                    <td>50</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>BBK</td>
+                                    <td>硫붾え由?/td>
+                                    <td>?꾩옄</td>
+                                    <td>80</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>SSK</td>
+                                    <td>梨?/td>
+                                    <td>?쒖쟻</td>
+                                    <td>15</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>
+                                    <td>EJW</td>
+                                    <td>梨?/td>
+                                    <td>?쒖쟻</td>
+                                    <td>15</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td>EJW</td>
+                                    <td>泥?컮吏</td>
+                                    <td>?섎쪟</td>
+                                    <td>50</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>
+                                    <td>BBK</td>
+                                    <td>?대룞??/td>
+                                    <td>NULL</td>
+                                    <td>30</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>
+                                    <td>EJW</td>
+                                    <td>梨?/td>
+                                    <td>?쒖쟻</td>
+                                    <td>15</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>
+                                    <td>BBK</td>
+                                    <td>?대룞??/td>
+                                    <td>NULL</td>
+                                    <td>30</td>
+                                    <td>2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- V2 ?댁쫰 而⑦뀒?대꼫 -->
+        <div id="v2-quiz-container"></div>
+
+        <!-- 而⑦듃濡?-->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="gradeAllV2()">???꾩껜 梨꾩젏</button>
+            <button class="btn btn-primary" onclick="showAllV2Answers()">?뱰 ?꾩껜 ?뺣떟</button>
+            <button class="btn btn-primary" onclick="reviewWrongV2()">?봽 ?由?臾몄젣 蹂듭뒿</button>
+            <button class="btn btn-secondary" onclick="resetV2Quiz()">占쏙툘 ?꾩껜 珥덇린??/button>
+        </div>
+
+        <!-- ?먯닔 ?쒖떆 -->
+        <div class="score-display">
+            <div class="score-label">?꾩옱 ?먯닔</div>
+            <div><span class="score-num" id="v2-score">0</span><span class="score-total"> / <span
+                        id="v2-total">0</span></span></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="../../shared/quiz-v2.js"></script>
+    <!-- Quiz Sets -->
+    <script src="data/set1.js"></script>
+    <script src="data/set2.js"></script>
+    <script src="data/set3.js"></script>
+    <script src="data/set4.js"></script>
+    <script src="data/set5.js"></script>
+    <script src="data/set6.js"></script>
+    <script src="data/set7.js"></script>
+    <script src="data/set8.js"></script>
+    <script src="data/set9.js"></script>
+    <script src="data/set10.js"></script>
+    <script src="data/set11.js"></script>
+    <script src="data/set12.js"></script>
+    <script src="data/database-midterm.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof quizRound !== 'undefined') {
+                renderQuizRound(quizRound);
+            } else {
+                document.getElementById('v2-quiz-container').innerHTML =
+                    '<p style="color: var(--error);">?댁쫰 ?곗씠?곕? 濡쒕뱶?섏? 紐삵뻽?듬땲??</p>';
+            }
+        });
+
+        // Toggle reference panel
+        function toggleReferencePanel() {
+            const panel = document.getElementById('referencePanel');
+            const btn = document.getElementById('refToggleBtn');
+            panel.classList.toggle('open');
+            btn.classList.toggle('hidden');
+        }
+    </script>
+</body>
+
+</html>
+

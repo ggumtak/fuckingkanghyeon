@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5회차: 포인터 흐름 제어 | 연결 리스트 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>5회차: 포인터 흐름 제어</h1>
+            <p class="subtitle">.link 할당과 조건문 논리 연산자 정복</p>
+        </header>
+
+        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <div class="code-block">
+            <pre id="code-5"></pre>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="checkAnswers('5', quiz5Data)">? 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllAnswers('5', quiz5Data)">?? 전체 정답</button>
+            <button class="btn btn-secondary" onclick="toggleAnswers('5')">?? 정답표 보기</button>
+            <button class="btn btn-secondary" onclick="resetQuiz('5', quiz5Data)">?? 초기화</button>
+        </div>
+
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="score-5">0</span><span class="score-total"> / 30</span></div>
+        </div>
+
+        <div id="answers-5" class="answer-section">
+            <h3>?? 5회차 정답</h3>
+            <div class="answer-grid" id="answerGrid-5"></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script><script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="data/quiz-5-data.js"></script>
+    <script src="../../shared/quiz-app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz('5', quiz5Data);
+        });
+    </script>
+</body>
+
+</html>
+
+

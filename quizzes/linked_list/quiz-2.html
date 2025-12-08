@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2회차: 흐름 제어 | 연결 리스트 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>2회차: 흐름 제어</h1>
+            <p class="subtitle">while, if 조건문과 포인터 이동 로직</p>
+        </header>
+
+        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <div class="code-block">
+            <pre id="code-2"></pre>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="checkAnswers('2', quiz2Data)">✅ 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllAnswers('2', quiz2Data)">💡 전체 정답</button>
+            <button class="btn btn-secondary" onclick="toggleAnswers('2')">📖 정답표 보기</button>
+            <button class="btn btn-secondary" onclick="resetQuiz('2', quiz2Data)">🔄 초기화</button>
+        </div>
+
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="score-2">0</span><span class="score-total"> / 35</span></div>
+        </div>
+
+        <div id="answers-2" class="answer-section">
+            <h3>📝 2회차 정답</h3>
+            <div class="answer-grid" id="answerGrid-2"></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script><script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="data/quiz-2-data.js"></script>
+    <script src="../../shared/quiz-app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz('2', quiz2Data);
+        });
+    </script>
+</body>
+
+</html>
+

@@ -1,0 +1,505 @@
+/**
+ * V2 Quiz System
+ * Supports multiple question types: code-fill, mcq, short, essay
+ * Reuses existing color feedback system (green/yellow/red)
+ */
+
+// State for v2 quizzes
+const v2States = new Map();
+const v2WasEverWrong = new Set();
+let currentV2Round = null;
+
+/**
+ * Render a v2 quiz round
+ * @param {Object} round - QuizRound object
+ * @param {string} containerId - Container element ID (default: 'v2-quiz-container')
+ */
+function renderQuizRound(round, containerId = 'v2-quiz-container') {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error('V2 quiz container not found:', containerId);
+        return;
+    }
+
+    currentV2Round = round;
+    container.innerHTML = '';
+
+    // Render each question
+    round.questions.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `q-${q.id}`;
+        card.dataset.questionId = q.id;
+        card.dataset.type = q.type;
+
+        // Question header with number and type badge
+        const typeBadges = {
+            'code-fill': 'SQL',
+            'mcq': '객관식',
+            'short': '단답형',
+            'essay': '서술형'
+        };
+
+        card.innerHTML = `
+            <div class="question-header">
+                <span class="question-number">Q${index + 1}</span>
+                <span class="question-type-badge ${q.type}">${typeBadges[q.type] || q.type}</span>
+                ${q.points ? `<span class="question-points">${q.points}점</span>` : ''}
+            </div>
+            <div class="question-body"></div>
+        `;
+
+        const body = card.querySelector('.question-body');
+
+        // Render based on type
+        switch (q.type) {
+            case 'code-fill':
+                renderCodeFillQuestion(q, body);
+                break;
+            case 'mcq':
+                renderMcqQuestion(q, body);
+                break;
+            case 'short':
+                renderShortQuestion(q, body);
+                break;
+            case 'essay':
+                renderEssayQuestion(q, body);
+                break;
+            default:
+                body.innerHTML = `<p>Unknown question type: ${q.type}</p>`;
+        }
+
+        container.appendChild(card);
+    });
+
+    // Bind v2 events
+    bindV2Events(round);
+    updateV2Score();
+}
+
+/**
+ * Render code-fill question (SQL blanks)
+ */
+function renderCodeFillQuestion(q, container) {
+    const prompt = document.createElement('div');
+    prompt.className = 'question-prompt';
+    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    container.appendChild(prompt);
+
+    const codeBlock = document.createElement('div');
+    codeBlock.className = 'code-block v2-code';
+
+    let codeHtml = escapeHtml(q.code);
+
+    if (q.blanks) {
+        for (let i = q.blanks.length; i >= 1; i--) {
+            const blank = q.blanks.find(b => b.index === i);
+            const placeholder = blank?.placeholder || `(${i})`;
+            codeHtml = codeHtml.replace(
+                `( ${i} )`,
+                `<input type="text" class="blank-input v2-blank" data-question="${q.id}" data-blank="${i}" placeholder="${placeholder}">`
+            );
+        }
+    }
+
+    codeBlock.innerHTML = `<pre>${codeHtml}</pre>`;
+    container.appendChild(codeBlock);
+}
+
+/**
+ * Render MCQ question
+ */
+function renderMcqQuestion(q, container) {
+    const prompt = document.createElement('div');
+    prompt.className = 'question-prompt';
+    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    container.appendChild(prompt);
+
+    const options = document.createElement('div');
+    options.className = 'mcq-options';
+
+    q.options.forEach((opt, i) => {
+        const label = document.createElement('label');
+        label.className = 'mcq-option';
+        label.innerHTML = `
+            <input type="radio" name="mcq-${q.id}" value="${i}" data-question="${q.id}">
+            <span class="mcq-marker">${String.fromCharCode(9312 + i)}</span>
+            <span class="mcq-text">${escapeHtml(opt)}</span>
+        `;
+        options.appendChild(label);
+    });
+
+    container.appendChild(options);
+}
+
+/**
+ * Render short answer question
+ */
+function renderShortQuestion(q, container) {
+    const prompt = document.createElement('div');
+    prompt.className = 'question-prompt';
+    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    container.appendChild(prompt);
+
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'short-answer-wrapper';
+    inputWrapper.innerHTML = `
+        <input type="text" class="short-answer-input v2-short" 
+               data-question="${q.id}" 
+               placeholder="답을 입력하세요...">
+    `;
+    container.appendChild(inputWrapper);
+}
+
+/**
+ * Render essay question
+ */
+function renderEssayQuestion(q, container) {
+    const prompt = document.createElement('div');
+    prompt.className = 'question-prompt';
+    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    container.appendChild(prompt);
+
+    const textareaWrapper = document.createElement('div');
+    textareaWrapper.className = 'essay-wrapper';
+    textareaWrapper.innerHTML = `
+        <textarea class="essay-textarea v2-essay" 
+                  data-question="${q.id}" 
+                  placeholder="답을 작성하세요..."
+                  rows="4"></textarea>
+    `;
+    container.appendChild(textareaWrapper);
+
+    const showBtn = document.createElement('button');
+    showBtn.className = 'btn btn-sm btn-show-answer';
+    showBtn.textContent = '정답 예시 보기';
+    showBtn.onclick = () => showEssayAnswer(q);
+    container.appendChild(showBtn);
+}
+
+function showEssayAnswer(q) {
+    const card = document.getElementById(`q-${q.id}`);
+    if (!card) return;
+
+    let answerDiv = card.querySelector('.essay-answer-example');
+    if (answerDiv) {
+        answerDiv.classList.toggle('show');
+        return;
+    }
+
+    answerDiv = document.createElement('div');
+    answerDiv.className = 'essay-answer-example show';
+
+    let content = '';
+    if (q.rubric?.length) content = `<strong>채점 기준:</strong><br>` + q.rubric.map(r => `• ${r}`).join('<br>');
+    if (q.acceptableAnswers?.length) content += `<br><br><strong>정답 예시:</strong><br>` + q.acceptableAnswers.join(' / ');
+
+    answerDiv.innerHTML = content || '정답 예시가 없습니다.';
+    card.querySelector('.question-body').appendChild(answerDiv);
+}
+
+function bindV2Events(round) {
+    document.querySelectorAll('.v2-blank').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.ctrlKey) {
+                e.preventDefault();
+                gradeV2CodeFill(input, round);
+            } else if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                gradeAllV2();
+            }
+        });
+    });
+
+    document.querySelectorAll('.mcq-options input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => gradeV2Mcq(radio, round));
+    });
+
+    document.querySelectorAll('.v2-short').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                gradeV2Short(input, round);
+            }
+        });
+    });
+}
+
+function gradeV2CodeFill(input, round) {
+    const questionId = input.dataset.question;
+    const blankIndex = parseInt(input.dataset.blank);
+    const question = round.questions.find(q => q.id === questionId);
+    if (!question?.blanks) return;
+
+    const blank = question.blanks.find(b => b.index === blankIndex);
+    if (!blank) return;
+
+    const key = `${questionId}-${blankIndex}`;
+    const state = v2States.get(key);
+    const userAnswer = input.value.trim();
+    const correctAnswer = blank.answer;
+    const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
+
+    if (state === 'graded' && input.classList.contains('wrong')) {
+        input.value = correctAnswer;
+        input.readOnly = true;
+        v2States.set(key, 'shown');
+        moveToNextV2Blank(input);
+    } else if (!state || state !== 'correct') {
+        input.classList.remove('correct', 'wrong', 'retry');
+        if (userAnswer) {
+            if (isCorrect) {
+                input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
+                input.readOnly = true;
+                v2States.set(key, 'correct');
+                moveToNextV2Blank(input);
+            } else {
+                input.classList.add('wrong');
+                v2WasEverWrong.add(key);
+                v2States.set(key, 'graded');
+            }
+        }
+    }
+    updateV2Score();
+}
+
+function gradeV2Mcq(radio, round) {
+    const questionId = radio.dataset.question;
+    const question = round.questions.find(q => q.id === questionId);
+    if (!question) return;
+
+    const card = document.getElementById(`q-${questionId}`);
+    const selectedIndex = parseInt(radio.value);
+    const isCorrect = selectedIndex === question.correctIndex;
+    const key = `mcq-${questionId}`;
+
+    card.querySelectorAll('.mcq-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
+    const selectedLabel = radio.closest('.mcq-option');
+
+    if (isCorrect) {
+        selectedLabel.classList.add('correct');
+        v2States.set(key, 'correct');
+    } else {
+        selectedLabel.classList.add('wrong');
+        v2WasEverWrong.add(key);
+        v2States.set(key, 'graded');
+        const correctOption = card.querySelectorAll('.mcq-option')[question.correctIndex];
+        if (correctOption) correctOption.classList.add('correct');
+    }
+
+    card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    updateV2Score();
+}
+
+function gradeV2Short(input, round) {
+    const questionId = input.dataset.question;
+    const question = round.questions.find(q => q.id === questionId);
+    if (!question?.acceptableAnswers) return;
+
+    const key = `short-${questionId}`;
+    const state = v2States.get(key);
+    const userAnswer = input.value.trim();
+    const isCorrect = question.acceptableAnswers.some(ans =>
+        question.caseSensitive ? userAnswer === ans : normalizeAnswer(userAnswer) === normalizeAnswer(ans)
+    );
+
+    if (state === 'graded' && input.classList.contains('wrong')) {
+        input.value = question.acceptableAnswers[0];
+        input.readOnly = true;
+        v2States.set(key, 'shown');
+    } else if (!state || state !== 'correct') {
+        input.classList.remove('correct', 'wrong', 'retry');
+        if (userAnswer) {
+            if (isCorrect) {
+                input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
+                input.readOnly = true;
+                v2States.set(key, 'correct');
+            } else {
+                input.classList.add('wrong');
+                v2WasEverWrong.add(key);
+                v2States.set(key, 'graded');
+            }
+        }
+    }
+    updateV2Score();
+}
+
+function gradeAllV2() {
+    if (!currentV2Round) return;
+    currentV2Round.questions.forEach(q => {
+        if (q.type === 'code-fill') {
+            document.querySelectorAll(`.v2-blank[data-question="${q.id}"]`).forEach(input => {
+                if (!input.readOnly) gradeV2CodeFill(input, currentV2Round);
+            });
+        } else if (q.type === 'short') {
+            const shortInput = document.querySelector(`.v2-short[data-question="${q.id}"]`);
+            if (shortInput && !shortInput.readOnly) gradeV2Short(shortInput, currentV2Round);
+        }
+    });
+    updateV2Score();
+}
+
+function resetV2Quiz() {
+    if (!currentV2Round) return;
+    document.querySelectorAll('.v2-blank, .v2-short').forEach(input => {
+        input.value = '';
+        input.classList.remove('correct', 'wrong', 'retry');
+        input.readOnly = false;
+    });
+    document.querySelectorAll('.mcq-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
+    document.querySelectorAll('.mcq-options input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+        radio.disabled = false;
+    });
+    document.querySelectorAll('.v2-essay').forEach(textarea => textarea.value = '');
+    document.querySelectorAll('.essay-answer-example').forEach(el => el.remove());
+    v2States.clear();
+    v2WasEverWrong.clear();
+    updateV2Score();
+}
+
+function showAllV2Answers() {
+    if (!currentV2Round) return;
+    currentV2Round.questions.forEach(q => {
+        if (q.type === 'code-fill') {
+            q.blanks?.forEach(blank => {
+                const input = document.querySelector(`.v2-blank[data-question="${q.id}"][data-blank="${blank.index}"]`);
+                if (input && !input.classList.contains('correct') && !input.classList.contains('retry')) {
+                    input.value = blank.answer;
+                    input.classList.add('wrong');
+                    input.readOnly = true;
+                }
+            });
+        } else if (q.type === 'mcq') {
+            const card = document.getElementById(`q-${q.id}`);
+            if (card) {
+                const correctOption = card.querySelectorAll('.mcq-option')[q.correctIndex];
+                if (correctOption) correctOption.classList.add('correct');
+                card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+            }
+        } else if (q.type === 'short') {
+            const input = document.querySelector(`.v2-short[data-question="${q.id}"]`);
+            if (input && !input.classList.contains('correct') && !input.classList.contains('retry')) {
+                input.value = q.acceptableAnswers?.[0] || '';
+                input.classList.add('wrong');
+                input.readOnly = true;
+            }
+        } else if (q.type === 'essay') {
+            showEssayAnswer(q);
+        }
+    });
+    updateV2Score();
+}
+
+function updateV2Score() {
+    if (!currentV2Round) return;
+    let correct = 0, total = 0;
+    currentV2Round.questions.forEach(q => {
+        if (q.type === 'code-fill') {
+            q.blanks?.forEach(blank => {
+                total++;
+                if (v2States.get(`${q.id}-${blank.index}`) === 'correct') correct++;
+            });
+        } else if (q.type === 'mcq' || q.type === 'short') {
+            total++;
+            const key = q.type === 'mcq' ? `mcq-${q.id}` : `short-${q.id}`;
+            if (v2States.get(key) === 'correct') correct++;
+        }
+    });
+    const scoreEl = document.getElementById('v2-score');
+    const totalEl = document.getElementById('v2-total');
+    if (scoreEl) scoreEl.textContent = correct;
+    if (totalEl) totalEl.textContent = total;
+}
+
+function moveToNextV2Blank(currentInput) {
+    const allBlanks = Array.from(document.querySelectorAll('.v2-blank:not([readonly]), .v2-short:not([readonly])'));
+    const currentIndex = allBlanks.indexOf(currentInput);
+    if (currentIndex >= 0 && currentIndex < allBlanks.length - 1) {
+        allBlanks[currentIndex + 1].focus();
+    }
+}
+
+function normalizeAnswer(str) {
+    if (!str) return '';
+    // Remove ALL whitespace for comparison (so "a = b" matches "a=b")
+    return str.toLowerCase().replace(/\s+/g, '').trim();
+}
+
+/**
+ * Review only wrong answers - resets wrong items for re-practice
+ */
+function reviewWrongV2() {
+    if (!currentV2Round) return;
+
+    let hasWrong = false;
+
+    currentV2Round.questions.forEach(q => {
+        if (q.type === 'code-fill') {
+            q.blanks?.forEach(blank => {
+                const key = `${q.id}-${blank.index}`;
+                const state = v2States.get(key);
+                // Reset if was ever wrong (shown or graded state with wasEverWrong)
+                if (v2WasEverWrong.has(key) || state === 'shown' || state === 'graded') {
+                    const input = document.querySelector(`.v2-blank[data-question="${q.id}"][data-blank="${blank.index}"]`);
+                    if (input) {
+                        input.value = '';
+                        input.classList.remove('correct', 'wrong', 'retry');
+                        input.readOnly = false;
+                        v2States.delete(key);
+                        hasWrong = true;
+                    }
+                }
+            });
+        } else if (q.type === 'mcq') {
+            const key = `mcq-${q.id}`;
+            if (v2WasEverWrong.has(key) || v2States.get(key) === 'graded') {
+                const card = document.getElementById(`q-${q.id}`);
+                if (card) {
+                    card.querySelectorAll('.mcq-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
+                    card.querySelectorAll('input[type="radio"]').forEach(r => {
+                        r.checked = false;
+                        r.disabled = false;
+                    });
+                    v2States.delete(key);
+                    hasWrong = true;
+                }
+            }
+        } else if (q.type === 'short') {
+            const key = `short-${q.id}`;
+            const state = v2States.get(key);
+            if (v2WasEverWrong.has(key) || state === 'shown' || state === 'graded') {
+                const input = document.querySelector(`.v2-short[data-question="${q.id}"]`);
+                if (input) {
+                    input.value = '';
+                    input.classList.remove('correct', 'wrong', 'retry');
+                    input.readOnly = false;
+                    v2States.delete(key);
+                    hasWrong = true;
+                }
+            }
+        }
+    });
+
+    // Clear wasEverWrong for fresh start
+    v2WasEverWrong.clear();
+    updateV2Score();
+
+    if (!hasWrong) {
+        alert('복습할 문제가 없습니다! 🎉');
+    } else {
+        // Focus first blank
+        const firstBlank = document.querySelector('.v2-blank:not([readonly]), .v2-short:not([readonly])');
+        if (firstBlank) firstBlank.focus();
+    }
+}
+
+// Export v2 functions
+if (typeof window !== 'undefined') {
+    window.renderQuizRound = renderQuizRound;
+    window.gradeAllV2 = gradeAllV2;
+    window.resetV2Quiz = resetV2Quiz;
+    window.showAllV2Answers = showAllV2Answers;
+    window.reviewWrongV2 = reviewWrongV2;
+}
+

@@ -1,0 +1,438 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연결 리스트 마스터 퀴즈</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="shared/styles.css">
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 36px 32px;
+            margin-bottom: 32px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #4ade80;
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .hero-subtitle {
+            color: #9CA3AF;
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #111827;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .stat-pill .label {
+            color: #6B7280;
+        }
+
+        .stat-pill .value {
+            font-weight: 600;
+            color: #60A5FA;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #9CA3AF;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(148, 163, 184, 0.15);
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .nav-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 28px 20px;
+            background: #111827;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 20px;
+            text-decoration: none;
+            color: #E5E7EB;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(96, 165, 250, 0.5);
+            background: #1e293b;
+        }
+
+        .nav-card .icon {
+            font-size: 2rem;
+            margin-bottom: 14px;
+        }
+
+        .nav-card .title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .nav-card .count {
+            font-size: 0.82rem;
+            color: #6B7280;
+        }
+
+        .nav-card .difficulty {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-easy {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+        }
+
+        .difficulty-medium {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        .difficulty-hard {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .practice-card {
+            border-color: rgba(74, 222, 128, 0.2);
+        }
+
+        .practice-card:hover {
+            border-color: rgba(74, 222, 128, 0.45);
+        }
+
+        .tips-section {
+            background: #111827;
+            border-radius: 20px;
+            padding: 24px 28px;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .tips-section h3 {
+            font-size: 0.95rem;
+            color: #60A5FA;
+            margin-bottom: 16px;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+
+        kbd {
+            background: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            font-family: monospace;
+            font-size: 0.8em;
+        }
+
+        /* View Toggle Styles */
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
+        }
+
+        .view-toggle-label {
+            color: #6B7280;
+            font-size: 0.85rem;
+        }
+
+        .view-toggle-buttons {
+            display: flex;
+            background: #111827;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .view-btn:hover {
+            background: rgba(96, 165, 250, 0.1);
+            color: #9CA3AF;
+        }
+
+        .view-btn.active {
+            background: rgba(96, 165, 250, 0.2);
+            color: #60A5FA;
+        }
+
+        .view-btn+.view-btn {
+            border-left: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        /* Grid size variations */
+        .nav-grid.view-small {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .nav-grid.view-small .nav-card {
+            padding: 16px 12px;
+        }
+
+        .nav-grid.view-small .nav-card .icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .nav-grid.view-small .nav-card .title {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .nav-grid.view-small .nav-card .count {
+            font-size: 0.7rem;
+        }
+
+        .nav-grid.view-small .difficulty {
+            font-size: 0.55rem;
+            padding: 2px 5px;
+            top: 6px;
+            right: 6px;
+        }
+
+        .nav-grid.view-medium {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .nav-grid.view-large {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .nav-grid.view-large .nav-card {
+            padding: 36px 28px;
+        }
+
+        .nav-grid.view-large .nav-card .icon {
+            font-size: 2.8rem;
+            margin-bottom: 18px;
+        }
+
+        .nav-grid.view-large .nav-card .title {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .nav-grid.view-large .nav-card .count {
+            font-size: 0.9rem;
+        }
+
+        /* List view */
+        .nav-grid.view-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-grid.view-list .nav-card {
+            flex-direction: row;
+            padding: 14px 20px;
+            border-radius: 12px;
+            gap: 16px;
+        }
+
+        .nav-grid.view-list .nav-card .icon {
+            font-size: 1.4rem;
+            margin-bottom: 0;
+        }
+
+        .nav-grid.view-list .nav-card .title {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .nav-grid.view-list .nav-card .count {
+            flex: 1;
+            text-align: right;
+            font-size: 0.82rem;
+        }
+
+        .nav-grid.view-list .difficulty {
+            position: static;
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <section class="hero-section" id="heroSection">
+            <span class="hero-badge" id="heroBadge"></span>
+            <h1 class="hero-title" id="heroTitle"></h1>
+            <p class="hero-subtitle" id="heroSubtitle"></p>
+            <div class="stats-bar" id="statsBar"></div>
+        </section>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <span class="view-toggle-label">보기:</span>
+            <div class="view-toggle-buttons">
+                <button class="view-btn" data-view="small" title="작은 아이콘">🔳</button>
+                <button class="view-btn active" data-view="medium" title="중간 아이콘">⬜</button>
+                <button class="view-btn" data-view="large" title="큰 아이콘">🔲</button>
+                <button class="view-btn" data-view="list" title="리스트">📋</button>
+            </div>
+        </div>
+
+        <div id="quizSections"></div>
+        <div class="tips-section">
+            <h3>💡 사용법</h3>
+            <div class="tips-grid">
+                <div class="tip-item"><span>⌨️</span><span><kbd>Enter</kbd> 1번 = 채점, 2번 = 정답</span></div>
+                <div class="tip-item"><span>⚡</span><span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> 전체 채점</span></div>
+                <div class="tip-item"><span>🎯</span><span><span style="color:#4ade80;">초록</span>=정답 <span
+                            style="color:#f59e0b;">노랑</span>=고침 <span style="color:#ef4444;">빨강</span>=오답</span></div>
+                <div class="tip-item"><span>🔄</span><span>틀린 문제만 복습</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="shared/quiz-config.js"></script>
+    <script>
+        const difficultyLabels = { easy: '쉬움', medium: '보통', hard: '어려움' };
+
+        // View toggle functionality
+        function setView(viewType) {
+            const grids = document.querySelectorAll('.nav-grid');
+            grids.forEach(grid => {
+                grid.classList.remove('view-small', 'view-medium', 'view-large', 'view-list');
+                grid.classList.add(`view-${viewType}`);
+            });
+
+            // Update button states
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewType);
+            });
+
+            // Save preference
+            localStorage.setItem('quizGridView', viewType);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const meta = QUIZ_CONFIG.meta;
+            document.getElementById('heroBadge').textContent = meta.badge;
+            document.getElementById('heroTitle').textContent = meta.title;
+            document.getElementById('heroSubtitle').textContent = meta.subtitle;
+            document.getElementById('statsBar').innerHTML = `
+                <div class="stat-pill"><span class="label">회차</span><span class="value">${getTotalRounds()}</span></div>
+                <div class="stat-pill"><span class="label">문제</span><span class="value">${getTotalQuizCount()}+</span></div>
+                <div class="stat-pill"><span class="label">복습</span><span class="value">∞</span></div>`;
+            const container = document.getElementById('quizSections');
+            QUIZ_CONFIG.modules.forEach(m => {
+                container.insertAdjacentHTML('beforeend', `<h2 class="section-title">${m.icon} ${m.name}</h2><nav class="nav-grid view-medium" id="grid-${m.id}"></nav>`);
+                const grid = document.getElementById(`grid-${m.id}`);
+                m.quizzes.forEach(q => {
+                    const url = getQuizUrl(m, q);
+                    const diffBadge = q.difficulty ? `<span class="difficulty difficulty-${q.difficulty}">${difficultyLabels[q.difficulty]}</span>` : '';
+                    grid.insertAdjacentHTML('beforeend', `<a href="${url}" class="nav-card ${m.type === 'review' ? 'practice-card' : ''}">${diffBadge}<span class="icon">${q.icon}</span><span class="title">${q.title}</span><span class="count">${q.count ? q.subtitle + ' (' + q.count + ')' : q.subtitle}</span></a>`);
+                });
+            });
+
+            // View toggle event listeners
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => setView(btn.dataset.view));
+            });
+
+            // Restore saved preference
+            const savedView = localStorage.getItem('quizGridView') || 'medium';
+            setView(savedView);
+        });
+    </script>
+    <script src="shared/nav-config.js"></script>
+    <script src="shared/sidebar.js"></script>
+    <script src="shared/ai-chat.js"></script>
+</body>
+
+</html>

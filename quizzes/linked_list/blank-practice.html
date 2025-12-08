@@ -1,0 +1,927 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>백지복습 | 연결 리스트 코드 연습</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <style>
+        /* Layout for split view */
+        .main-content {
+            transition: margin-right 0.3s ease;
+        }
+
+        body.reference-open .main-content {
+            margin-right: 45%;
+        }
+
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .practice-header h2 {
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .practice-stats {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .practice-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .editor-wrapper {
+            position: relative;
+            background: var(--code-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--code-border);
+            overflow: hidden;
+        }
+
+        .editor-wrapper::before {
+            content: '백지복습';
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 3px 10px;
+            background: var(--accent-dim);
+            border-radius: 6px;
+            font-weight: 500;
+            z-index: 10;
+        }
+
+        .line-numbers {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text-dim);
+            text-align: right;
+            padding-right: 12px;
+            user-select: none;
+            overflow: hidden;
+            white-space: pre;
+        }
+
+        .practice-editor {
+            width: 100%;
+            min-height: 500px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            line-height: 1.85;
+            resize: vertical;
+            padding: 24px 24px 24px 70px;
+            tab-size: 4;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+        }
+
+        .practice-editor::placeholder {
+            color: var(--text-dim);
+        }
+
+        .practice-controls {
+            display: flex;
+            gap: 14px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Reference Panel - Right Sidebar */
+        .reference-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 45%;
+            max-width: 550px;
+            min-width: 320px;
+            height: 100vh;
+            background: var(--bg-secondary, #1E1F20);
+            border-left: 1px solid var(--border);
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .reference-panel.show {
+            transform: translateX(0);
+        }
+
+        .reference-panel-header {
+            padding: 14px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .reference-panel-header h4 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reference-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .reference-code-wrapper {
+            display: flex;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.85;
+        }
+
+        .reference-line-numbers {
+            padding: 16px 10px;
+            background: rgba(0, 0, 0, 0.25);
+            border-right: 1px solid var(--border);
+            color: var(--text-dim);
+            text-align: right;
+            user-select: none;
+            flex-shrink: 0;
+            min-width: 40px;
+            white-space: pre;
+        }
+
+        .reference-code-content {
+            padding: 16px;
+            color: var(--text-secondary);
+            white-space: pre;
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .reference-code-content .line {
+            display: block;
+            padding: 0 8px;
+            margin: 0 -8px;
+            border-radius: 3px;
+            transition: background 0.15s;
+        }
+
+        .reference-code-content .line.highlight {
+            background: rgba(168, 199, 250, 0.2);
+            border-left: 3px solid var(--accent, #A8C7FA);
+            padding-left: 5px;
+        }
+
+        .current-line-info {
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .tips-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border);
+        }
+
+        .tips-section h3 {
+            font-size: 0.95rem;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .tips-section li {
+            padding: 6px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tips-section li::before {
+            content: '→';
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        kbd {
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+        }
+
+        .indent-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        .indent-indicator.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 900px) {
+            .reference-panel {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            body.reference-open .main-content {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container main-content">
+        <header>
+            <h1>📝 백지복습 모드</h1>
+            <p class="subtitle">코드를 직접 타이핑하며 연결 리스트를 완전히 내 것으로!</p>
+        </header>
+
+        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:24px;">← 퀴즈로 돌아가기</a>
+
+        <div class="tips-section">
+            <h3>💡 사용법</h3>
+            <ul>
+                <li><kbd>:</kbd> 입력 시 자동 들여쓰기 (콜론 뒤 Enter)</li>
+                <li><kbd>Enter</kbd> × 2 (빈 줄에서) → 들여쓰기 한 단계 해제</li>
+                <li><kbd>Tab</kbd> → 들여쓰기 추가 / <kbd>Shift+Tab</kbd> → 들여쓰기 제거</li>
+                <li>참조 코드를 보면서 연습하거나, 완전 백지 상태에서 도전해보세요!</li>
+            </ul>
+        </div>
+
+        <div class="practice-header">
+            <h2>🖊️ 코드 직접 작성</h2>
+            <div class="practice-stats">
+                <span>📄 줄: <strong id="lineCount">1</strong></span>
+                <span>🔤 글자: <strong id="charCount">0</strong></span>
+            </div>
+        </div>
+
+        <div class="editor-wrapper">
+            <div class="line-numbers" id="lineNumbers">1</div>
+            <textarea class="practice-editor" id="practiceEditor" placeholder="여기에 연결 리스트 코드를 직접 작성해보세요...
+
+class Node():
+    def __init__(self):
+        ..." spellcheck="false"></textarea>
+        </div>
+
+        <div class="practice-controls">
+            <button class="btn btn-primary" onclick="clearEditor()">🗑️ 전체 지우기</button>
+            <button class="btn btn-secondary" onclick="toggleReference()">📖 참조 코드 보기</button>
+            <button class="btn btn-secondary" onclick="copyToClipboard()">📋 복사</button>
+        </div>
+    </div>
+
+    <!-- Reference Panel (Right Sidebar) -->
+    <div class="reference-panel" id="referencePanel">
+        <div class="reference-panel-header">
+            <h4>📚 참조 코드</h4>
+            <button class="btn btn-back" onclick="toggleReference()" style="padding:6px 12px;font-size:0.8rem;">닫기
+                ✕</button>
+        </div>
+        <div class="reference-panel-body" id="referencePanelBody">
+            <div class="reference-code-wrapper">
+                <div class="reference-code-content" id="referenceCode"></div>
+            </div>
+        </div>
+        <div class="current-line-info" id="currentLineInfo">현재 줄: 1</div>
+    </div>
+
+    <div class="indent-indicator" id="indentIndicator">들여쓰기: <span id="indentLevel">0</span> 칸</div>
+
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script>
+        // ========== Reference Code (원본 txt 파일과 동일 - 273줄) ==========
+        const REFERENCE_CODE = `## 클래스와 함수 선언 부분 ##
+class Node():
+    def __init__(self):
+        self.data = None
+        self.link = None
+
+def printNodes(start):
+    """현재 연결 리스트 전체를 출력"""
+    current = start
+    if current is None:
+        print("(빈 리스트)")
+        return
+    print("현재 리스트:", end=' ')
+    print(current.data, end=' ')
+    while current.link is not None:
+        current = current.link
+        print(current.data, end=' ')
+    print()
+
+def get_list_data():
+    """연결 리스트의 data들을 파이썬 리스트로 반환 (파일 저장용)"""
+    result = []
+    current = head
+    while current is not None:
+        result.append(current.data)
+        current = current.link
+    return result
+
+def appendNode(newData):
+    """맨 뒤에 노드 추가"""
+    global head
+    node = Node()
+    node.data = newData
+    if head is None:
+        head = node
+        return
+    current = head
+    while current.link is not None:
+        current = current.link
+    current.link = node
+
+def insertNode(findData, insertData):
+    """특정 데이터 앞에 삽입, 못 찾으면 맨 뒤에 추가"""
+    global head
+    
+    # 리스트가 비어 있을 경우
+    if head is None:
+        node = Node()
+        node.data = insertData
+        head = node
+        return
+
+    # 첫 번째 노드가 findData인 경우 (맨 앞 삽입)
+    if head.data == findData:
+        node = Node()
+        node.data = insertData
+        node.link = head
+        head = node
+        return
+
+    # 그 외 노드 탐색
+    current = head
+    while current.link is not None:
+        pre = current
+        current = current.link
+        if current.data == findData:
+            node = Node()
+            node.data = insertData
+            node.link = current
+            pre.link = node
+            return
+
+    # findData를 끝까지 못 찾으면 맨 뒤에 추가
+    node = Node()
+    node.data = insertData
+    current.link = node
+
+def insertAt(index, data):
+    """특정 인덱스 위치에 노드 삽입"""
+    global head
+    
+    if index < 0:
+        print("인덱스는 0 이상이어야 합니다.")
+        return
+
+    newNode = Node()
+    newNode.data = data
+
+    # 인덱스가 0 (맨 앞 삽입)
+    if index == 0:
+        newNode.link = head
+        head = newNode
+        return
+
+    # 중간 또는 끝 삽입을 위해 순회
+    current = head
+    currentIndex = 0
+    
+    # 삽입 위치 바로 직전(index-1)까지 이동
+    while current is not None and currentIndex < index - 1:
+        current = current.link
+        currentIndex += 1
+    
+    if current is None:
+        print("인덱스가 리스트의 길이를 초과했습니다.")
+        return
+
+    # 삽입 실행
+    newNode.link = current.link
+    current.link = newNode
+
+def deleteNode(deleteData):
+    """특정 데이터 삭제"""
+    global head, current, pre
+
+    if head is None:
+        print("삭제할 노드가 없습니다.(빈 리스트)")
+        return
+
+    # 첫 번째 노드가 삭제 대상인 경우
+    if head.data == deleteData:
+        current = head
+        head = head.link
+        del(current)
+        return
+
+    # 그 외 노드 탐색
+    current = head
+    while current.link is not None:
+        pre = current
+        current = current.link
+        if current.data == deleteData:
+            pre.link = current.link
+            del(current)
+            return
+
+    print(f"'{deleteData}' 데이터를 찾을 수 없습니다.")
+
+def clearList():
+    """리스트 전체 초기화"""
+    global head
+    head = None
+    print("리스트가 초기화되었습니다.")
+
+def searchNode(target):
+    """target을 검색해서 인덱스 리스트 반환"""
+    global head
+    indexes = []
+    current = head
+    idx = 0
+    while current is not None:
+        if current.data == target:
+            indexes.append(idx)
+        current = current.link
+        idx += 1
+    return indexes
+
+def saveToFile(filename):
+    """현재 리스트 데이터를 파일에 저장"""
+    data_list = get_list_data()
+    with open(filename, 'w', encoding='utf-8') as f:
+        for item in data_list:
+            f.write(str(item) + '\\n')
+    print(f"리스트가 파일로 저장되었습니다. ({filename})")
+
+def loadFromFile(filename):
+    """파일에서 데이터를 읽어 리스트 재구성"""
+    global head
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        print("파일을 찾을 수 없습니다.")
+        return
+
+    # 기존 리스트 초기화 후 다시 구성
+    head = None
+    for line in lines:
+        data = line.strip()
+        if data != '':
+            appendNode(data)
+    print(f"파일에서 리스트를 불러왔습니다. ({filename})")
+
+## 전역 변수 선언 부분 ##
+memory = []
+head, current, pre = None, None, None
+
+## 메인 코드 부분 ##
+if __name__ == "__main__":
+    # 초기 데이터 셋팅
+    dataArray = ["서울대", "고대", "연대", "두원", "부산"]
+    for data in dataArray:
+        appendNode(data)
+    
+    print("초기 연결 리스트:")
+    printNodes(head)
+
+    # 사용자 입력 기반 메뉴
+    select = -1
+    while select != 9:
+        print("\\n--- 연결 리스트 메뉴 ---")
+        print("1: 추가 (맨 뒤)")
+        print("2: 삽입 (특정 데이터 앞에 삽입)")
+        print("3: 삽입 (특정 위치에 삽입)")
+        print("4: 삭제 (특정 데이터 삭제 / 삭제 전 확인)")
+        print("5: 리스트 초기화")
+        print("6: 검색 (데이터 -> 인덱스)")
+        print("7: 파일 저장")
+        print("8: 파일 불러오기")
+        print("9: 종료")
+
+        try:
+            select = int(input("메뉴 선택: "))
+        except ValueError:
+            print("숫자를 입력하세요.")
+            continue
+
+        if select == 1:
+            data = input("추가할 데이터 입력: ")
+            appendNode(data)
+            printNodes(head)
+        
+        elif select == 2:
+            findData = input("어느 데이터 앞에 삽입할까요? (찾을 데이터): ")
+            insertData = input("삽입할 데이터 입력: ")
+            insertNode(findData, insertData)
+            printNodes(head)
+        
+        elif select == 3:
+            try:
+                idx = int(input("삽입할 인덱스 번호 입력: "))
+                data = input("삽입할 데이터 입력: ")
+                insertAt(idx, data)
+                printNodes(head)
+            except ValueError:
+                print("인덱스는 숫자로 입력해야 합니다.")
+
+        elif select == 4:
+            delData = input("삭제할 데이터 입력: ")
+            confirm = input(f"정말로 '{delData}'를 삭제할까요? (y/n): ")
+            if confirm.lower() == 'y':
+                deleteNode(delData)
+                printNodes(head)
+            else:
+                print("삭제를 취소했습니다.")
+                printNodes(head)
+
+        elif select == 5:
+            clearList()
+            printNodes(head)
+
+        elif select == 6:
+            data = input("검색할 데이터 입력: ")
+            indexes = searchNode(data)
+            if indexes:
+                print(f"'{data}' 데이터는 다음 인덱스에 있습니다: {indexes}")
+            else:
+                print(f"'{data}' 데이터는 리스트에 없습니다.")
+
+        elif select == 7:
+            filename = input("저장할 파일 이름 입력 (예: data.txt): ")
+            saveToFile(filename)
+
+        elif select == 8:
+            filename = input("불러올 파일 이름 입력 (예: data.txt): ")
+            loadFromFile(filename)
+            printNodes(head)
+
+        elif select == 9:
+            print("프로그램을 종료합니다.")
+        
+        else:
+            print("잘못된 선택입니다. 다시 입력하세요.")`;
+
+        // ========== DOM Elements ==========
+        const editor = document.getElementById('practiceEditor');
+        const lineNumbers = document.getElementById('lineNumbers');
+        const lineCount = document.getElementById('lineCount');
+        const charCount = document.getElementById('charCount');
+        const indentIndicator = document.getElementById('indentIndicator');
+        const indentLevel = document.getElementById('indentLevel');
+        const referenceCode = document.getElementById('referenceCode');
+        const referencePanelBody = document.getElementById('referencePanelBody');
+        const currentLineInfo = document.getElementById('currentLineInfo');
+
+        // ========== State ==========
+        let currentIndent = 0;
+        let lastKeyWasEnter = false;
+        const INDENT_SIZE = 4;
+        const INDENT_CHARS = '    ';
+
+        // ========== Initialize Reference Code ==========
+        function initReferenceCode() {
+            const lines = REFERENCE_CODE.split('\n');
+            let codeHtml = '';
+
+            lines.forEach((line, i) => {
+                codeHtml += `<span class="line" data-line="${i + 1}">${escapeHtml(line)}</span>\n`;
+            });
+
+            referenceCode.innerHTML = codeHtml;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========== Line Number & Stats ==========
+        function updateLineNumbers() {
+            const lines = editor.value.split('\n');
+            const count = lines.length;
+
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += i + '\n';
+            }
+            lineNumbers.textContent = html;
+            lineCount.textContent = count;
+            charCount.textContent = editor.value.length;
+        }
+
+        // ========== Get Current Editor Line ==========
+        function getCurrentEditorLine() {
+            const text = editor.value;
+            const cursorPos = editor.selectionStart;
+            const linesBeforeCursor = text.substring(0, cursorPos).split('\n');
+            return linesBeforeCursor.length;
+        }
+
+        // ========== Sync Reference Panel to Current Line ==========
+        function syncReferenceToCurrentLine() {
+            const currentLine = getCurrentEditorLine();
+            currentLineInfo.textContent = `현재 줄: ${currentLine}`;
+
+            // Remove previous highlight
+            document.querySelectorAll('.reference-code-content .line.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+
+            // Add highlight to matching line
+            const targetLine = document.querySelector(`.reference-code-content .line[data-line="${currentLine}"]`);
+            if (targetLine) {
+                targetLine.classList.add('highlight');
+
+                // Scroll to keep the line visible (slightly above center)
+                const panelBody = referencePanelBody;
+                const lineRect = targetLine.getBoundingClientRect();
+                const panelRect = panelBody.getBoundingClientRect();
+                const lineTop = targetLine.offsetTop;
+                const scrollTarget = lineTop - panelRect.height * 0.35;
+
+                panelBody.scrollTo({
+                    top: Math.max(0, scrollTarget),
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // ========== Indentation Helpers ==========
+        function getCurrentLineIndent() {
+            const cursorPos = editor.selectionStart;
+            const text = editor.value;
+            const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+            const lineEnd = text.indexOf('\n', cursorPos);
+            const line = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
+
+            let indent = 0;
+            for (const char of line) {
+                if (char === ' ') indent++;
+                else if (char === '\t') indent += INDENT_SIZE;
+                else break;
+            }
+            return indent;
+        }
+
+        function getLineBeforeCursor() {
+            const cursorPos = editor.selectionStart;
+            const text = editor.value;
+            const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+            return text.substring(lineStart, cursorPos);
+        }
+
+        function isCurrentLineEmpty() {
+            return getLineBeforeCursor().trim() === '';
+        }
+
+        function insertAtCursor(text) {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const value = editor.value;
+
+            editor.value = value.substring(0, start) + text + value.substring(end);
+            editor.selectionStart = editor.selectionEnd = start + text.length;
+        }
+
+        function showIndentIndicator(level) {
+            indentLevel.textContent = level;
+            indentIndicator.classList.add('show');
+            setTimeout(() => {
+                indentIndicator.classList.remove('show');
+            }, 1500);
+        }
+
+        // ========== Keyboard Events ==========
+        editor.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+
+                const lineBeforeCursor = getLineBeforeCursor();
+                const currentLineIndent = getCurrentLineIndent();
+
+                // Double enter on empty line - reduce indent AND add newline
+                if (lastKeyWasEnter && isCurrentLineEmpty() && currentLineIndent > 0) {
+                    const cursorPos = editor.selectionStart;
+                    const text = editor.value;
+                    const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+
+                    const removeAmount = Math.min(INDENT_SIZE, currentLineIndent);
+                    const newIndentLevel = currentLineIndent - removeAmount;
+
+                    editor.value = text.substring(0, lineStart) + text.substring(lineStart + removeAmount);
+                    const newCursorPos = cursorPos - removeAmount;
+                    editor.selectionStart = editor.selectionEnd = newCursorPos;
+
+                    insertAtCursor('\n' + ' '.repeat(newIndentLevel));
+
+                    currentIndent = newIndentLevel;
+                    showIndentIndicator(currentIndent);
+                    lastKeyWasEnter = true;
+                } else {
+                    const trimmedLine = lineBeforeCursor.trim();
+                    const shouldIndent = trimmedLine.endsWith(':');
+
+                    let newIndent = currentLineIndent;
+                    if (shouldIndent) {
+                        newIndent += INDENT_SIZE;
+                    }
+
+                    insertAtCursor('\n' + ' '.repeat(newIndent));
+                    currentIndent = newIndent;
+
+                    if (shouldIndent) {
+                        showIndentIndicator(currentIndent);
+                    }
+
+                    lastKeyWasEnter = true;
+                }
+
+                updateLineNumbers();
+                syncReferenceToCurrentLine();
+                scrollEditorLineToUpperCenter();
+                return;
+            }
+
+            // Tab handling
+            if (e.key === 'Tab') {
+                e.preventDefault();
+
+                if (e.shiftKey) {
+                    const cursorPos = editor.selectionStart;
+                    const text = editor.value;
+                    const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+
+                    let removeCount = 0;
+                    for (let i = 0; i < INDENT_SIZE && lineStart + i < cursorPos; i++) {
+                        if (text[lineStart + i] === ' ') removeCount++;
+                        else break;
+                    }
+
+                    if (removeCount > 0) {
+                        editor.value = text.substring(0, lineStart) + text.substring(lineStart + removeCount);
+                        editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
+                    }
+                } else {
+                    insertAtCursor(INDENT_CHARS);
+                }
+
+                updateLineNumbers();
+                return;
+            }
+
+            // Reset enter flag on other keys
+            if (e.key !== 'Enter') {
+                lastKeyWasEnter = false;
+            }
+        });
+
+        // Update on input and sync reference + auto-scroll
+        editor.addEventListener('input', () => {
+            updateLineNumbers();
+            syncReferenceToCurrentLine();
+            scrollEditorLineToUpperCenter();
+        });
+
+        // Scroll editor so current line is at upper-center (30% from top)
+        function scrollEditorLineToUpperCenter() {
+            const computedStyle = getComputedStyle(editor);
+            const lineHeight = parseFloat(computedStyle.lineHeight) || 28;
+            const paddingTop = parseFloat(computedStyle.paddingTop) || 24;
+            const currentLine = getCurrentEditorLine();
+            const editorVisibleHeight = editor.clientHeight;
+
+            // Where the current line is located (in scroll terms)
+            const currentLinePosition = paddingTop + (currentLine - 1) * lineHeight;
+
+            // We want the current line to be at 30% from the TOP of the visible area
+            // So we need to scroll down by: currentLinePosition - (30% of visible height)
+            const targetScrollTop = currentLinePosition - (editorVisibleHeight * 0.30);
+
+            // Apply scroll
+            editor.scrollTop = Math.max(0, targetScrollTop);
+
+            // Immediately sync line numbers
+            lineNumbers.scrollTop = editor.scrollTop;
+        }
+
+        editor.addEventListener('click', () => {
+            syncReferenceToCurrentLine();
+            scrollEditorLineToUpperCenter();
+        });
+        editor.addEventListener('keyup', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+                syncReferenceToCurrentLine();
+                scrollEditorLineToUpperCenter();
+            }
+        });
+
+        // Sync scroll for line numbers
+        editor.addEventListener('scroll', function () {
+            lineNumbers.scrollTop = editor.scrollTop;
+        });
+
+        // ========== Control Functions ==========
+        function clearEditor() {
+            if (confirm('정말로 전체 내용을 지우시겠습니까?')) {
+                editor.value = '';
+                currentIndent = 0;
+                updateLineNumbers();
+                editor.focus();
+            }
+        }
+
+        function toggleReference() {
+            const panel = document.getElementById('referencePanel');
+            panel.classList.toggle('show');
+            document.body.classList.toggle('reference-open');
+
+            if (panel.classList.contains('show')) {
+                syncReferenceToCurrentLine();
+            }
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(editor.value).then(() => {
+                alert('클립보드에 복사되었습니다!');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+            });
+        }
+
+        // ========== Initialize ==========
+        initReferenceCode();
+        updateLineNumbers();
+    </script>
+</body>
+
+</html>

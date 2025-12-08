@@ -1,0 +1,276 @@
+/**
+ * Gemini-Style Sidebar Navigation
+ * 
+ * Features:
+ * - Hamburger menu toggle (open/close)
+ * - Dynamic menu from nav-config.js
+ * - Collapsible subject groups
+ * - Admin panel for page management
+ * - Mobile-friendly with overlay
+ */
+
+// Sidebar state
+let sidebarOpen = false;
+let adminMode = false;
+
+// Initialize sidebar when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    createSidebar();
+    createHamburgerButton();
+    createOverlay();
+});
+
+// Create the sidebar HTML structure
+function createSidebar() {
+    const sidebar = document.createElement('aside');
+    sidebar.id = 'sidebar';
+    sidebar.className = 'sidebar';
+    sidebar.innerHTML = `
+        <div class="sidebar-header">
+            <span class="sidebar-title">퀴즈 네비게이션</span>
+            <button class="sidebar-close" onclick="toggleSidebar()" title="닫기">✕</button>
+        </div>
+        <nav class="sidebar-nav" id="sidebarNav"></nav>
+        <div class="sidebar-footer">
+            <button class="sidebar-admin-btn" onclick="toggleAdminMode()" title="관리자 모드">
+                ⚙️ 관리
+            </button>
+        </div>
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <div class="admin-header">
+                <span>📋 페이지 관리</span>
+                <button onclick="toggleAdminMode()">✕</button>
+            </div>
+            <div class="admin-content" id="adminContent"></div>
+            <div class="admin-actions">
+                <button onclick="showAddPageForm()">➕ 페이지 추가</button>
+                <button onclick="resetNavConfig(); renderSidebarNav(); alert('기본값으로 초기화됨');">🔄 초기화</button>
+            </div>
+        </div>
+    `;
+    document.body.prepend(sidebar);
+    renderSidebarNav();
+}
+
+// Create hamburger button
+function createHamburgerButton() {
+    const btn = document.createElement('button');
+    btn.id = 'hamburgerBtn';
+    btn.className = 'hamburger-btn';
+    btn.innerHTML = '☰';
+    btn.title = '메뉴 열기';
+    btn.onclick = toggleSidebar;
+    document.body.prepend(btn);
+}
+
+// Create overlay for mobile
+function createOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'sidebarOverlay';
+    overlay.className = 'sidebar-overlay';
+    overlay.onclick = toggleSidebar;
+    document.body.prepend(overlay);
+}
+
+// Toggle sidebar open/close
+function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const btn = document.getElementById('hamburgerBtn');
+
+    if (sidebarOpen) {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        btn.innerHTML = '✕';
+        btn.title = '메뉴 닫기';
+    } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        btn.innerHTML = '☰';
+        btn.title = '메뉴 열기';
+        // Also close admin panel
+        if (adminMode) toggleAdminMode();
+    }
+}
+
+// Render navigation items from config
+function renderSidebarNav() {
+    const nav = document.getElementById('sidebarNav');
+    if (!nav) return;
+
+    const config = getNavConfig();
+    const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+
+    let html = '';
+
+    config.subjects.forEach(subject => {
+        html += `
+            <div class="nav-group">
+                <button class="nav-group-header" onclick="toggleNavGroup('${subject.id}')">
+                    <span class="nav-group-icon">${subject.icon}</span>
+                    <span class="nav-group-title">${subject.title}</span>
+                    <span class="nav-group-arrow ${subject.expanded ? 'expanded' : ''}">▼</span>
+                </button>
+                <div class="nav-group-items ${subject.expanded ? 'expanded' : ''}" id="navGroup-${subject.id}">
+        `;
+
+        subject.pages.forEach(page => {
+            const isActive = currentPage === page.id;
+            // Use config-based URL if available
+            const href = typeof getPageUrl === 'function'
+                ? getPageUrl(subject, page)
+                : (page.file || `${page.id}.html`);
+            html += `
+                <a href="${href}" class="nav-item ${isActive ? 'active' : ''}">
+                    <span class="nav-item-title">${page.title}</span>
+                    ${page.count ? `<span class="nav-item-count">${page.count}</span>` : ''}
+                </a>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    // Home link - use config-based URL
+    const homeUrl = typeof getHomeUrl === 'function' ? getHomeUrl() : '../quiz.html';
+    html += `
+        <a href="${homeUrl}" class="nav-item nav-home">
+            <span class="nav-item-icon">🏠</span>
+            <span class="nav-item-title">메인으로</span>
+        </a>
+    `;
+
+    nav.innerHTML = html;
+}
+
+// Toggle nav group expand/collapse
+function toggleNavGroup(subjectId) {
+    const group = document.getElementById(`navGroup-${subjectId}`);
+    const arrow = group.previousElementSibling.querySelector('.nav-group-arrow');
+
+    group.classList.toggle('expanded');
+    arrow.classList.toggle('expanded');
+
+    // Save preference using config-based function
+    if (typeof saveNavPreferences === 'function') {
+        saveNavPreferences(subjectId, group.classList.contains('expanded'));
+    }
+}
+
+// Toggle admin mode
+function toggleAdminMode() {
+    adminMode = !adminMode;
+    const panel = document.getElementById('adminPanel');
+    const nav = document.getElementById('sidebarNav');
+
+    if (adminMode) {
+        panel.style.display = 'block';
+        nav.style.display = 'none';
+        renderAdminContent();
+    } else {
+        panel.style.display = 'none';
+        nav.style.display = 'block';
+    }
+}
+
+// Render admin panel content
+function renderAdminContent() {
+    const content = document.getElementById('adminContent');
+    const config = getNavConfig();
+
+    let html = '';
+
+    config.subjects.forEach(subject => {
+        html += `
+            <div class="admin-subject">
+                <div class="admin-subject-header">
+                    <span>${subject.icon} ${subject.title}</span>
+                    <button onclick="removeSubject('${subject.id}'); renderAdminContent(); renderSidebarNav();" title="삭제">🗑️</button>
+                </div>
+                <ul class="admin-page-list">
+        `;
+
+        subject.pages.forEach(page => {
+            html += `
+                <li class="admin-page-item">
+                    <span>${page.title}</span>
+                    <button onclick="removePage('${subject.id}', '${page.id}'); renderAdminContent(); renderSidebarNav();" title="삭제">✕</button>
+                </li>
+            `;
+        });
+
+        html += `
+                </ul>
+            </div>
+        `;
+    });
+
+    content.innerHTML = html;
+}
+
+// Show add page form
+function showAddPageForm() {
+    const config = getNavConfig();
+
+    const subjectOptions = config.subjects.map(s =>
+        `<option value="${s.id}">${s.title}</option>`
+    ).join('');
+
+    const formHtml = `
+        <div class="admin-form" id="addPageForm">
+            <h4>새 페이지 추가</h4>
+            <label>
+                과목:
+                <select id="newPageSubject">${subjectOptions}</select>
+            </label>
+            <label>
+                파일명 (확장자 제외):
+                <input type="text" id="newPageId" placeholder="quiz-7">
+            </label>
+            <label>
+                제목:
+                <input type="text" id="newPageTitle" placeholder="7회차: 제목">
+            </label>
+            <label>
+                문제 수:
+                <input type="number" id="newPageCount" placeholder="20">
+            </label>
+            <div class="admin-form-actions">
+                <button onclick="submitAddPage()">추가</button>
+                <button onclick="document.getElementById('addPageForm').remove();">취소</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('adminContent').insertAdjacentHTML('beforeend', formHtml);
+}
+
+// Submit add page form
+function submitAddPage() {
+    const subjectId = document.getElementById('newPageSubject').value;
+    const pageId = document.getElementById('newPageId').value.trim();
+    const title = document.getElementById('newPageTitle').value.trim();
+    const count = parseInt(document.getElementById('newPageCount').value) || null;
+
+    if (!pageId || !title) {
+        alert('파일명과 제목을 입력하세요.');
+        return;
+    }
+
+    addPage(subjectId, { id: pageId, title, count });
+    document.getElementById('addPageForm').remove();
+    renderAdminContent();
+    renderSidebarNav();
+    alert(`"${title}" 페이지가 추가되었습니다.`);
+}
+
+// Keyboard shortcut: Escape to close sidebar
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebarOpen) {
+        toggleSidebar();
+    }
+});

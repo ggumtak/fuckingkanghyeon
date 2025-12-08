@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6회차: 문장 완성 | 연결 리스트 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>6회차: 문장 완성</h1>
+            <p class="subtitle">if문, while 조건문, 핵심 로직 전체를 완성하라!</p>
+        </header>
+
+        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <div class="code-block">
+            <pre id="code-6"></pre>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="checkAnswers('6', quiz6Data)">? 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllAnswers('6', quiz6Data)">?? 전체 정답</button>
+            <button class="btn btn-secondary" onclick="toggleAnswers('6')">?? 정답표 보기</button>
+            <button class="btn btn-secondary" onclick="resetQuiz('6', quiz6Data)">?? 초기화</button>
+        </div>
+
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="score-6">0</span><span class="score-total"> / 17</span></div>
+        </div>
+
+        <div id="answers-6" class="answer-section">
+            <h3>?? 6회차 정답</h3>
+            <div class="answer-grid" id="answerGrid-6"></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script><script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="data/quiz-6-data.js"></script>
+    <script src="../../shared/quiz-app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz('6', quiz6Data);
+        });
+    </script>
+</body>
+
+</html>
+
+

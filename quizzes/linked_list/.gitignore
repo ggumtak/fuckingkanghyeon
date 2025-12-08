@@ -1,0 +1,16 @@
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Agent files
+.agent/
+
+# Deploy script (keep locally but don't upload)
+deploy.bat
