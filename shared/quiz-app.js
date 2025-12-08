@@ -341,7 +341,7 @@ function closeCompletionModal() {
     const modal = document.getElementById('completionModal');
     if (modal) modal.classList.remove('show');
     // Go to home using config-based URL
-    window.location.href = typeof getHomeUrl === 'function' ? getHomeUrl() : '../quiz.html';
+    window.location.href = typeof getHomeUrl === 'function' ? getHomeUrl() : '../../index.html';
 }
 
 function goToNextQuiz() {
@@ -362,7 +362,7 @@ function goToNextQuiz() {
             window.location.href = `quiz-${nextQuiz}.html`;
         } else {
             alert('마지막 회차입니다! 🎉');
-            window.location.href = '../quiz.html';
+            window.location.href = '../../index.html';
         }
     }
 }

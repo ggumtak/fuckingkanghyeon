@@ -6,6 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>백지복습 | 연결 리스트 코드 연습</title>
     <link rel="stylesheet" href="../../shared/styles.css">
+
+    <!-- CodeMirror 6 from CDN -->
+    <script type="module">
+        import { EditorView, basicSetup } from 'https://esm.sh/@codemirror/basic-setup@0.20.0';
+        import { python } from 'https://esm.sh/@codemirror/lang-python@6.1.3';
+        import { oneDark } from 'https://esm.sh/@codemirror/theme-one-dark@6.1.2';
+        import { indentUnit } from 'https://esm.sh/@codemirror/language@6.10.1';
+        import { EditorState } from 'https://esm.sh/@codemirror/state@6.4.1';
+        import { keymap } from 'https://esm.sh/@codemirror/view@6.26.0';
+        import { indentWithTab } from 'https://esm.sh/@codemirror/commands@6.3.3';
+
+        // Make editor globally accessible
+        window.initCodeMirror = function () {
+            const editorContainer = document.getElementById('editorContainer');
+
+            const editor = new EditorView({
+                state: EditorState.create({
+                    doc: '',
+                    extensions: [
+                        basicSetup,
+                        python(),
+                        oneDark,
+                        indentUnit.of("    "),
+                        keymap.of([indentWithTab]),
+                        EditorView.theme({
+                            "&": {
+                                height: "500px",
+                                fontSize: "14px"
+                            },
+                            ".cm-scroller": {
+                                fontFamily: "'JetBrains Mono', 'Consolas', monospace",
+                                lineHeight: "1.8"
+                            },
+                            ".cm-gutters": {
+                                backgroundColor: "rgba(0,0,0,0.2)",
+                                border: "none"
+                            },
+                            ".cm-content": {
+                                padding: "16px 0"
+                            }
+                        }),
+                        EditorView.lineWrapping
+                    ]
+                }),
+                parent: editorContainer
+            });
+
+            window.cmEditor = editor;
+        };
+
+        window.getCMValue = function () {
+            return window.cmEditor ? window.cmEditor.state.doc.toString() : '';
+        };
+
+        window.setCMValue = function (text) {
+            if (window.cmEditor) {
+                window.cmEditor.dispatch({
+                    changes: { from: 0, to: window.cmEditor.state.doc.length, insert: text }
+                });
+            }
+        };
+    </script>
+
     <style>
         /* Layout for split view */
         .main-content {
@@ -31,68 +94,28 @@
             font-weight: 600;
         }
 
-        .practice-stats {
-            display: none;
-            /* User requested to hide */
-            gap: 20px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .practice-stats span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
         .editor-wrapper {
             position: relative;
-            background: var(--code-bg);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--code-border);
+            background: var(--code-bg, #1a1a1a);
+            border-radius: var(--radius-lg, 12px);
+            border: 1px solid var(--code-border, #333);
             overflow: hidden;
+            min-height: 500px;
         }
 
-        .line-numbers {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 50px;
-            background: rgba(0, 0, 0, 0.2);
-            border-right: 1px solid var(--border);
-            padding: 24px 0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.92rem;
-            line-height: 1.85;
-            color: var(--text-dim);
-            text-align: right;
-            padding-right: 12px;
-            user-select: none;
-            overflow: hidden;
-            white-space: pre;
-        }
-
-        .practice-editor {
+        #editorContainer {
             width: 100%;
             min-height: 500px;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.92rem;
-            line-height: 1.85;
-            resize: vertical;
-            padding: 24px 24px 24px 70px;
-            tab-size: 4;
-            white-space: pre;
-            overflow-wrap: normal;
-            overflow-x: auto;
         }
 
-        .practice-editor::placeholder {
-            color: var(--text-dim);
+        /* CodeMirror overrides for dark theme consistency */
+        .cm-editor {
+            background: transparent !important;
+        }
+
+        .cm-editor .cm-gutters {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border-right: 1px solid var(--border, #444) !important;
         }
 
         .practice-controls {
@@ -154,18 +177,6 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.82rem;
             line-height: 1.85;
-        }
-
-        .reference-line-numbers {
-            padding: 16px 10px;
-            background: rgba(0, 0, 0, 0.25);
-            border-right: 1px solid var(--border);
-            color: var(--text-dim);
-            text-align: right;
-            user-select: none;
-            flex-shrink: 0;
-            min-width: 40px;
-            white-space: pre;
         }
 
         .reference-code-content {
@@ -243,27 +254,6 @@
             font-size: 0.85em;
         }
 
-        .indent-indicator {
-            display: none;
-            /* User requested to hide */
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            padding: 10px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 100;
-        }
-
-        .indent-indicator.show {
-            opacity: 1;
-        }
-
         @media (max-width: 900px) {
             .reference-panel {
                 width: 100%;
@@ -273,6 +263,15 @@
             body.reference-open .main-content {
                 margin-right: 0;
             }
+        }
+
+        /* Loading state */
+        .editor-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            color: var(--text-secondary);
         }
     </style>
 </head>
@@ -284,13 +283,12 @@
             <p class="subtitle">코드를 직접 타이핑하며 연결 리스트를 완전히 내 것으로!</p>
         </header>
 
-        <a href="../../quiz.html" class="btn btn-back" style="margin-bottom:24px;">← 퀴즈로 돌아가기</a>
+        <a href="../../index.html" class="btn btn-back" style="margin-bottom:24px;">← 메인으로</a>
 
         <div class="tips-section">
             <h3>💡 사용법</h3>
             <ul>
-                <li><kbd>:</kbd> 입력 시 자동 들여쓰기 (콜론 뒤 Enter)</li>
-                <li><kbd>Enter</kbd> × 2 (빈 줄에서) → 들여쓰기 한 단계 해제</li>
+                <li>실시간 Python 신택스 하이라이팅 지원!</li>
                 <li><kbd>Tab</kbd> → 들여쓰기 추가 / <kbd>Shift+Tab</kbd> → 들여쓰기 제거</li>
                 <li>참조 코드를 보면서 연습하거나, 완전 백지 상태에서 도전해보세요!</li>
             </ul>
@@ -298,19 +296,12 @@
 
         <div class="practice-header">
             <h2>🖊️ 코드 직접 작성</h2>
-            <div class="practice-stats">
-                <span>📄 줄: <strong id="lineCount">1</strong></span>
-                <span>🔤 글자: <strong id="charCount">0</strong></span>
-            </div>
         </div>
 
         <div class="editor-wrapper">
-            <div class="line-numbers" id="lineNumbers">1</div>
-            <textarea class="practice-editor" id="practiceEditor" placeholder="여기에 연결 리스트 코드를 직접 작성해보세요...
-
-class Node():
-    def __init__(self):
-        ..." spellcheck="false"></textarea>
+            <div id="editorContainer">
+                <div class="editor-loading">⏳ 에디터 로딩 중...</div>
+            </div>
         </div>
 
         <div class="practice-controls">
@@ -332,16 +323,15 @@ class Node():
                 <div class="reference-code-content" id="referenceCode"></div>
             </div>
         </div>
-        <div class="current-line-info" id="currentLineInfo">현재 줄: 1</div>
+        <div class="current-line-info" id="currentLineInfo">참조 코드</div>
     </div>
-
-    <div class="indent-indicator" id="indentIndicator">들여쓰기: <span id="indentLevel">0</span> 칸</div>
 
     <script src="../../shared/quiz-config.js"></script>
     <script src="../../shared/nav-config.js"></script>
     <script src="../../shared/sidebar.js"></script>
     <script src="../../shared/ai-chat.js"></script>
     <script>
+        // Reference code (clean version without ## headers and docstrings)
         const REFERENCE_CODE = `class Node():
     def __init__(self):
         self.data = None
@@ -382,14 +372,12 @@ def appendNode(newData):
 def insertNode(findData, insertData):
     global head
     
-    # 리스트가 비어 있을 경우
     if head is None:
         node = Node()
         node.data = insertData
         head = node
         return
 
-    # 첫 번째 노드가 findData인 경우 (맨 앞 삽입)
     if head.data == findData:
         node = Node()
         node.data = insertData
@@ -397,7 +385,6 @@ def insertNode(findData, insertData):
         head = node
         return
 
-    # 그 외 노드 탐색
     current = head
     while current.link is not None:
         pre = current
@@ -409,7 +396,6 @@ def insertNode(findData, insertData):
             pre.link = node
             return
 
-    # findData를 끝까지 못 찾으면 맨 뒤에 추가
     node = Node()
     node.data = insertData
     current.link = node
@@ -424,17 +410,14 @@ def insertAt(index, data):
     newNode = Node()
     newNode.data = data
 
-    # 인덱스가 0 (맨 앞 삽입)
     if index == 0:
         newNode.link = head
         head = newNode
         return
 
-    # 중간 또는 끝 삽입을 위해 순회
     current = head
     currentIndex = 0
     
-    # 삽입 위치 바로 직전(index-1)까지 이동
     while current is not None and currentIndex < index - 1:
         current = current.link
         currentIndex += 1
@@ -443,7 +426,6 @@ def insertAt(index, data):
         print("인덱스가 리스트의 길이를 초과했습니다.")
         return
 
-    # 삽입 실행
     newNode.link = current.link
     current.link = newNode
 
@@ -454,14 +436,12 @@ def deleteNode(deleteData):
         print("삭제할 노드가 없습니다.(빈 리스트)")
         return
 
-    # 첫 번째 노드가 삭제 대상인 경우
     if head.data == deleteData:
         current = head
         head = head.link
         del(current)
         return
 
-    # 그 외 노드 탐색
     current = head
     while current.link is not None:
         pre = current
@@ -506,7 +486,6 @@ def loadFromFile(filename):
         print("파일을 찾을 수 없습니다.")
         return
 
-    # 기존 리스트 초기화 후 다시 구성
     head = None
     for line in lines:
         data = line.strip()
@@ -518,7 +497,6 @@ memory = []
 head, current, pre = None, None, None
 
 if __name__ == "__main__":
-    # 초기 데이터 셋팅
     dataArray = ["서울대", "고대", "연대", "두원", "부산"]
     for data in dataArray:
         appendNode(data)
@@ -526,7 +504,6 @@ if __name__ == "__main__":
     print("초기 연결 리스트:")
     printNodes(head)
 
-    # 사용자 입력 기반 메뉴
     select = -1
     while select != 9:
         print("\\n--- 연결 리스트 메뉴 ---")
@@ -603,24 +580,7 @@ if __name__ == "__main__":
         else:
             print("잘못된 선택입니다. 다시 입력하세요.")`;
 
-        // ========== DOM Elements ==========
-        const editor = document.getElementById('practiceEditor');
-        const lineNumbers = document.getElementById('lineNumbers');
-        const lineCount = document.getElementById('lineCount');
-        const charCount = document.getElementById('charCount');
-        const indentIndicator = document.getElementById('indentIndicator');
-        const indentLevel = document.getElementById('indentLevel');
-        const referenceCode = document.getElementById('referenceCode');
-        const referencePanelBody = document.getElementById('referencePanelBody');
-        const currentLineInfo = document.getElementById('currentLineInfo');
-
-        // ========== State ==========
-        let currentIndent = 0;
-        let lastKeyWasEnter = false;
-        const INDENT_SIZE = 4;
-        const INDENT_CHARS = '    ';
-
-        // ========== Initialize Reference Code ==========
+        // Initialize reference code display
         function initReferenceCode() {
             const lines = REFERENCE_CODE.split('\n');
             let codeHtml = '';
@@ -629,7 +589,7 @@ if __name__ == "__main__":
                 codeHtml += `<span class="line" data-line="${i + 1}">${escapeHtml(line)}</span>\n`;
             });
 
-            referenceCode.innerHTML = codeHtml;
+            document.getElementById('referenceCode').innerHTML = codeHtml;
         }
 
         function escapeHtml(text) {
@@ -638,277 +598,44 @@ if __name__ == "__main__":
             return div.innerHTML;
         }
 
-        // ========== Line Number & Stats ==========
-        function updateLineNumbers() {
-            const lines = editor.value.split('\n');
-            const count = lines.length;
-
-            let html = '';
-            for (let i = 1; i <= count; i++) {
-                html += i + '\n';
-            }
-            lineNumbers.textContent = html;
-            lineCount.textContent = count;
-            charCount.textContent = editor.value.length;
-        }
-
-        // ========== Get Current Editor Line ==========
-        function getCurrentEditorLine() {
-            const text = editor.value;
-            const cursorPos = editor.selectionStart;
-            const linesBeforeCursor = text.substring(0, cursorPos).split('\n');
-            return linesBeforeCursor.length;
-        }
-
-        // ========== Sync Reference Panel to Current Line ==========
-        function syncReferenceToCurrentLine() {
-            const currentLine = getCurrentEditorLine();
-            currentLineInfo.textContent = `현재 줄: ${currentLine}`;
-
-            // Remove previous highlight
-            document.querySelectorAll('.reference-code-content .line.highlight').forEach(el => {
-                el.classList.remove('highlight');
-            });
-
-            // Add highlight to matching line
-            const targetLine = document.querySelector(`.reference-code-content .line[data-line="${currentLine}"]`);
-            if (targetLine) {
-                targetLine.classList.add('highlight');
-
-                // Scroll to keep the line visible (slightly above center)
-                const panelBody = referencePanelBody;
-                const lineRect = targetLine.getBoundingClientRect();
-                const panelRect = panelBody.getBoundingClientRect();
-                const lineTop = targetLine.offsetTop;
-                const scrollTarget = lineTop - panelRect.height * 0.35;
-
-                panelBody.scrollTo({
-                    top: Math.max(0, scrollTarget),
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        // ========== Indentation Helpers ==========
-        function getCurrentLineIndent() {
-            const cursorPos = editor.selectionStart;
-            const text = editor.value;
-            const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-            const lineEnd = text.indexOf('\n', cursorPos);
-            const line = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
-
-            let indent = 0;
-            for (const char of line) {
-                if (char === ' ') indent++;
-                else if (char === '\t') indent += INDENT_SIZE;
-                else break;
-            }
-            return indent;
-        }
-
-        function getLineBeforeCursor() {
-            const cursorPos = editor.selectionStart;
-            const text = editor.value;
-            const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-            return text.substring(lineStart, cursorPos);
-        }
-
-        function isCurrentLineEmpty() {
-            return getLineBeforeCursor().trim() === '';
-        }
-
-        function insertAtCursor(text) {
-            const start = editor.selectionStart;
-            const end = editor.selectionEnd;
-            const value = editor.value;
-
-            editor.value = value.substring(0, start) + text + value.substring(end);
-            editor.selectionStart = editor.selectionEnd = start + text.length;
-        }
-
-        function showIndentIndicator(level) {
-            indentLevel.textContent = level;
-            indentIndicator.classList.add('show');
-            setTimeout(() => {
-                indentIndicator.classList.remove('show');
-            }, 1500);
-        }
-
-        // ========== Keyboard Events ==========
-        editor.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-
-                const lineBeforeCursor = getLineBeforeCursor();
-                const currentLineIndent = getCurrentLineIndent();
-
-                // VS Code style: If current line is whitespace-only AND has indentation,
-                // reduce indent and add newline (single Enter, no double-Enter needed)
-                if (isCurrentLineEmpty() && currentLineIndent > 0) {
-                    const cursorPos = editor.selectionStart;
-                    const text = editor.value;
-                    const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-
-                    const removeAmount = Math.min(INDENT_SIZE, currentLineIndent);
-                    const newIndentLevel = currentLineIndent - removeAmount;
-
-                    // Remove indent from current line
-                    editor.value = text.substring(0, lineStart) + ' '.repeat(newIndentLevel) + text.substring(lineStart + currentLineIndent);
-                    const newCursorPos = lineStart + newIndentLevel;
-                    editor.selectionStart = editor.selectionEnd = newCursorPos;
-
-                    // Add newline with reduced indent
-                    insertAtCursor('\n' + ' '.repeat(newIndentLevel));
-
-                    currentIndent = newIndentLevel;
-                } else {
-                    const trimmedLine = lineBeforeCursor.trim();
-                    const shouldIndent = trimmedLine.endsWith(':');
-
-                    let newIndent = currentLineIndent;
-                    if (shouldIndent) {
-                        newIndent += INDENT_SIZE;
-                    }
-
-                    insertAtCursor('\n' + ' '.repeat(newIndent));
-                    currentIndent = newIndent;
-                }
-
-                updateLineNumbers();
-                syncReferenceToCurrentLine();
-                scrollEditorLineToUpperCenter();
-                return;
-            }
-
-            // Tab handling
-            if (e.key === 'Tab') {
-                e.preventDefault();
-
-                if (e.shiftKey) {
-                    const cursorPos = editor.selectionStart;
-                    const text = editor.value;
-                    const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-
-                    let removeCount = 0;
-                    for (let i = 0; i < INDENT_SIZE && lineStart + i < cursorPos; i++) {
-                        if (text[lineStart + i] === ' ') removeCount++;
-                        else break;
-                    }
-
-                    if (removeCount > 0) {
-                        editor.value = text.substring(0, lineStart) + text.substring(lineStart + removeCount);
-                        editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
-                    }
-                } else {
-                    insertAtCursor(INDENT_CHARS);
-                }
-
-                updateLineNumbers();
-                return;
-            }
-
-            // Backspace handling - VS Code style: remove 4 spaces at start of line
-            if (e.key === 'Backspace') {
-                const cursorPos = editor.selectionStart;
-                const text = editor.value;
-                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-                const textBeforeCursor = text.substring(lineStart, cursorPos);
-
-                // Only if cursor is in the leading whitespace area
-                if (textBeforeCursor.length > 0 && textBeforeCursor.trim() === '') {
-                    e.preventDefault();
-                    const removeCount = Math.min(INDENT_SIZE, textBeforeCursor.length);
-
-                    // Remove up to 4 spaces
-                    editor.value = text.substring(0, cursorPos - removeCount) + text.substring(cursorPos);
-                    editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
-                    updateLineNumbers();
-                    return;
-                }
-            }
-
-            // Reset enter flag on other keys
-            if (e.key !== 'Enter') {
-                lastKeyWasEnter = false;
-            }
-        });
-
-        // Update on input and sync reference + auto-scroll
-        editor.addEventListener('input', () => {
-            updateLineNumbers();
-            syncReferenceToCurrentLine();
-            scrollEditorLineToUpperCenter();
-        });
-
-        // Scroll editor so current line is at upper-center (30% from top)
-        function scrollEditorLineToUpperCenter() {
-            const computedStyle = getComputedStyle(editor);
-            const lineHeight = parseFloat(computedStyle.lineHeight) || 28;
-            const paddingTop = parseFloat(computedStyle.paddingTop) || 24;
-            const currentLine = getCurrentEditorLine();
-            const editorVisibleHeight = editor.clientHeight;
-
-            // Where the current line is located (in scroll terms)
-            const currentLinePosition = paddingTop + (currentLine - 1) * lineHeight;
-
-            // We want the current line to be at 30% from the TOP of the visible area
-            // So we need to scroll down by: currentLinePosition - (30% of visible height)
-            const targetScrollTop = currentLinePosition - (editorVisibleHeight * 0.30);
-
-            // Apply scroll
-            editor.scrollTop = Math.max(0, targetScrollTop);
-
-            // Immediately sync line numbers
-            lineNumbers.scrollTop = editor.scrollTop;
-        }
-
-        editor.addEventListener('click', () => {
-            syncReferenceToCurrentLine();
-            scrollEditorLineToUpperCenter();
-        });
-        editor.addEventListener('keyup', (e) => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
-                syncReferenceToCurrentLine();
-                scrollEditorLineToUpperCenter();
-            }
-        });
-
-        // Sync scroll for line numbers
-        editor.addEventListener('scroll', function () {
-            lineNumbers.scrollTop = editor.scrollTop;
-        });
-
-        // ========== Control Functions ==========
-        function clearEditor() {
-            if (confirm('정말로 전체 내용을 지우시겠습니까?')) {
-                editor.value = '';
-                currentIndent = 0;
-                updateLineNumbers();
-                editor.focus();
-            }
-        }
-
+        // Toggle reference panel
         function toggleReference() {
             const panel = document.getElementById('referencePanel');
             panel.classList.toggle('show');
-            document.body.classList.toggle('reference-open');
+            document.body.classList.toggle('reference-open', panel.classList.contains('show'));
+        }
 
-            if (panel.classList.contains('show')) {
-                syncReferenceToCurrentLine();
+        // Clear editor
+        function clearEditor() {
+            if (confirm('정말로 전체 내용을 지우시겠습니까?')) {
+                if (typeof setCMValue === 'function') {
+                    setCMValue('');
+                }
             }
         }
 
+        // Copy to clipboard
         function copyToClipboard() {
-            navigator.clipboard.writeText(editor.value).then(() => {
+            const text = typeof getCMValue === 'function' ? getCMValue() : '';
+            navigator.clipboard.writeText(text).then(() => {
                 alert('클립보드에 복사되었습니다!');
             }).catch(err => {
                 console.error('Copy failed:', err);
             });
         }
 
-        // ========== Initialize ==========
-        initReferenceCode();
-        updateLineNumbers();
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initReferenceCode();
+
+            // Wait for CodeMirror module to load
+            const checkCM = setInterval(() => {
+                if (typeof initCodeMirror === 'function') {
+                    clearInterval(checkCM);
+                    initCodeMirror();
+                }
+            }, 100);
+        });
     </script>
 </body>
 

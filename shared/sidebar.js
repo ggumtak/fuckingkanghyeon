@@ -101,7 +101,7 @@ function renderSidebarNav() {
 
     const config = getNavConfig();
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
-    const homeUrl = typeof getHomeUrl === 'function' ? getHomeUrl() : '../quiz.html';
+    const homeUrl = typeof getHomeUrl === 'function' ? getHomeUrl() : '../../index.html';
 
     // Home button at top (like ChatGPT style)
     let html = `

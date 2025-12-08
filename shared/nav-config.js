@@ -117,9 +117,9 @@ function getPageUrl(subject, page) {
  * Get home URL based on current location
  */
 function getHomeUrl() {
-    const isMainPage = window.location.pathname.endsWith('quiz.html') ||
+    const isMainPage = window.location.pathname.endsWith('index.html') ||
         window.location.pathname.endsWith('/');
-    return isMainPage ? 'quiz.html' : '../quiz.html';
+    return isMainPage ? 'index.html' : '../../index.html';
 }
 
 /**
