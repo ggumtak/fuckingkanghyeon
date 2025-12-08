@@ -82,13 +82,14 @@ function toggleSidebar() {
     if (sidebarOpen) {
         sidebar.classList.add('open');
         overlay.classList.add('active');
-        btn.innerHTML = '✕';
-        btn.title = '메뉴 닫기';
+        // Hide hamburger button when sidebar is open (X is already in sidebar header)
+        btn.style.opacity = '0';
+        btn.style.pointerEvents = 'none';
     } else {
         sidebar.classList.remove('open');
         overlay.classList.remove('active');
-        btn.innerHTML = '☰';
-        btn.title = '메뉴 열기';
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
         // Also close admin panel
         if (adminMode) toggleAdminMode();
     }
