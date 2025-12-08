@@ -420,7 +420,8 @@ function createFloatingScrollButtons() {
     floatingBtns.style.cssText = `
         position: fixed;
         right: 20px;
-        bottom: 20px;
+        top: 50%;
+        transform: translateY(-50%);
         display: flex;
         flex-direction: column;
         gap: 8px;

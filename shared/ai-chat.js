@@ -11,7 +11,7 @@
 
 // ========== Configuration ==========
 const GEMINI_CONFIG = {
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-flash-latest',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     storageKey: 'gemini_api_key'
 };
