@@ -547,7 +547,7 @@ if __name__ == "__main__":
             const codeEl = document.getElementById('referenceCode');
             codeEl.innerHTML = lines.map((line, i) =>
                 `<span class="ref-line" data-line="${i + 1}">${Prism.highlight(line, Prism.languages.python, 'python') || ' '}</span>`
-            ).join('\n');
+            ).join('');
 
             updateLineNumbers();
             editor.focus();
