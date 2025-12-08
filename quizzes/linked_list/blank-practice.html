@@ -342,15 +342,12 @@ class Node():
     <script src="../../shared/sidebar.js"></script>
     <script src="../../shared/ai-chat.js"></script>
     <script>
-        // ========== Reference Code (원본 txt 파일과 동일 - 273줄) ==========
-        const REFERENCE_CODE = `## 클래스와 함수 선언 부분 ##
-class Node():
+        const REFERENCE_CODE = `class Node():
     def __init__(self):
         self.data = None
         self.link = None
 
 def printNodes(start):
-    """현재 연결 리스트 전체를 출력"""
     current = start
     if current is None:
         print("(빈 리스트)")
@@ -363,7 +360,6 @@ def printNodes(start):
     print()
 
 def get_list_data():
-    """연결 리스트의 data들을 파이썬 리스트로 반환 (파일 저장용)"""
     result = []
     current = head
     while current is not None:
@@ -372,7 +368,6 @@ def get_list_data():
     return result
 
 def appendNode(newData):
-    """맨 뒤에 노드 추가"""
     global head
     node = Node()
     node.data = newData
@@ -385,7 +380,6 @@ def appendNode(newData):
     current.link = node
 
 def insertNode(findData, insertData):
-    """특정 데이터 앞에 삽입, 못 찾으면 맨 뒤에 추가"""
     global head
     
     # 리스트가 비어 있을 경우
@@ -421,7 +415,6 @@ def insertNode(findData, insertData):
     current.link = node
 
 def insertAt(index, data):
-    """특정 인덱스 위치에 노드 삽입"""
     global head
     
     if index < 0:
@@ -455,7 +448,6 @@ def insertAt(index, data):
     current.link = newNode
 
 def deleteNode(deleteData):
-    """특정 데이터 삭제"""
     global head, current, pre
 
     if head is None:
@@ -482,13 +474,11 @@ def deleteNode(deleteData):
     print(f"'{deleteData}' 데이터를 찾을 수 없습니다.")
 
 def clearList():
-    """리스트 전체 초기화"""
     global head
     head = None
     print("리스트가 초기화되었습니다.")
 
 def searchNode(target):
-    """target을 검색해서 인덱스 리스트 반환"""
     global head
     indexes = []
     current = head
@@ -501,7 +491,6 @@ def searchNode(target):
     return indexes
 
 def saveToFile(filename):
-    """현재 리스트 데이터를 파일에 저장"""
     data_list = get_list_data()
     with open(filename, 'w', encoding='utf-8') as f:
         for item in data_list:
@@ -509,7 +498,6 @@ def saveToFile(filename):
     print(f"리스트가 파일로 저장되었습니다. ({filename})")
 
 def loadFromFile(filename):
-    """파일에서 데이터를 읽어 리스트 재구성"""
     global head
     try:
         with open(filename, 'r', encoding='utf-8') as f:
@@ -526,11 +514,9 @@ def loadFromFile(filename):
             appendNode(data)
     print(f"파일에서 리스트를 불러왔습니다. ({filename})")
 
-## 전역 변수 선언 부분 ##
 memory = []
 head, current, pre = None, None, None
 
-## 메인 코드 부분 ##
 if __name__ == "__main__":
     # 초기 데이터 셋팅
     dataArray = ["서울대", "고대", "연대", "두원", "부산"]
@@ -819,6 +805,26 @@ if __name__ == "__main__":
 
                 updateLineNumbers();
                 return;
+            }
+
+            // Backspace handling - VS Code style: remove 4 spaces at start of line
+            if (e.key === 'Backspace') {
+                const cursorPos = editor.selectionStart;
+                const text = editor.value;
+                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+                const textBeforeCursor = text.substring(lineStart, cursorPos);
+
+                // Only if cursor is in the leading whitespace area
+                if (textBeforeCursor.length > 0 && textBeforeCursor.trim() === '') {
+                    e.preventDefault();
+                    const removeCount = Math.min(INDENT_SIZE, textBeforeCursor.length);
+
+                    // Remove up to 4 spaces
+                    editor.value = text.substring(0, cursorPos - removeCount) + text.substring(cursorPos);
+                    editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
+                    updateLineNumbers();
+                    return;
+                }
             }
 
             // Reset enter flag on other keys

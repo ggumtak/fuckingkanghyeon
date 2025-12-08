@@ -34,7 +34,7 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
 
         // Question header with number and type badge
         const typeBadges = {
-            'code-fill': 'SQL',
+            'code-fill': q.language?.toUpperCase() || 'CODE',
             'mcq': '객관식',
             'short': '단답형',
             'essay': '서술형'

@@ -202,9 +202,8 @@ function createReviewSection(quizId, data) {
     `;
     controls.appendChild(reviewBtns);
 
-    // Add floating elements
+    // Add floating scroll buttons only (nav bar removed - sidebar is enough)
     createFloatingScrollButtons();
-    createFloatingNavBar();
 }
 
 // ========== Completion Modal ==========
@@ -448,93 +447,6 @@ function createFloatingScrollButtons() {
     });
 
     document.body.appendChild(floatingBtns);
-}
-
-// Create floating navigation bar for quiz switching (config-based)
-function createFloatingNavBar() {
-    if (document.getElementById('floatingNavBar')) return;
-
-    const currentPage = window.location.pathname.split('/').pop();
-    const currentQuizNum = getCurrentQuizNumber ? getCurrentQuizNumber() : 0;
-
-    const navBar = document.createElement('div');
-    navBar.id = 'floatingNavBar';
-
-    // Build navigation dynamically from config
-    let navHTML = `<a href="${typeof getHomeUrl === 'function' ? getHomeUrl() : '../quiz.html'}" title="메인">🏠</a>`;
-    navHTML += `<span style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></span>`;
-
-    // Get quiz pages from config
-    if (typeof getAllQuizPages === 'function') {
-        const pages = getAllQuizPages();
-        pages.forEach(page => {
-            const pageNum = parseInt(page.id.replace('quiz-', '')) || 0;
-            const isActive = pageNum === currentQuizNum;
-            navHTML += `<a href="${page.file}" class="${isActive ? 'active' : ''}" title="${page.title}">${pageNum}</a>`;
-        });
-    } else {
-        // Fallback to hardcoded
-        for (let i = 1; i <= 6; i++) {
-            navHTML += `<a href="quiz-${i}.html" class="${currentQuizNum === i ? 'active' : ''}" title="${i}회차">${i}</a>`;
-        }
-    }
-
-    navHTML += `<span style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></span>`;
-    navHTML += `<a href="blank-practice.html" title="백지복습">📝</a>`;
-
-    navBar.innerHTML = navHTML;
-    navBar.style.cssText = `
-        position: fixed;
-        top: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 6px 10px;
-        background: rgba(20,20,20,0.95);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 10px;
-        z-index: 1000;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-    `;
-
-    const linkStyle = `
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 6px;
-        text-decoration: none;
-        color: #a0a0a0;
-        font-size: 12px;
-        font-weight: 600;
-        transition: all 0.2s;
-    `;
-
-    navBar.querySelectorAll('a').forEach(link => {
-        link.style.cssText = linkStyle;
-        if (link.classList.contains('active')) {
-            link.style.background = '#3d6cb5';
-            link.style.color = 'white';
-        }
-        link.onmouseenter = () => {
-            if (!link.classList.contains('active')) {
-                link.style.background = 'rgba(61,108,181,0.25)';
-                link.style.color = 'white';
-            }
-        };
-        link.onmouseleave = () => {
-            if (!link.classList.contains('active')) {
-                link.style.background = 'transparent';
-                link.style.color = '#a0a0a0';
-            }
-        };
-    });
-
-    document.body.appendChild(navBar);
 }
 
 // Bind all events

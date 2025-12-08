@@ -39,7 +39,7 @@ const QUIZ_CONFIG = {
                 { id: 9, title: '9회차', subtitle: '핵심 로직', count: 30, icon: '👑', difficulty: 'hard' },
                 { id: 10, title: '10회차', subtitle: '백지 스켈레톤', count: 88, icon: '🏆', difficulty: 'hard' },
                 { id: 'linked-list-full', title: '전체 코드', subtitle: 'Set 1+2', count: 48, icon: '📚', file: 'linked-list-full.html' },
-                { id: 'blank-practice', title: '백지 복습', subtitle: '직접 코드 작성', icon: '✍️', file: 'blank-practice.html' }
+                { id: 'blank-practice', title: '백지 복습', subtitle: '직접 코드 작성', count: 0, icon: '✍️', file: 'blank-practice.html' }
             ]
         },
         {
