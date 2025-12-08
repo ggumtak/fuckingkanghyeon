@@ -1,19 +1,19 @@
 // Service Worker for Quiz App PWA
-const CACHE_NAME = 'quiz-app-v1';
-const OFFLINE_URL = '/index.html';
+const CACHE_NAME = 'quiz-app-v2';
+const OFFLINE_URL = './index.html';
 
 // Files to cache for offline use
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/shared/styles.css',
-    '/shared/quiz-app.js',
-    '/shared/quiz-config.js',
-    '/shared/nav-config.js',
-    '/shared/sidebar.js',
-    '/shared/ai-chat.js',
-    '/assets/img.png',
-    '/manifest.json'
+    './',
+    './index.html',
+    './shared/styles.css',
+    './shared/quiz-app.js',
+    './shared/quiz-config.js',
+    './shared/nav-config.js',
+    './shared/sidebar.js',
+    './shared/ai-chat.js',
+    './assets/img.png',
+    './manifest.json'
 ];
 
 // Install event - cache static assets

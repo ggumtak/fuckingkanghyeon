@@ -2,7 +2,7 @@
     "name": "퀴즈 앱",
     "short_name": "퀴즈",
     "description": "Python 연결 리스트 코드 빈칸 채우기 퀴즈 앱",
-    "start_url": "/index.html",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#131314",
     "theme_color": "#131314",
