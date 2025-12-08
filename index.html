@@ -3,16 +3,35 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="퀴즈 앱">
+    <meta name="theme-color" content="#131314">
+    <meta name="msapplication-TileColor" content="#131314">
     <title>퀴즈 앱</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/img.png">
+    <link rel="apple-touch-icon" href="assets/img.png">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="shared/styles.css">
     <style>
+        /* === PWA Safe Area === */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
         .container {
-            max-width: 1100px;
-            padding: 20px;
+            max-width: 1200px;
+            padding: 16px;
+            min-height: 100vh;
         }
 
         /* 네비게이션 바 */
@@ -20,7 +39,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             padding: 10px 14px;
             background: #111827;
             border-radius: 12px;
@@ -31,13 +50,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 8px;
             color: #6B7280;
-            font-size: 0.9rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.15s;
         }
@@ -57,7 +76,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #94a3b8;
             margin-left: 8px;
         }
@@ -74,7 +93,7 @@
         .view-options {
             margin-left: auto;
             display: none;
-            gap: 3px;
+            gap: 4px;
         }
 
         .view-options.visible {
@@ -82,12 +101,12 @@
         }
 
         .view-btn {
-            padding: 5px 8px;
+            padding: 6px 10px;
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 6px;
             color: #6B7280;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.15s;
         }
@@ -103,91 +122,154 @@
             color: #60A5FA;
         }
 
-        /* 헤더 */
+        /* === 헤더 - 더 풍성한 디자인 === */
         .header {
             text-align: center;
-            padding: 10px 0 24px;
+            padding: 32px 20px;
+            margin-bottom: 24px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #60A5FA, #A78BFA, transparent);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(96, 165, 250, 0.08) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .header h1 {
-            font-size: 1.4rem;
-            background: linear-gradient(135deg, #60A5FA, #A78BFA);
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            background: linear-gradient(135deg, #60A5FA, #A78BFA, #F472B6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
         }
 
         .header p {
-            color: #6B7280;
-            font-size: 0.8rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
         }
 
         .stats {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-top: 12px;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
 
         .stat {
-            background: #1e293b;
-            padding: 5px 12px;
-            border-radius: 14px;
-            font-size: 0.75rem;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
         }
 
         .stat-label {
             color: #6B7280;
+            margin-right: 4px;
         }
 
         .stat-value {
             color: #60A5FA;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        /* 폴더 그리드 */
+        /* === 폴더 그리드 - 더 큰 카드 === */
         .folder-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
         }
 
         .folder-card {
             aspect-ratio: 1;
             background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .folder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.1) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .folder-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(96, 165, 250, 0.4);
-            box-shadow: 0 8px 24px rgba(96, 165, 250, 0.12);
+            transform: translateY(-6px);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 12px 32px rgba(96, 165, 250, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .folder-card:hover::before {
+            opacity: 1;
         }
 
         .folder-icon {
-            font-size: 2rem;
+            font-size: 3rem;
+            position: relative;
+            z-index: 1;
         }
 
         .folder-name {
-            font-weight: 600;
-            font-size: 0.85rem;
+            font-weight: 700;
+            font-size: 1.1rem;
             color: #f1f5f9;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         .folder-stats {
-            font-size: 0.6rem;
+            font-size: 0.8rem;
             color: #64748b;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         /* 파일 뷰 */
@@ -201,84 +283,114 @@
 
         .file-grid {
             display: grid;
-            gap: 10px;
+            gap: 12px;
         }
 
-        /* 보기 모드 */
+        /* 보기 모드 - 더 큰 카드 */
         .file-grid.view-small {
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
         }
 
         .file-grid.view-medium {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
         }
 
         .file-grid.view-large {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
         }
 
         .file-grid.view-list {
             grid-template-columns: 1fr;
-            gap: 2px;
+            gap: 6px;
         }
 
         .file-card {
-            background: #1a1a2e;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            padding: 12px;
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 24px 20px;
             text-decoration: none;
-            color: #d1d5db;
-            transition: all 0.15s;
+            color: #e2e8f0;
+            transition: all 0.25s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 12px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.08) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .file-card:hover {
-            background: rgba(96, 165, 250, 0.08);
-            border-color: rgba(96, 165, 250, 0.3);
-            color: #60A5FA;
+            background: linear-gradient(145deg, #1e3a5f 0%, #0f172a 100%);
+            border-color: rgba(96, 165, 250, 0.5);
+            color: #93c5fd;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
+        }
+
+        .file-card:hover::before {
+            opacity: 1;
         }
 
         .file-icon {
-            font-size: 1.6rem;
+            font-size: 2.8rem;
+            position: relative;
+            z-index: 1;
         }
 
         .file-name {
-            font-weight: 500;
-            font-size: 0.75rem;
+            font-weight: 700;
+            font-size: 1.1rem;
             word-break: break-word;
+            position: relative;
+            z-index: 1;
         }
 
         .file-meta {
-            font-size: 0.6rem;
-            color: #6B7280;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            position: relative;
+            z-index: 1;
         }
 
         .file-progress {
-            font-size: 0.65rem;
+            font-size: 1rem;
             color: #4ade80;
-            font-weight: 500;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
         }
 
         /* 작은 아이콘 */
         .view-small .file-card {
-            padding: 8px 6px;
-            gap: 3px;
-            border-radius: 8px;
+            padding: 16px 12px;
+            gap: 8px;
+            border-radius: 14px;
         }
 
         .view-small .file-icon {
-            font-size: 1.2rem;
+            font-size: 2rem;
         }
 
         .view-small .file-name {
-            font-size: 0.65rem;
+            font-size: 0.9rem;
         }
 
         .view-small .file-meta,
@@ -289,16 +401,16 @@
 
         /* 중간 아이콘 */
         .view-medium .file-card {
-            padding: 10px 8px;
-            gap: 5px;
+            padding: 24px 16px;
+            gap: 10px;
         }
 
         .view-medium .file-icon {
-            font-size: 1.4rem;
+            font-size: 2.6rem;
         }
 
         .view-medium .file-name {
-            font-size: 0.7rem;
+            font-size: 1.05rem;
         }
 
         .view-medium .file-meta {
@@ -307,59 +419,59 @@
 
         /* 큰 아이콘 */
         .view-large .file-card {
-            padding: 14px 10px;
-            gap: 6px;
+            padding: 32px 20px;
+            gap: 14px;
             aspect-ratio: 1;
         }
 
         .view-large .file-icon {
-            font-size: 1.8rem;
+            font-size: 3.2rem;
         }
 
         .view-large .file-name {
-            font-size: 0.8rem;
+            font-size: 1.15rem;
         }
 
-        /* 리스트 - 매우 얇게 */
+        /* 리스트 */
         .view-list .file-card {
             flex-direction: row;
             justify-content: flex-start;
-            padding: 6px 10px;
-            gap: 8px;
+            padding: 16px 20px;
+            gap: 16px;
             text-align: left;
-            border-radius: 4px;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .view-list .file-card:hover {
-            background: rgba(96, 165, 250, 0.06);
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
         }
 
         .view-list .file-icon {
-            font-size: 0.9rem;
+            font-size: 1.6rem;
         }
 
         .view-list .file-name {
             flex: 1;
-            font-size: 0.8rem;
+            font-size: 1.05rem;
         }
 
         .view-list .file-meta {
-            font-size: 0.65rem;
+            font-size: 0.85rem;
             margin-left: auto;
         }
 
         .view-list .file-progress {
-            font-size: 0.7rem;
+            font-size: 0.95rem;
         }
 
         /* 뱃지 */
         .badge {
-            font-size: 0.5rem;
-            padding: 1px 4px;
-            border-radius: 3px;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-weight: 600;
         }
 
@@ -380,6 +492,119 @@
 
         .view-small .badge {
             display: none;
+        }
+
+        /* === 반응형 - Galaxy S7+ 태블릿 (800px 이상) === */
+        @media (min-width: 800px) {
+            .container {
+                padding: 24px;
+            }
+
+            .folder-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+
+            .header {
+                padding: 40px 32px;
+            }
+
+            .header h1 {
+                font-size: 2.4rem;
+            }
+        }
+
+        /* === 반응형 - Galaxy S23 Ultra (360-414px) === */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .nav-bar {
+                padding: 8px 10px;
+                margin-bottom: 12px;
+            }
+
+            .nav-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nav-path {
+                font-size: 0.8rem;
+            }
+
+            .header {
+                padding: 24px 16px;
+                margin-bottom: 16px;
+                border-radius: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .folder-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .folder-card {
+                padding: 16px;
+                border-radius: 14px;
+            }
+
+            .folder-icon {
+                font-size: 2.2rem;
+            }
+
+            .folder-name {
+                font-size: 0.9rem;
+            }
+
+            .folder-stats {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* === 초소형 화면 (360px 미만) === */
+        @media (max-width: 360px) {
+            .folder-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .folder-card {
+                aspect-ratio: auto;
+                flex-direction: row;
+                padding: 14px;
+                gap: 14px;
+            }
+
+            .folder-icon {
+                font-size: 2rem;
+            }
+
+            .folder-name {
+                text-align: left;
+            }
+
+            .folder-stats {
+                text-align: left;
+            }
         }
     </style>
 </head>
@@ -558,6 +783,16 @@
     <script src="shared/nav-config.js"></script>
     <script src="shared/sidebar.js"></script>
     <script src="shared/ai-chat.js"></script>
+    <script>
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker 등록됨:', reg.scope))
+                    .catch(err => console.log('[PWA] Service Worker 등록 실패:', err));
+            });
+        }
+    </script>
 </body>
 
 </html>
