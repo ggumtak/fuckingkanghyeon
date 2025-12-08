@@ -277,6 +277,7 @@ def printNodes(start):
     if current is None:
         print("(빈 리스트)")
         return
+
     print("현재 리스트:", end=' ')
     print(current.data, end=' ')
     while current.link is not None:
@@ -294,11 +295,14 @@ def get_list_data():
 
 def appendNode(newData):
     global head
+
     node = Node()
     node.data = newData
+
     if head is None:
         head = node
         return
+
     current = head
     while current.link is not None:
         current = current.link
@@ -390,11 +394,13 @@ def deleteNode(deleteData):
 
 def clearList():
     global head
+
     head = None
     print("리스트가 초기화되었습니다.")
 
 def searchNode(target):
     global head
+
     indexes = []
     current = head
     idx = 0
@@ -414,6 +420,7 @@ def saveToFile(filename):
 
 def loadFromFile(filename):
     global head
+
     try:
         with open(filename, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -432,12 +439,89 @@ memory = []
 head, current, pre = None, None, None
 
 if __name__ == "__main__":
+
     dataArray = ["서울대", "고대", "연대", "두원", "부산"]
     for data in dataArray:
         appendNode(data)
     
     print("초기 연결 리스트:")
-    printNodes(head)`;
+    printNodes(head)
+
+    select = -1
+    while select != 9:
+        print("\\n--- 연결 리스트 메뉴 ---")
+        print("1: 추가 (맨 뒤)")
+        print("2: 삽입 (특정 데이터 앞에 삽입)")
+        print("3: 삽입 (특정 위치에 삽입)")
+        print("4: 삭제 (특정 데이터 삭제 / 삭제 전 확인)")
+        print("5: 리스트 초기화")
+        print("6: 검색 (데이터 -> 인덱스)")
+        print("7: 파일 저장")
+        print("8: 파일 불러오기")
+        print("9: 종료")
+
+        try:
+            select = int(input("메뉴 선택: "))
+        except ValueError:
+            print("숫자를 입력하세요.")
+            continue
+
+        if select == 1:
+            data = input("추가할 데이터 입력: ")
+            appendNode(data)
+            printNodes(head)
+        
+        elif select == 2:
+            findData = input("어느 데이터 앞에 삽입할까요? (찾을 데이터): ")
+            insertData = input("삽입할 데이터 입력: ")
+            insertNode(findData, insertData)
+            printNodes(head)
+        
+        elif select == 3:
+            try:
+                idx = int(input("삽입할 인덱스 번호 입력: "))
+                data = input("삽입할 데이터 입력: ")
+                insertAt(idx, data)
+                printNodes(head)
+            except ValueError:
+                print("인덱스는 숫자로 입력해야 합니다.")
+
+        elif select == 4:
+            delData = input("삭제할 데이터 입력: ")
+            confirm = input(f"정말로 '{delData}'를 삭제할까요? (y/n): ")
+            if confirm.lower() == 'y':
+                deleteNode(delData)
+                printNodes(head)
+            else:
+                print("삭제를 취소했습니다.")
+                printNodes(head)
+
+        elif select == 5:
+            clearList()
+            printNodes(head)
+
+        elif select == 6:
+            data = input("검색할 데이터 입력: ")
+            indexes = searchNode(data)
+            if indexes:
+                print(f"'{data}' 데이터는 다음 인덱스에 있습니다: {indexes}")
+            else:
+                print(f"'{data}' 데이터는 리스트에 없습니다.")
+
+        elif select == 7:
+            filename = input("저장할 파일 이름 입력 (예: data.txt): ")
+            saveToFile(filename)
+
+        elif select == 8:
+            filename = input("불러올 파일 이름 입력 (예: data.txt): ")
+            loadFromFile(filename)
+            printNodes(head)
+
+        elif select == 9:
+            print("프로그램을 종료합니다.")
+        
+        else:
+            print("잘못된 선택입니다. 다시 입력하세요.")`;
 
         const editor = document.getElementById('practiceEditor');
         const lineNumbers = document.getElementById('lineNumbers');
@@ -579,6 +663,12 @@ if __name__ == "__main__":
             if (activeLine) {
                 activeLine.scrollIntoView({ block: 'center', behavior: 'smooth' });
             }
+
+            // Scroll editor to place current line at upper-center (30% from top)
+            const lineHeight = parseFloat(getComputedStyle(editor).lineHeight);
+            const targetScrollTop = (lineNum - 1) * lineHeight - (editor.clientHeight * 0.3);
+            editor.scrollTop = Math.max(0, targetScrollTop);
+            lineNumbers.scrollTop = editor.scrollTop;
         }
 
         // Reference panel

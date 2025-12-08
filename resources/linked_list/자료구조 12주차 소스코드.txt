@@ -1,15 +1,14 @@
-## 클래스와 함수 선언 부분 ##
 class Node():
     def __init__(self):
         self.data = None
         self.link = None
 
 def printNodes(start):
-    """현재 연결 리스트 전체를 출력"""
     current = start
     if current is None:
         print("(빈 리스트)")
         return
+
     print("현재 리스트:", end=' ')
     print(current.data, end=' ')
     while current.link is not None:
@@ -18,7 +17,6 @@ def printNodes(start):
     print()
 
 def get_list_data():
-    """연결 리스트의 data들을 파이썬 리스트로 반환 (파일 저장용)"""
     result = []
     current = head
     while current is not None:
@@ -27,30 +25,29 @@ def get_list_data():
     return result
 
 def appendNode(newData):
-    """맨 뒤에 노드 추가"""
     global head
+
     node = Node()
     node.data = newData
+
     if head is None:
         head = node
         return
+
     current = head
     while current.link is not None:
         current = current.link
     current.link = node
 
 def insertNode(findData, insertData):
-    """특정 데이터 앞에 삽입, 못 찾으면 맨 뒤에 추가"""
     global head
     
-    # 리스트가 비어 있을 경우
     if head is None:
         node = Node()
         node.data = insertData
         head = node
         return
 
-    # 첫 번째 노드가 findData인 경우 (맨 앞 삽입)
     if head.data == findData:
         node = Node()
         node.data = insertData
@@ -58,7 +55,6 @@ def insertNode(findData, insertData):
         head = node
         return
 
-    # 그 외 노드 탐색
     current = head
     while current.link is not None:
         pre = current
@@ -70,13 +66,11 @@ def insertNode(findData, insertData):
             pre.link = node
             return
 
-    # findData를 끝까지 못 찾으면 맨 뒤에 추가
     node = Node()
     node.data = insertData
     current.link = node
 
 def insertAt(index, data):
-    """특정 인덱스 위치에 노드 삽입"""
     global head
     
     if index < 0:
@@ -86,17 +80,14 @@ def insertAt(index, data):
     newNode = Node()
     newNode.data = data
 
-    # 인덱스가 0 (맨 앞 삽입)
     if index == 0:
         newNode.link = head
         head = newNode
         return
 
-    # 중간 또는 끝 삽입을 위해 순회
     current = head
     currentIndex = 0
     
-    # 삽입 위치 바로 직전(index-1)까지 이동
     while current is not None and currentIndex < index - 1:
         current = current.link
         currentIndex += 1
@@ -105,26 +96,22 @@ def insertAt(index, data):
         print("인덱스가 리스트의 길이를 초과했습니다.")
         return
 
-    # 삽입 실행
     newNode.link = current.link
     current.link = newNode
 
 def deleteNode(deleteData):
-    """특정 데이터 삭제"""
     global head, current, pre
 
     if head is None:
         print("삭제할 노드가 없습니다.(빈 리스트)")
         return
 
-    # 첫 번째 노드가 삭제 대상인 경우
     if head.data == deleteData:
         current = head
         head = head.link
         del(current)
         return
 
-    # 그 외 노드 탐색
     current = head
     while current.link is not None:
         pre = current
@@ -137,14 +124,14 @@ def deleteNode(deleteData):
     print(f"'{deleteData}' 데이터를 찾을 수 없습니다.")
 
 def clearList():
-    """리스트 전체 초기화"""
     global head
+
     head = None
     print("리스트가 초기화되었습니다.")
 
 def searchNode(target):
-    """target을 검색해서 인덱스 리스트 반환"""
     global head
+
     indexes = []
     current = head
     idx = 0
@@ -156,7 +143,6 @@ def searchNode(target):
     return indexes
 
 def saveToFile(filename):
-    """현재 리스트 데이터를 파일에 저장"""
     data_list = get_list_data()
     with open(filename, 'w', encoding='utf-8') as f:
         for item in data_list:
@@ -164,8 +150,8 @@ def saveToFile(filename):
     print(f"리스트가 파일로 저장되었습니다. ({filename})")
 
 def loadFromFile(filename):
-    """파일에서 데이터를 읽어 리스트 재구성"""
     global head
+
     try:
         with open(filename, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -173,7 +159,6 @@ def loadFromFile(filename):
         print("파일을 찾을 수 없습니다.")
         return
 
-    # 기존 리스트 초기화 후 다시 구성
     head = None
     for line in lines:
         data = line.strip()
@@ -181,13 +166,11 @@ def loadFromFile(filename):
             appendNode(data)
     print(f"파일에서 리스트를 불러왔습니다. ({filename})")
 
-## 전역 변수 선언 부분 ##
 memory = []
 head, current, pre = None, None, None
 
-## 메인 코드 부분 ##
 if __name__ == "__main__":
-    # 초기 데이터 셋팅
+
     dataArray = ["서울대", "고대", "연대", "두원", "부산"]
     for data in dataArray:
         appendNode(data)
@@ -195,7 +178,6 @@ if __name__ == "__main__":
     print("초기 연결 리스트:")
     printNodes(head)
 
-    # 사용자 입력 기반 메뉴
     select = -1
     while select != 9:
         print("\n--- 연결 리스트 메뉴 ---")
