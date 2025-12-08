@@ -21,6 +21,6 @@ git push -u origin main --force
 
 echo.
 echo === Done! ===
-echo URL: https://ggumtak.github.io/testpractice/quiz.html
+echo URL: https://ggumtak.github.io/testpractice
 echo.
 pause
