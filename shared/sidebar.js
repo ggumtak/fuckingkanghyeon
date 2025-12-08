@@ -101,8 +101,16 @@ function renderSidebarNav() {
 
     const config = getNavConfig();
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+    const homeUrl = typeof getHomeUrl === 'function' ? getHomeUrl() : '../quiz.html';
 
-    let html = '';
+    // Home button at top (like ChatGPT style)
+    let html = `
+        <a href="${homeUrl}" class="nav-home-btn" title="홈으로">
+            <span class="nav-home-icon">🏠</span>
+            <span class="nav-home-text">홈</span>
+        </a>
+        <div class="nav-divider"></div>
+    `;
 
     config.subjects.forEach(subject => {
         html += `
@@ -121,10 +129,16 @@ function renderSidebarNav() {
             const href = typeof getPageUrl === 'function'
                 ? getPageUrl(subject, page)
                 : (page.file || `${page.id}.html`);
+
+            // Get progress for this quiz
+            const progress = getQuizProgress(page.id);
+            const totalCount = page.count || progress.total || 0;
+            const progressText = totalCount > 0 ? `(${progress.solved}/${totalCount})` : '';
+
             html += `
                 <a href="${href}" class="nav-item ${isActive ? 'active' : ''}">
                     <span class="nav-item-title">${page.title}</span>
-                    ${page.count ? `<span class="nav-item-count">${page.count}</span>` : ''}
+                    ${progressText ? `<span class="nav-item-progress">${progressText}</span>` : ''}
                 </a>
             `;
         });
@@ -135,16 +149,38 @@ function renderSidebarNav() {
         `;
     });
 
-    // Home link - use config-based URL
-    const homeUrl = typeof getHomeUrl === 'function' ? getHomeUrl() : '../quiz.html';
-    html += `
-        <a href="${homeUrl}" class="nav-item nav-home">
-            <span class="nav-item-icon">🏠</span>
-            <span class="nav-item-title">메인으로</span>
-        </a>
-    `;
-
     nav.innerHTML = html;
+}
+
+/**
+ * Get quiz progress from localStorage (matches index.html logic)
+ */
+function getQuizProgress(quizId) {
+    // Extract quiz number from quizId like "quiz-1" or just "1"
+    const quizNum = String(quizId).replace(/[^0-9]/g, '') || quizId;
+    const data = localStorage.getItem(`quiz_progress_${quizNum}`);
+
+    if (!data) return { solved: 0, total: 0 };
+
+    try {
+        const progress = JSON.parse(data);
+        let solved = 0;
+        let total = 0;
+
+        if (progress.states) {
+            for (const blankNum in progress.states) {
+                total++;
+                const state = progress.states[blankNum];
+                if (state && state.state === 'correct') {
+                    solved++;
+                }
+            }
+        }
+
+        return { solved, total };
+    } catch (e) {
+        return { solved: 0, total: 0 };
+    }
 }
 
 // Toggle nav group expand/collapse

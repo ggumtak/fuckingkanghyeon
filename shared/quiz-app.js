@@ -193,11 +193,11 @@ function createReviewSection(quizId, data) {
     reviewBtns.id = `review-${quizId}`;
     reviewBtns.style.cssText = 'display: flex; gap: 8px; margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--border);';
     reviewBtns.innerHTML = `
-        <button class="btn" onclick="reviewWrong('${quizId}', ${JSON.stringify(data).replace(/"/g, '&quot;')}, 'hard')" style="background: #ef4444; color: white; border: none; padding: 10px 14px; font-size: 0.85rem;" title="정답 본 문제만 다시 풀기">
-            🔴 다시
+        <button class="btn btn-secondary" onclick="reviewWrong('${quizId}', ${JSON.stringify(data).replace(/"/g, '&quot;')}, 'hard')" title="정답 본 문제만 다시 풀기">
+            오답 다시
         </button>
-        <button class="btn" onclick="reviewWrong('${quizId}', ${JSON.stringify(data).replace(/"/g, '&quot;')}, 'all')" style="background: #f59e0b; color: white; border: none; padding: 10px 14px; font-size: 0.85rem;" title="고친 문제도 포함해서 다시 풀기">
-            🟡 다시
+        <button class="btn btn-secondary" onclick="reviewWrong('${quizId}', ${JSON.stringify(data).replace(/"/g, '&quot;')}, 'all')" title="고친 문제도 포함해서 다시 풀기">
+            전체 다시
         </button>
     `;
     controls.appendChild(reviewBtns);

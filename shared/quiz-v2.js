@@ -89,21 +89,57 @@ function renderCodeFillQuestion(q, container) {
     const codeBlock = document.createElement('div');
     codeBlock.className = 'code-block v2-code';
 
-    let codeHtml = escapeHtml(q.code);
+    // Create a placeholder for blanks that won't be affected by hljs
+    const blankPlaceholders = new Map();
+    let codeText = q.code;
 
+    // Replace ( N ) with unique placeholders before highlighting
     if (q.blanks) {
         for (let i = q.blanks.length; i >= 1; i--) {
-            const blank = q.blanks.find(b => b.index === i);
-            const placeholder = blank?.placeholder || `(${i})`;
-            codeHtml = codeHtml.replace(
-                `( ${i} )`,
-                `<input type="text" class="blank-input v2-blank" data-question="${q.id}" data-blank="${i}" placeholder="${placeholder}">`
-            );
+            const placeholder = `___BLANK_${i}___`;
+            blankPlaceholders.set(placeholder, i);
+            codeText = codeText.replace(`( ${i} )`, placeholder);
         }
     }
 
-    codeBlock.innerHTML = `<pre>${codeHtml}</pre>`;
+    // Create pre and code elements for hljs
+    const pre = document.createElement('pre');
+    const code = document.createElement('code');
+
+    // Set language class for highlight.js
+    const langMap = {
+        'sql': 'sql',
+        'python': 'python',
+        'javascript': 'javascript',
+        'js': 'javascript',
+        'csharp': 'csharp',
+        'cs': 'csharp',
+        'java': 'java',
+        'cpp': 'cpp',
+        'c': 'c'
+    };
+    const lang = langMap[q.language?.toLowerCase()] || q.language || 'plaintext';
+    code.className = `language-${lang}`;
+    code.textContent = codeText;
+    pre.appendChild(code);
+    codeBlock.appendChild(pre);
     container.appendChild(codeBlock);
+
+    // Apply highlight.js if available
+    if (typeof hljs !== 'undefined') {
+        hljs.highlightElement(code);
+    }
+
+    // Now replace placeholders with actual input elements
+    let highlightedHtml = code.innerHTML;
+    blankPlaceholders.forEach((blankIndex, placeholder) => {
+        const blank = q.blanks.find(b => b.index === blankIndex);
+        const placeholderText = blank?.placeholder || `(${blankIndex})`;
+        const inputHtml = `<input type="text" class="blank-input v2-blank" data-question="${q.id}" data-blank="${blankIndex}" placeholder="${placeholderText}">`;
+        highlightedHtml = highlightedHtml.replace(placeholder, inputHtml);
+    });
+
+    code.innerHTML = highlightedHtml;
 }
 
 /**
@@ -493,6 +529,77 @@ function reviewWrongV2() {
     }
 }
 
+// ========== Floating Reference Panel ==========
+
+/**
+ * Initialize floating reference panel for database quizzes
+ * Converts inline <details class="reference-tables-inline"> to floating panel
+ */
+function initFloatingReferencePanel() {
+    const inlineTables = document.querySelector('.reference-tables-inline');
+    if (!inlineTables) return;
+
+    // Create floating panel
+    const panel = document.createElement('div');
+    panel.className = 'reference-panel';
+    panel.id = 'referencePanel';
+    panel.innerHTML = `
+        <div class="reference-panel-header">
+            <h3>📊 참고 테이블</h3>
+            <button class="reference-panel-close" onclick="toggleReferencePanel()">✕</button>
+        </div>
+        <div class="reference-panel-content" id="referencePanelContent"></div>
+    `;
+    document.body.appendChild(panel);
+
+    // Create toggle button (FAB)
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'reference-toggle-btn';
+    toggleBtn.id = 'referenceToggleBtn';
+    toggleBtn.innerHTML = '📊 테이블';
+    toggleBtn.title = '참조 테이블 열기';
+    toggleBtn.onclick = function () { toggleReferencePanel(); };
+    document.body.appendChild(toggleBtn);
+
+    // Move table content to floating panel
+    const content = document.getElementById('referencePanelContent');
+    const detailsContent = inlineTables.querySelector('details');
+    if (detailsContent) {
+        // Get inner content (skip summary)
+        const innerContent = detailsContent.querySelector('div');
+        if (innerContent) {
+            content.innerHTML = innerContent.innerHTML;
+        }
+    }
+
+    // Hide inline tables
+    inlineTables.style.display = 'none';
+}
+
+/**
+ * Toggle floating reference panel
+ */
+function toggleReferencePanel() {
+    const panel = document.getElementById('referencePanel');
+    const btn = document.getElementById('referenceToggleBtn');
+    if (!panel) return;
+
+    panel.classList.toggle('open');
+    if (btn) btn.classList.toggle('hidden', panel.classList.contains('open'));
+}
+
+// Helper function for escaping HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Initialize floating panel on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    initFloatingReferencePanel();
+});
+
 // Export v2 functions
 if (typeof window !== 'undefined') {
     window.renderQuizRound = renderQuizRound;
@@ -500,4 +607,5 @@ if (typeof window !== 'undefined') {
     window.resetV2Quiz = resetV2Quiz;
     window.showAllV2Answers = showAllV2Answers;
     window.reviewWrongV2 = reviewWrongV2;
+    window.toggleReferencePanel = toggleReferencePanel;
 }

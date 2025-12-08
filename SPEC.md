@@ -87,8 +87,8 @@
 
 ```text
 testpractice-main/
-├── quiz.html                    # Main dashboard
-├── index.html                   # Redirect / PWA entry
+├── quiz.html                    # Main dashboard (deprecated, use index.html)
+├── index.html                   # Main dashboard / PWA entry
 ├── manifest.json                # PWA manifest
 ├── sw.js                        # Service Worker
 ├── deploy.bat                   # GitHub Pages deploy
@@ -96,17 +96,20 @@ testpractice-main/
 ├── quizzes/                     # 🎯 Quiz-only folder
 │   ├── database/                # Database subject
 │   │   ├── database-set1.html ~ set12.html  # Set-based quiz pages
+│   │   ├── database-midterm.html            # Midterm practice
 │   │   └── data/
 │   │       └── set1.js ~ set12.js           # Question data
 │   │
 │   └── linked_list/             # Python Linked List subject
 │       ├── quiz-1.html ~ quiz-10.html       # Round-based quiz pages
+│       ├── linked-list-full.html            # Full code practice (Set 1+2)
 │       ├── blank-practice.html              # Blank practice mode
 │       └── data/
-│           └── quiz-1-data.js ~ quiz-10-data.js
+│           ├── quiz-1-data.js ~ quiz-10-data.js
+│           ├── linked-list-set1.js          # Set 1: 주요 로직 (27문제)
+│           └── linked-list-set2.js          # Set 2: 변수/조건식 (21문제)
 │
 ├── resources/                   # 📚 Reference materials folder
-│   ├── project_specification.v2.md  # This document
 │   ├── README.md                    # Usage guide
 │   │
 │   ├── database/                # DB subject references
@@ -726,6 +729,32 @@ function gradeNewTypeQuestion(q, userAnswer) {
 - ❌ Changing `quiz-app.js` function signatures (add v2 extension functions separately)
 - ❌ Using emojis in quiz page headers
 
+### 7.5 Adding New Quizzes (Mandatory)
+
+> [!IMPORTANT]
+> **New quizzes MUST be integrated into the existing folder structure and config.**
+
+**Folder Organization Rules:**
+1. Quiz files (`*.html`) → `quizzes/subject/` (e.g., `quizzes/database/`, `quizzes/linked_list/`)
+2. Question data (`*.js`) → `quizzes/subject/data/`
+3. Reference materials → `resources/subject/`
+4. Register in `quiz-config.js` to appear in web UI (folder → file navigation)
+
+**When creating a new quiz:**
+```javascript
+// Add to QUIZ_CONFIG.modules[].quizzes array in quiz-config.js
+{ id: 'new-quiz', title: '새 퀴즈', subtitle: '설명', count: 10, icon: '📝', file: 'new-quiz.html' }
+```
+
+**When adding a new subject (folder):**
+1. Create `quizzes/new_subject/` and `quizzes/new_subject/data/`
+2. Create `resources/new_subject/` for reference materials
+3. Add new module entry in `quiz-config.js`
+
+**UI Display:**
+- Main page: Modules appear as folders, quizzes as files inside folders
+- Sidebar: Auto-generated from `quiz-config.js`
+
 ---
 
 ## 8. Quick Reference
@@ -757,5 +786,115 @@ function gradeNewTypeQuestion(q, userAnswer) {
 
 ---
 
-> **Last Updated**: 2024-12-09
-> **Version**: v2.1 (PWA Support Added)
+## 9. Problem Prompt Template (문제 프롬프트)
+
+> [!TIP]
+> 다른 AI에게 문제를 요청할 때 아래 프롬프트를 복사해서 사용하세요.
+> 이 프로젝트의 JSON 형식에 맞는 문제를 바로 받을 수 있습니다.
+
+### 9.1 Full Prompt (Copy & Paste)
+
+```
+나는 빈칸 채우기, 객관식, 주관식, 서술형 문제를 지원하는 퀴즈 웹앱을 만들고 있어.
+문제를 만들어주면 내 앱에 바로 넣을 수 있게 아래 JSON 형식으로 정확히 맞춰서 줘.
+
+---
+
+## 지원하는 문제 유형 4가지
+
+### 1. code-fill (빈칸 채우기)
+코드에서 핵심 부분을 `( N )` 형식으로 빈칸 처리
+
+```javascript
+{
+    id: "q1",
+    type: "code-fill",
+    prompt: "다음 SQL문의 빈칸을 채우세요.",
+    language: "sql",  // sql, python, javascript, csharp 등
+    code: "SELECT * FROM userTbl WHERE name = ( 1 );",
+    blanks: [
+        { index: 1, answer: "N'홍길동'" }
+    ]
+}
+```
+
+### 2. mcq (객관식)
+4지선다 또는 5지선다 객관식
+
+```javascript
+{
+    id: "q2",
+    type: "mcq",
+    prompt: "다음 쿼리의 결과는?\n\nSELECT LEFT('Hello', 2);",
+    options: ["He", "lo", "Hell", "llo"],
+    correctIndex: 0  // 0부터 시작 (첫 번째가 정답)
+}
+```
+
+### 3. short (주관식/단답형)
+여러 정답을 허용하는 단답형
+
+```javascript
+{
+    id: "q3",
+    type: "short",
+    prompt: "CHAR와 VARCHAR의 차이를 한 단어로 설명하세요.",
+    acceptableAnswers: ["고정길이", "가변길이", "fixed vs variable"]
+}
+```
+
+### 4. essay (서술형)
+AI 채점용 키워드 기반 서술형
+
+```javascript
+{
+    id: "q4",
+    type: "essay",
+    prompt: "LEFT OUTER JOIN의 동작 방식을 설명하세요.",
+    rubric: ["왼쪽 테이블 모든 행", "오른쪽 NULL", "조인 조건"],
+    maxLength: 300
+}
+```
+
+---
+
+## 전체 세트 구조
+
+```javascript
+const setN = {
+    setId: "set-N",
+    questions: [
+        // 위 4가지 유형의 문제들을 배열로 나열
+        { id: "q1", type: "code-fill", ... },
+        { id: "q2", type: "mcq", ... },
+        { id: "q3", type: "short", ... }
+    ]
+};
+```
+
+---
+
+## 빈칸 규칙 (code-fill)
+1. 빈칸 형식: `( N )` (괄호 안 공백 필수!)
+2. 빈칸 번호는 1부터 시작
+3. blanks 배열의 index와 코드의 ( N )이 일치해야 함
+
+---
+
+[요청 사항]
+예: "SQL INSERT/UPDATE/DELETE 문제 10개 만들어줘. 빈칸 5개, 객관식 3개, 주관식 2개로 섞어서."
+```
+
+### 9.2 Quick Reference Table
+
+| Type | 용도 | 필수 필드 |
+|------|------|-----------|
+| `code-fill` | 코드 빈칸 | `language`, `code`, `blanks[]` |
+| `mcq` | 객관식 | `options[]`, `correctIndex` |
+| `short` | 주관식 | `acceptableAnswers[]` |
+| `essay` | 서술형 | `rubric[]`, `maxLength` |
+
+---
+
+> **Last Updated**: 2025-12-09
+> **Version**: v2.2 (Problem Prompt Template Added)

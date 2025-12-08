@@ -537,6 +537,72 @@ pre {
     color: #E5C07B;
 }
 
+/* === Highlight.js Overrides (Gemini/Atom One Dark) === */
+/* Override highlight.js classes to match our existing theme */
+.hljs {
+    background: transparent !important;
+    color: var(--text) !important;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-link {
+    color: #C678DD !important;
+}
+
+.hljs-function .hljs-keyword {
+    color: #C678DD !important;
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-function {
+    color: #61AFEF !important;
+}
+
+.hljs-string,
+.hljs-template-variable,
+.hljs-addition,
+.hljs-quote {
+    color: #98C379 !important;
+}
+
+.hljs-number,
+.hljs-regexp,
+.hljs-symbol {
+    color: #D19A66 !important;
+}
+
+.hljs-comment,
+.hljs-deletion,
+.hljs-meta {
+    color: #5C6370 !important;
+    font-style: italic;
+}
+
+.hljs-built_in,
+.hljs-type,
+.hljs-class .hljs-title {
+    color: #E5C07B !important;
+}
+
+.hljs-variable,
+.hljs-attr,
+.hljs-name,
+.hljs-tag {
+    color: #E06C75 !important;
+}
+
+.hljs-params {
+    color: var(--text) !important;
+}
+
+.hljs-attribute {
+    color: #D19A66 !important;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     body {
@@ -773,14 +839,48 @@ pre {
     border-radius: 10px;
 }
 
+.nav-item-progress {
+    font-size: 0.7rem;
+    color: var(--success);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 .nav-item-icon {
     margin-right: 8px;
 }
 
-.nav-home {
-    margin-top: 16px;
-    border-top: 1px solid var(--border);
-    padding-top: 16px;
+/* Home Button at Top */
+.nav-home-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.nav-home-btn:hover {
+    background: var(--hover-bg);
+}
+
+.nav-home-icon {
+    font-size: 1.2rem;
+}
+
+.nav-home-text {
+    flex: 1;
+}
+
+.nav-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0 12px 0;
 }
 
 /* Sidebar Footer */

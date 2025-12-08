@@ -84,22 +84,31 @@ function saveNavPreferences(subjectId, expanded) {
  * Get the URL for a page within a module
  */
 function getPageUrl(subject, page) {
-    // Determine if we're on the main page or inside a folder
-    const isMainPage = !window.location.pathname.includes('/linked_list/') &&
-        !window.location.pathname.includes('/stack_queue/');
+    // Get current path parts and detect folder
+    const pathParts = window.location.pathname.split('/');
+    const currentFile = pathParts[pathParts.length - 1];
+    const currentDirName = pathParts[pathParts.length - 2] || '';
 
-    const folder = subject.folder || 'linked_list';
+    // Check if we're inside a quiz folder (linked_list, database, etc.)
+    const quizFolders = ['linked_list', 'database'];
+    const isInQuizFolder = quizFolders.includes(currentDirName);
+
+    // Extract target folder name from subject.folder (e.g., 'quizzes/linked_list' -> 'linked_list')
+    const folder = subject.folder || 'quizzes/linked_list';
+    const targetFolderName = folder.split('/').pop();
     const file = page.file || `${page.id}.html`;
 
-    if (isMainPage) {
+    if (!isInQuizFolder) {
+        // On main page or outside quiz folders - use full path
         return `${folder}/${file}`;
     } else {
-        // Inside a quiz folder, need to go to sibling or parent
-        const currentFolder = window.location.pathname.split('/').slice(-2, -1)[0];
-        if (currentFolder === folder) {
+        // Inside a quiz folder
+        if (currentDirName === targetFolderName) {
+            // Same folder - just use filename
             return file;
         } else {
-            return `../${folder}/${file}`;
+            // Different folder - navigate to sibling
+            return `../${targetFolderName}/${file}`;
         }
     }
 }

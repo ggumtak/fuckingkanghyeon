@@ -37,16 +37,8 @@ const QUIZ_CONFIG = {
                 { id: 7, title: '7회차', subtitle: '1줄 완성 A', count: 27, icon: '🎯', difficulty: 'medium' },
                 { id: 8, title: '8회차', subtitle: '1줄 완성 B', count: 23, icon: '🎲', difficulty: 'medium' },
                 { id: 9, title: '9회차', subtitle: '핵심 로직', count: 30, icon: '👑', difficulty: 'hard' },
-                { id: 10, title: '10회차', subtitle: '백지 스켈레톤', count: 88, icon: '🏆', difficulty: 'hard' }
-            ]
-        },
-        {
-            id: 'review',
-            name: '복습 모드',
-            icon: '📝',
-            folder: 'quizzes/linked_list',      // Uses same folder (blank-practice.html is there)
-            type: 'review',
-            quizzes: [
+                { id: 10, title: '10회차', subtitle: '백지 스켈레톤', count: 88, icon: '🏆', difficulty: 'hard' },
+                { id: 'linked-list-full', title: '전체 코드', subtitle: 'Set 1+2', count: 48, icon: '📚', file: 'linked-list-full.html' },
                 { id: 'blank-practice', title: '백지 복습', subtitle: '직접 코드 작성', icon: '✍️', file: 'blank-practice.html' }
             ]
         },

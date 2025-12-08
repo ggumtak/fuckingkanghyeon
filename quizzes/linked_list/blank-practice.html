@@ -32,7 +32,8 @@
         }
 
         .practice-stats {
-            display: flex;
+            display: none;
+            /* User requested to hide */
             gap: 20px;
             color: var(--text-secondary);
             font-size: 0.9rem;
@@ -50,22 +51,6 @@
             border-radius: var(--radius-lg);
             border: 1px solid var(--code-border);
             overflow: hidden;
-        }
-
-        .editor-wrapper::before {
-            content: '백지복습';
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            font-size: 0.7rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 3px 10px;
-            background: var(--accent-dim);
-            border-radius: 6px;
-            font-weight: 500;
-            z-index: 10;
         }
 
         .line-numbers {
@@ -259,6 +244,8 @@
         }
 
         .indent-indicator {
+            display: none;
+            /* User requested to hide */
             position: fixed;
             bottom: 20px;
             left: 20px;
@@ -769,8 +756,9 @@ if __name__ == "__main__":
                 const lineBeforeCursor = getLineBeforeCursor();
                 const currentLineIndent = getCurrentLineIndent();
 
-                // Double enter on empty line - reduce indent AND add newline
-                if (lastKeyWasEnter && isCurrentLineEmpty() && currentLineIndent > 0) {
+                // VS Code style: If current line is whitespace-only AND has indentation,
+                // reduce indent and add newline (single Enter, no double-Enter needed)
+                if (isCurrentLineEmpty() && currentLineIndent > 0) {
                     const cursorPos = editor.selectionStart;
                     const text = editor.value;
                     const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
@@ -778,15 +766,15 @@ if __name__ == "__main__":
                     const removeAmount = Math.min(INDENT_SIZE, currentLineIndent);
                     const newIndentLevel = currentLineIndent - removeAmount;
 
-                    editor.value = text.substring(0, lineStart) + text.substring(lineStart + removeAmount);
-                    const newCursorPos = cursorPos - removeAmount;
+                    // Remove indent from current line
+                    editor.value = text.substring(0, lineStart) + ' '.repeat(newIndentLevel) + text.substring(lineStart + currentLineIndent);
+                    const newCursorPos = lineStart + newIndentLevel;
                     editor.selectionStart = editor.selectionEnd = newCursorPos;
 
+                    // Add newline with reduced indent
                     insertAtCursor('\n' + ' '.repeat(newIndentLevel));
 
                     currentIndent = newIndentLevel;
-                    showIndentIndicator(currentIndent);
-                    lastKeyWasEnter = true;
                 } else {
                     const trimmedLine = lineBeforeCursor.trim();
                     const shouldIndent = trimmedLine.endsWith(':');
@@ -798,12 +786,6 @@ if __name__ == "__main__":
 
                     insertAtCursor('\n' + ' '.repeat(newIndent));
                     currentIndent = newIndent;
-
-                    if (shouldIndent) {
-                        showIndentIndicator(currentIndent);
-                    }
-
-                    lastKeyWasEnter = true;
                 }
 
                 updateLineNumbers();

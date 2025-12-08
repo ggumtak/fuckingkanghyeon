@@ -22,10 +22,10 @@
         </div>
 
         <div class="controls">
-            <button class="btn btn-primary" onclick="checkAnswers('4', quiz4Data)">? 전체 채점</button>
-            <button class="btn btn-primary" onclick="showAllAnswers('4', quiz4Data)">?? 전체 정답</button>
-            <button class="btn btn-secondary" onclick="toggleAnswers('4')">?? 정답표 보기</button>
-            <button class="btn btn-secondary" onclick="resetQuiz('4', quiz4Data)">?? 초기화</button>
+            <button class="btn btn-secondary" onclick="checkAnswers('4', quiz4Data)">전체 채점</button>
+            <button class="btn btn-secondary" onclick="showAllAnswers('4', quiz4Data)">전체 정답</button>
+            <button class="btn btn-secondary" onclick="toggleAnswers('4')">정답표 보기</button>
+            <button class="btn btn-secondary" onclick="resetQuiz('4', quiz4Data)">초기화</button>
         </div>
 
         <div class="score-display">
@@ -34,12 +34,13 @@
         </div>
 
         <div id="answers-4" class="answer-section">
-            <h3>?? 4회차 정답</h3>
+            <h3>4회차 정답</h3>
             <div class="answer-grid" id="answerGrid-4"></div>
         </div>
     </div>
 
-    <script src="../../shared/quiz-config.js"></script><script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
     <script src="../../shared/sidebar.js"></script>
     <script src="../../shared/ai-chat.js"></script>
     <script src="data/quiz-4-data.js"></script>
@@ -52,5 +53,3 @@
 </body>
 
 </html>
-
-
