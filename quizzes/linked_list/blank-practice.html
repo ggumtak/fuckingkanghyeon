@@ -589,20 +589,9 @@ if __name__ == "__main__":
                 const lineBeforeCursor = getLineBeforeCursor();
                 const currentIndent = getCurrentLineIndent();
 
-                if (isCurrentLineEmpty() && currentIndent > 0) {
-                    const cursorPos = editor.selectionStart;
-                    const text = editor.value;
-                    const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-                    const newIndent = Math.max(0, currentIndent - INDENT_SIZE);
-
-                    editor.value = text.substring(0, lineStart) + ' '.repeat(newIndent) + text.substring(lineStart + currentIndent);
-                    editor.selectionStart = editor.selectionEnd = lineStart + newIndent;
-                    insertAtCursor('\n' + ' '.repeat(newIndent));
-                } else {
-                    const shouldIndent = lineBeforeCursor.trim().endsWith(':');
-                    let newIndent = currentIndent + (shouldIndent ? INDENT_SIZE : 0);
-                    insertAtCursor('\n' + ' '.repeat(newIndent));
-                }
+                const shouldIndent = lineBeforeCursor.trim().endsWith(':');
+                let newIndent = currentIndent + (shouldIndent ? INDENT_SIZE : 0);
+                insertAtCursor('\n' + ' '.repeat(newIndent));
                 updateLineNumbers();
                 syncReferenceHighlight();
                 return;
@@ -635,8 +624,10 @@ if __name__ == "__main__":
                 const text = editor.value;
                 const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
                 const textBeforeCursor = text.substring(lineStart, cursorPos);
+                const positionInLine = cursorPos - lineStart;
 
-                if (textBeforeCursor.length > 0 && textBeforeCursor.trim() === '') {
+                // Only smart-delete if: all spaces before cursor AND at 4-char boundary (4, 8, 12...)
+                if (textBeforeCursor.length > 0 && textBeforeCursor.trim() === '' && positionInLine % INDENT_SIZE === 0) {
                     e.preventDefault();
                     const removeCount = Math.min(INDENT_SIZE, textBeforeCursor.length);
                     editor.value = text.substring(0, cursorPos - removeCount) + text.substring(cursorPos);
