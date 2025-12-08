@@ -7,14 +7,12 @@
     <title>백지복습 | 연결 리스트 코드 연습</title>
     <link rel="stylesheet" href="../../shared/styles.css">
 
-    <!-- Highlight.js for syntax highlighting -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <!-- Prism.js for reference code highlighting only -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 
     <style>
-        /* Layout for split view */
         .main-content {
             transition: margin-right 0.3s ease;
         }
@@ -28,8 +26,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
         }
 
         .practice-header h2 {
@@ -38,16 +34,12 @@
             font-weight: 600;
         }
 
-        /* Editor with syntax highlighting overlay */
+        /* Simple editor without overlay complexity */
         .editor-container {
-            position: relative;
-            background: #282c34;
+            background: #1e1e1e;
             border-radius: var(--radius-lg, 12px);
             border: 1px solid var(--code-border, #333);
             overflow: hidden;
-            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            line-height: 1.8;
         }
 
         .editor-wrapper {
@@ -57,60 +49,30 @@
 
         .line-numbers {
             padding: 16px 12px;
-            background: rgba(0, 0, 0, 0.2);
-            color: #636d83;
+            background: rgba(0, 0, 0, 0.3);
+            color: #858585;
             text-align: right;
             user-select: none;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 13px;
+            border-right: 1px solid #333;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.8;
             min-width: 45px;
         }
 
-        .editor-area {
-            position: relative;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Highlighted background layer */
-        .highlight-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 16px;
-            pointer-events: none;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            color: transparent;
-            overflow: hidden;
-        }
-
-        .highlight-layer code {
-            font-family: inherit;
-            font-size: inherit;
-            line-height: inherit;
-            background: transparent !important;
-        }
-
-        /* Textarea on top */
         .practice-editor {
-            position: relative;
-            width: 100%;
-            min-height: 500px;
+            flex: 1;
             padding: 16px;
             background: transparent;
-            color: #abb2bf;
+            color: #d4d4d4;
             border: none;
             outline: none;
             resize: none;
-            font-family: inherit;
-            font-size: inherit;
-            line-height: inherit;
-            caret-color: #61afef;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            z-index: 1;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre;
+            overflow-x: auto;
         }
 
         .practice-editor::placeholder {
@@ -124,7 +86,7 @@
             flex-wrap: wrap;
         }
 
-        /* Reference Panel - Right Sidebar */
+        /* Reference Panel */
         .reference-panel {
             position: fixed;
             top: 0;
@@ -153,49 +115,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
         }
 
         .reference-panel-header h4 {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .reference-panel-body {
             flex: 1;
             overflow-y: auto;
-            overflow-x: hidden;
+            padding: 0;
         }
 
-        .reference-code-wrapper {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.82rem;
-            line-height: 1.85;
-        }
-
-        .reference-code-content {
+        .reference-panel-body pre {
+            margin: 0;
             padding: 16px;
-            color: var(--text-secondary);
-            white-space: pre;
-            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            background: transparent !important;
         }
 
-        .reference-code-content .line {
-            display: block;
-            padding: 0 8px;
-            margin: 0 -8px;
-            border-radius: 3px;
-            transition: background 0.15s;
-        }
-
-        .reference-code-content .line.highlight {
-            background: rgba(168, 199, 250, 0.2);
-            border-left: 3px solid var(--accent, #A8C7FA);
-            padding-left: 5px;
+        .reference-panel-body code {
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .tips-section {
@@ -210,7 +152,6 @@
             font-size: 0.95rem;
             color: var(--accent);
             margin-bottom: 12px;
-            font-weight: 600;
         }
 
         .tips-section ul {
@@ -222,14 +163,13 @@
         .tips-section li {
             padding: 6px 0;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 10px;
         }
 
         .tips-section li::before {
             content: '→';
             color: var(--accent);
-            font-weight: bold;
         }
 
         kbd {
@@ -266,11 +206,11 @@
         <div class="tips-section">
             <h3>💡 사용법</h3>
             <ul>
-                <li>실시간 Python 신택스 하이라이팅 지원!</li>
                 <li><kbd>:</kbd> 입력 후 Enter → 자동 들여쓰기</li>
                 <li>빈 줄에서 Enter → 들여쓰기 한 단계 해제</li>
                 <li><kbd>Tab</kbd> → 들여쓰기 / <kbd>Shift+Tab</kbd> → 들여쓰기 제거</li>
                 <li><kbd>Backspace</kbd> (들여쓰기 영역) → 4칸 삭제</li>
+                <li>📖 참조 코드 버튼으로 정답 확인!</li>
             </ul>
         </div>
 
@@ -281,14 +221,12 @@
         <div class="editor-container">
             <div class="editor-wrapper">
                 <div class="line-numbers" id="lineNumbers">1</div>
-                <div class="editor-area">
-                    <pre class="highlight-layer"><code class="language-python" id="highlightCode"></code></pre>
-                    <textarea class="practice-editor" id="practiceEditor" placeholder="여기에 코드를 작성하세요...
+                <textarea class="practice-editor" id="practiceEditor" placeholder="여기에 코드를 작성하세요...
 
 class Node():
     def __init__(self):
-        ..." spellcheck="false"></textarea>
-                </div>
+        self.data = None
+        self.link = None" spellcheck="false"></textarea>
             </div>
         </div>
 
@@ -299,17 +237,15 @@ class Node():
         </div>
     </div>
 
-    <!-- Reference Panel -->
+    <!-- Reference Panel with syntax highlighting -->
     <div class="reference-panel" id="referencePanel">
         <div class="reference-panel-header">
-            <h4>📚 참조 코드</h4>
+            <h4>📚 참조 코드 (정답)</h4>
             <button class="btn btn-back" onclick="toggleReference()" style="padding:6px 12px;font-size:0.8rem;">닫기
                 ✕</button>
         </div>
-        <div class="reference-panel-body" id="referencePanelBody">
-            <div class="reference-code-wrapper">
-                <div class="reference-code-content" id="referenceCode"></div>
-            </div>
+        <div class="reference-panel-body">
+            <pre><code class="language-python" id="referenceCode"></code></pre>
         </div>
     </div>
 
@@ -318,7 +254,6 @@ class Node():
     <script src="../../shared/sidebar.js"></script>
     <script src="../../shared/ai-chat.js"></script>
     <script>
-        // Reference code
         const REFERENCE_CODE = `class Node():
     def __init__(self):
         self.data = None
@@ -428,19 +363,10 @@ if __name__ == "__main__":
     printNodes(head)`;
 
         const editor = document.getElementById('practiceEditor');
-        const highlightCode = document.getElementById('highlightCode');
         const lineNumbers = document.getElementById('lineNumbers');
         const INDENT_SIZE = 4;
-        const INDENT_CHARS = '    ';
 
-        // Sync highlighting with textarea
-        function updateHighlight() {
-            const code = editor.value;
-            highlightCode.textContent = code;
-            hljs.highlightElement(highlightCode);
-            updateLineNumbers();
-        }
-
+        // Update line numbers
         function updateLineNumbers() {
             const lines = editor.value.split('\n').length;
             lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
@@ -448,15 +374,12 @@ if __name__ == "__main__":
 
         // Sync scroll
         editor.addEventListener('scroll', () => {
-            highlightCode.parentElement.scrollTop = editor.scrollTop;
-            highlightCode.parentElement.scrollLeft = editor.scrollLeft;
             lineNumbers.scrollTop = editor.scrollTop;
         });
 
-        // Update on input
-        editor.addEventListener('input', updateHighlight);
+        editor.addEventListener('input', updateLineNumbers);
 
-        // Helper functions
+        // Helper: Insert text at cursor
         function insertAtCursor(text) {
             const start = editor.selectionStart;
             const end = editor.selectionEnd;
@@ -464,6 +387,7 @@ if __name__ == "__main__":
             editor.selectionStart = editor.selectionEnd = start + text.length;
         }
 
+        // Helper: Get current line indent
         function getCurrentLineIndent() {
             const text = editor.value;
             const cursorPos = editor.selectionStart;
@@ -473,6 +397,7 @@ if __name__ == "__main__":
             return indent;
         }
 
+        // Helper: Check if current line is empty/whitespace only
         function isCurrentLineEmpty() {
             const text = editor.value;
             const cursorPos = editor.selectionStart;
@@ -482,6 +407,7 @@ if __name__ == "__main__":
             return line.trim() === '';
         }
 
+        // Helper: Get text before cursor on current line
         function getLineBeforeCursor() {
             const text = editor.value;
             const cursorPos = editor.selectionStart;
@@ -497,7 +423,7 @@ if __name__ == "__main__":
                 const lineBeforeCursor = getLineBeforeCursor();
                 const currentIndent = getCurrentLineIndent();
 
-                // VS Code style: empty line with indent -> reduce indent
+                // VS Code style: empty line -> reduce indent
                 if (isCurrentLineEmpty() && currentIndent > 0) {
                     const cursorPos = editor.selectionStart;
                     const text = editor.value;
@@ -508,12 +434,12 @@ if __name__ == "__main__":
                     editor.selectionStart = editor.selectionEnd = lineStart + newIndent;
                     insertAtCursor('\n' + ' '.repeat(newIndent));
                 } else {
-                    // Normal enter - check for colon
+                    // Check for colon -> increase indent
                     const shouldIndent = lineBeforeCursor.trim().endsWith(':');
                     let newIndent = currentIndent + (shouldIndent ? INDENT_SIZE : 0);
                     insertAtCursor('\n' + ' '.repeat(newIndent));
                 }
-                updateHighlight();
+                updateLineNumbers();
                 return;
             }
 
@@ -521,7 +447,6 @@ if __name__ == "__main__":
             if (e.key === 'Tab') {
                 e.preventDefault();
                 if (e.shiftKey) {
-                    // Shift+Tab: remove indent
                     const cursorPos = editor.selectionStart;
                     const text = editor.value;
                     const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
@@ -535,13 +460,13 @@ if __name__ == "__main__":
                         editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
                     }
                 } else {
-                    insertAtCursor(INDENT_CHARS);
+                    insertAtCursor('    ');
                 }
-                updateHighlight();
+                updateLineNumbers();
                 return;
             }
 
-            // Backspace - VS Code style: remove 4 spaces
+            // Backspace - remove 4 spaces if in indent area
             if (e.key === 'Backspace') {
                 const cursorPos = editor.selectionStart;
                 const text = editor.value;
@@ -553,23 +478,13 @@ if __name__ == "__main__":
                     const removeCount = Math.min(INDENT_SIZE, textBeforeCursor.length);
                     editor.value = text.substring(0, cursorPos - removeCount) + text.substring(cursorPos);
                     editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
-                    updateHighlight();
+                    updateLineNumbers();
                     return;
                 }
             }
         });
 
         // Reference panel
-        function initReferenceCode() {
-            const lines = REFERENCE_CODE.split('\n');
-            let html = '';
-            lines.forEach((line, i) => {
-                const escaped = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                html += `<span class="line" data-line="${i + 1}">${escaped}</span>\n`;
-            });
-            document.getElementById('referenceCode').innerHTML = html;
-        }
-
         function toggleReference() {
             const panel = document.getElementById('referencePanel');
             panel.classList.toggle('show');
@@ -579,7 +494,7 @@ if __name__ == "__main__":
         function clearEditor() {
             if (confirm('정말로 전체 내용을 지우시겠습니까?')) {
                 editor.value = '';
-                updateHighlight();
+                updateLineNumbers();
                 editor.focus();
             }
         }
@@ -592,8 +507,10 @@ if __name__ == "__main__":
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            initReferenceCode();
-            updateHighlight();
+            // Set reference code with syntax highlighting
+            document.getElementById('referenceCode').textContent = REFERENCE_CODE;
+            Prism.highlightAll();
+            updateLineNumbers();
             editor.focus();
         });
     </script>
