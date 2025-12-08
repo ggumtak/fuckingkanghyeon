@@ -525,7 +525,83 @@ if __name__ == "__main__":
 
         const editor = document.getElementById('practiceEditor');
         const lineNumbers = document.getElementById('lineNumbers');
-        const INDENT_SIZE = 4;
+
+        // ============================================
+        // VSCode-style Editor Configuration
+        // ============================================
+        const EDITOR_CONFIG = {
+            tabSize: 4,
+            insertSpaces: true,
+            indentUnit: '    ',  // 4 spaces
+            scrollMarginLines: 5  // Keep cursor this many lines from bottom
+        };
+        const INDENT_SIZE = EDITOR_CONFIG.tabSize;
+
+        // Python indentation rules (VSCode-style)
+        const PYTHON_RULES = {
+            // Lines ending with these trigger indent increase
+            increaseIndentPattern: /:\s*(#.*)?$/,
+            // Lines starting with these (or containing only these after indent) trigger outdent
+            decreaseIndentPattern: /^\s*(return|pass|break|continue|raise|else:|elif\s+.*:|except.*:|finally:)/,
+            // Outdent the NEXT line only
+            outdentNextLinePattern: /^\s*(return|pass|break|continue|raise)\b/,
+            // onEnter rules
+            onEnterRules: [
+                { beforeText: /:\s*(#.*)?$/, action: 'indent' },            // After colon
+                { beforeText: /^\s*$/, action: 'outdent' },                  // Empty line = reduce indent
+                { beforeText: /^\s*(return|pass|break|continue|raise)\b/, action: 'outdent' }  // After return/pass/etc
+            ]
+        };
+
+        // Helper: Get leading whitespace from a line
+        function getIndent(text) {
+            const match = text.match(/^[\t ]*/);
+            return match ? match[0] : '';
+        }
+
+        // Helper: Remove one indent level
+        function removeOneIndent(text) {
+            if (text.startsWith(EDITOR_CONFIG.indentUnit)) {
+                return text.slice(EDITOR_CONFIG.indentUnit.length);
+            }
+            const match = text.match(/^[ ]+/);
+            if (!match) return text;
+            const toRemove = Math.min(match[0].length, EDITOR_CONFIG.tabSize);
+            return text.slice(toRemove);
+        }
+
+        // Helper: Get full current line text
+        function getCurrentLineText() {
+            const text = editor.value;
+            const cursorPos = editor.selectionStart;
+            const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+            const lineEnd = text.indexOf('\n', cursorPos);
+            return text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
+        }
+
+        // Compute indent for new line (VSCode onEnterRules style)
+        function computeIndentOnEnter(prevLineText) {
+            const baseIndent = getIndent(prevLineText);
+            const trimmedLine = prevLineText.trim();
+
+            // Rule 1: Empty line = KEEP same indent (don't reduce)
+            if (trimmedLine === '') {
+                return baseIndent;
+            }
+
+            // Rule 2: Line ends with colon = increase indent
+            if (PYTHON_RULES.increaseIndentPattern.test(prevLineText)) {
+                return baseIndent + EDITOR_CONFIG.indentUnit;
+            }
+
+            // Rule 3: return/pass/break/continue = reduce indent
+            if (PYTHON_RULES.outdentNextLinePattern.test(prevLineText)) {
+                return removeOneIndent(baseIndent);
+            }
+
+            // Default: same indent as previous line
+            return baseIndent;
+        }
 
         // Line number update
         function updateLineNumbers() {
@@ -538,7 +614,10 @@ if __name__ == "__main__":
             lineNumbers.scrollTop = editor.scrollTop;
         });
 
-        editor.addEventListener('input', updateLineNumbers);
+        editor.addEventListener('input', () => {
+            updateLineNumbers();
+            scrollToCurrentLine();
+        });
 
         // Insert text at cursor
         function insertAtCursor(text) {
@@ -584,24 +663,289 @@ if __name__ == "__main__":
 
         // Keyboard handling
         editor.addEventListener('keydown', function (e) {
+            // Ctrl+/ - Toggle comment
+            if (e.key === '/' && e.ctrlKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+                const lineEnd = text.indexOf('\n', cursorPos);
+                const actualLineEnd = lineEnd === -1 ? text.length : lineEnd;
+                const line = text.substring(lineStart, actualLineEnd);
+
+                if (line.trimStart().startsWith('#')) {
+                    // Remove comment
+                    const hashIndex = line.indexOf('#');
+                    const newLine = line.substring(0, hashIndex) + line.substring(hashIndex + 2);
+                    editor.value = text.substring(0, lineStart) + newLine + text.substring(actualLineEnd);
+                    editor.selectionStart = editor.selectionEnd = cursorPos - 2;
+                } else {
+                    // Add comment
+                    const firstNonSpace = line.search(/\S/);
+                    const insertPos = firstNonSpace === -1 ? 0 : firstNonSpace;
+                    const newLine = line.substring(0, insertPos) + '# ' + line.substring(insertPos);
+                    editor.value = text.substring(0, lineStart) + newLine + text.substring(actualLineEnd);
+                    editor.selectionStart = editor.selectionEnd = cursorPos + 2;
+                }
+                updateLineNumbers();
+                return;
+            }
+
+            // Ctrl+D - Select word at cursor
+            if (e.key === 'd' && e.ctrlKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const wordChars = /[a-zA-Z0-9_]/;
+
+                let start = cursorPos;
+                let end = cursorPos;
+
+                while (start > 0 && wordChars.test(text[start - 1])) start--;
+                while (end < text.length && wordChars.test(text[end])) end++;
+
+                if (start !== end) {
+                    editor.selectionStart = start;
+                    editor.selectionEnd = end;
+                }
+                return;
+            }
+
+            // Ctrl+Shift+K - Delete line
+            if (e.key === 'K' && e.ctrlKey && e.shiftKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+                const lineEnd = text.indexOf('\n', cursorPos);
+
+                if (lineEnd === -1) {
+                    editor.value = text.substring(0, lineStart > 0 ? lineStart - 1 : 0);
+                } else {
+                    editor.value = text.substring(0, lineStart) + text.substring(lineEnd + 1);
+                }
+                editor.selectionStart = editor.selectionEnd = lineStart;
+                updateLineNumbers();
+                return;
+            }
+
+            // Alt+Up/Down - Move line
+            if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && e.altKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const lines = text.split('\n');
+
+                let charCount = 0;
+                let currentLineIndex = 0;
+                for (let i = 0; i < lines.length; i++) {
+                    if (charCount + lines[i].length >= cursorPos) {
+                        currentLineIndex = i;
+                        break;
+                    }
+                    charCount += lines[i].length + 1;
+                }
+
+                const targetIndex = e.key === 'ArrowUp' ? currentLineIndex - 1 : currentLineIndex + 1;
+                if (targetIndex >= 0 && targetIndex < lines.length) {
+                    const temp = lines[currentLineIndex];
+                    lines[currentLineIndex] = lines[targetIndex];
+                    lines[targetIndex] = temp;
+                    editor.value = lines.join('\n');
+
+                    // Calculate new cursor position
+                    let newPos = 0;
+                    for (let i = 0; i < targetIndex; i++) {
+                        newPos += lines[i].length + 1;
+                    }
+                    editor.selectionStart = editor.selectionEnd = newPos;
+                }
+                updateLineNumbers();
+                return;
+            }
+
+            // Ctrl+Enter - Insert line below
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const lineEnd = text.indexOf('\n', cursorPos);
+                const insertPos = lineEnd === -1 ? text.length : lineEnd;
+
+                editor.value = text.substring(0, insertPos) + '\n' + text.substring(insertPos);
+                editor.selectionStart = editor.selectionEnd = insertPos + 1;
+                updateLineNumbers();
+                syncReferenceHighlight();
+                return;
+            }
+
+            // Home - Smart home (toggle between line start and first non-space)
+            // Shift+Home - Select from cursor to home position
+            if (e.key === 'Home' && !e.ctrlKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const selectionEnd = editor.selectionEnd;
+                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+                const lineEnd = text.indexOf('\n', cursorPos);
+                const line = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
+                const firstNonSpace = line.search(/\S/);
+                const firstNonSpacePos = firstNonSpace === -1 ? lineStart : lineStart + firstNonSpace;
+
+                let targetPos;
+                if (cursorPos === firstNonSpacePos) {
+                    targetPos = lineStart;
+                } else {
+                    targetPos = firstNonSpacePos;
+                }
+
+                if (e.shiftKey) {
+                    // Select from current position to target
+                    editor.selectionStart = targetPos;
+                    editor.selectionEnd = selectionEnd;
+                } else {
+                    editor.selectionStart = editor.selectionEnd = targetPos;
+                }
+                return;
+            }
+
+            // End - Move to end of line
+            // Shift+End - Select from cursor to end of line
+            if (e.key === 'End' && !e.ctrlKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+                const lineEnd = text.indexOf('\n', cursorPos);
+                const endPos = lineEnd === -1 ? text.length : lineEnd;
+
+                if (e.shiftKey) {
+                    // Select from current position to end
+                    editor.selectionStart = cursorPos;
+                    editor.selectionEnd = endPos;
+                } else {
+                    editor.selectionStart = editor.selectionEnd = endPos;
+                }
+                return;
+            }
+
+            // Auto-close brackets and quotes
+            const pairs = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'" };
+            if (pairs[e.key]) {
+                e.preventDefault();
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const selected = editor.value.substring(start, end);
+
+                if (selected.length > 0) {
+                    // Wrap selection
+                    insertAtCursor(e.key + selected + pairs[e.key]);
+                    editor.selectionStart = start + 1;
+                    editor.selectionEnd = end + 1;
+                } else {
+                    // Insert pair
+                    insertAtCursor(e.key + pairs[e.key]);
+                    editor.selectionStart = editor.selectionEnd = start + 1;
+                }
+                return;
+            }
+
+            // Shift+Enter - Move to next line with proper indentation (no new line insertion)
+            // IMPORTANT: Never move to a position with LESS indent than current line
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                const text = editor.value;
+                const cursorPos = editor.selectionStart;
+
+                // Get current line info
+                const currentLineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+                const currentLineEnd = text.indexOf('\n', cursorPos);
+                const currentLine = text.substring(currentLineStart, currentLineEnd === -1 ? text.length : currentLineEnd);
+                const currentIndent = getIndent(currentLine);
+                const minIndentLength = currentIndent.length;  // Minimum indent to maintain
+
+                // Calculate target indent (add 4 spaces if line ends with colon)
+                const endsWithColon = currentLine.trim().endsWith(':');
+                const targetIndent = endsWithColon
+                    ? currentIndent + EDITOR_CONFIG.indentUnit
+                    : currentIndent;
+
+                if (currentLineEnd !== -1) {
+                    // Move to next line
+                    const nextLineStart = currentLineEnd + 1;
+
+                    // Get next line's content to check its indent
+                    const nextLineEnd = text.indexOf('\n', nextLineStart);
+                    const nextLine = text.substring(nextLineStart, nextLineEnd === -1 ? text.length : nextLineEnd);
+                    const nextLineIndent = getIndent(nextLine);
+
+                    // Use the GREATER of: target indent OR minimum indent from current line
+                    const finalIndentLength = Math.max(targetIndent.length, minIndentLength);
+
+                    // Don't go past end of next line
+                    const maxPos = nextLineEnd === -1 ? text.length : nextLineEnd;
+                    const targetPos = Math.min(nextLineStart + finalIndentLength, maxPos);
+
+                    editor.selectionStart = editor.selectionEnd = targetPos;
+                } else {
+                    // No next line - create new line with indent
+                    editor.value = text + '\n' + targetIndent;
+                    editor.selectionStart = editor.selectionEnd = text.length + 1 + targetIndent.length;
+                    updateLineNumbers();
+                }
+                return;
+            }
+
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const lineBeforeCursor = getLineBeforeCursor();
-                const currentIndent = getCurrentLineIndent();
+                const currentLineText = getCurrentLineText();
 
-                const shouldIndent = lineBeforeCursor.trim().endsWith(':');
-                let newIndent = currentIndent + (shouldIndent ? INDENT_SIZE : 0);
-                insertAtCursor('\n' + ' '.repeat(newIndent));
+                // Use VSCode-style indent computation
+                const newIndent = computeIndentOnEnter(currentLineText);
+                insertAtCursor('\n' + newIndent);
                 updateLineNumbers();
+                scrollToCurrentLine();
                 syncReferenceHighlight();
                 return;
             }
 
             if (e.key === 'Tab') {
                 e.preventDefault();
-                if (e.shiftKey) {
-                    const cursorPos = editor.selectionStart;
-                    const text = editor.value;
+                const text = editor.value;
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+
+                // Check if there's a multi-line selection
+                const hasSelection = start !== end;
+                const selectedText = text.substring(start, end);
+                const hasMultipleLines = hasSelection && selectedText.includes('\n');
+
+                if (hasMultipleLines) {
+                    // Multi-line indent/outdent
+                    const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+                    const lineEnd = text.indexOf('\n', end - 1);
+                    const actualEnd = lineEnd === -1 ? text.length : lineEnd;
+                    const linesText = text.substring(lineStart, actualEnd);
+                    const lines = linesText.split('\n');
+
+                    let newLines;
+                    if (e.shiftKey) {
+                        // Outdent all selected lines
+                        newLines = lines.map(line => removeOneIndent(line));
+                    } else {
+                        // Indent all selected lines
+                        newLines = lines.map(line => EDITOR_CONFIG.indentUnit + line);
+                    }
+
+                    const newText = newLines.join('\n');
+                    editor.value = text.substring(0, lineStart) + newText + text.substring(actualEnd);
+
+                    // Adjust selection
+                    const lengthDiff = newText.length - linesText.length;
+                    editor.selectionStart = lineStart;
+                    editor.selectionEnd = lineStart + newText.length;
+                } else if (e.shiftKey) {
+                    // Single line outdent
+                    const cursorPos = start;
                     const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
                     let removeCount = 0;
                     for (let i = 0; i < INDENT_SIZE && lineStart + i < cursorPos; i++) {
@@ -613,7 +957,8 @@ if __name__ == "__main__":
                         editor.selectionStart = editor.selectionEnd = cursorPos - removeCount;
                     }
                 } else {
-                    insertAtCursor('    ');
+                    // Single cursor: insert indent
+                    insertAtCursor(EDITOR_CONFIG.indentUnit);
                 }
                 updateLineNumbers();
                 return;
@@ -655,11 +1000,43 @@ if __name__ == "__main__":
                 activeLine.scrollIntoView({ block: 'center', behavior: 'smooth' });
             }
 
-            // Scroll editor to place current line at upper-center (30% from top)
-            const lineHeight = parseFloat(getComputedStyle(editor).lineHeight);
-            const targetScrollTop = (lineNum - 1) * lineHeight - (editor.clientHeight * 0.3);
-            editor.scrollTop = Math.max(0, targetScrollTop);
-            lineNumbers.scrollTop = editor.scrollTop;
+            // Scroll reference panel to current line
+            scrollToCurrentLine();
+        }
+
+        // Keep cursor line ALWAYS at 35% from top of viewport
+        function scrollToCurrentLine() {
+            requestAnimationFrame(() => {
+                const lineNum = getCurrentLineNumber();
+
+                const computedStyle = getComputedStyle(editor);
+                let lineHeight = parseFloat(computedStyle.lineHeight);
+                const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+
+                // Fallback for line-height being 'normal' or NaN
+                if (isNaN(lineHeight) || lineHeight <= 0) {
+                    lineHeight = 20;
+                }
+
+                const viewportHeight = editor.clientHeight;
+                const totalScrollHeight = editor.scrollHeight;
+
+                // Current line Y position (content-relative)
+                const lineTop = paddingTop + (lineNum - 1) * lineHeight;
+
+                // Target ratio: 0.0 = top, 0.5 = center, 0.35 = upper-center
+                const targetRatio = 0.35;
+
+                // Calculate scrollTop so this line is at targetRatio position
+                const targetScrollTop = lineTop - viewportHeight * targetRatio;
+
+                // Clamp to valid scroll range
+                const maxScrollTop = Math.max(0, totalScrollHeight - viewportHeight);
+                const finalScrollTop = Math.min(Math.max(targetScrollTop, 0), maxScrollTop);
+
+                editor.scrollTop = finalScrollTop;
+                lineNumbers.scrollTop = finalScrollTop;
+            });
         }
 
         // Reference panel
