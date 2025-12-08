@@ -401,12 +401,13 @@ pre {
 }
 
 .btn-primary {
-    background: var(--accent);
-    color: white;
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
 }
 
 .btn-primary:hover {
-    background: var(--accent-light);
+    background: var(--bg-card-hover);
     transform: translateY(-1px);
 }
 

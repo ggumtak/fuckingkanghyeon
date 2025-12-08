@@ -16,22 +16,124 @@ const GEMINI_CONFIG = {
     storageKey: 'gemini_api_key'
 };
 
-// System prompt with quiz app context
-const SYSTEM_PROMPT = `You are a helpful AI assistant integrated into a Python coding quiz web app.
+// System prompt with Ailey persona (base)
+const BASE_SYSTEM_PROMPT = `너는 에일리야. Python 코딩 퀴즈 앱에 통합된 친근한 AI 학습 도우미야.
 
-The app features:
-- Fill-in-the-blank quizzes for Python linked list code
-- 6 quiz rounds with 190+ questions
-- Gemini-style dark theme UI
-- Enter to grade, Ctrl+Enter for all, yellow for retry, green for correct
+[페르소나 - 에일리]
+- 따뜻하고 공감적인 학습 코치야
+- 친근한 반말 사용해 (예: ~했어?, ~해볼까?, ~거든, ~잖아!)
+- 이모지 자연스럽게 사용해 (😊🤓🤔💡✨)
+- 사용자가 틀려도 격려하면서 힌트를 줘
 
-When users ask about the quiz:
-- Help them understand Python code concepts
-- Explain linked list operations
-- Give hints without directly revealing answers
-- Use Korean for responses unless asked otherwise
+[사고 과정]
+1. 사용자 질문의 핵심을 파악해
+2. 개념을 직관적으로 설명해 (비유, 메타포 활용)
+3. "왜 그런지" 근본 원리를 설명해
+4. 정답은 직접 알려주지 말고 힌트를 줘
 
-Keep responses concise and helpful.`;
+[절대 금지 사항]
+- 1. 2. 3. 4. 같은 번호 매기기 금지 (질문에 대한 답변만 자연스럽게)
+- ~입니다, ~습니다 같은 존댓말 금지 (반말만 사용)
+- 정답을 직접적으로 알려주는 것 금지
+- 길고 장황한 설명 금지 (핵심만 간결하게)
+
+[응답 스타일]
+- 물어본 것에만 딱 대답해
+- 마치 친한 선배가 알려주듯이 자연스럽게
+- 개념 설명할 때는 "이게 뭐냐면~" "쉽게 말하면~" 이런 식으로
+- 막히면 "어디서 막혔어?" "뭐가 헷갈려?" 하고 물어봐
+
+[퀴즈 앱 정보]
+- Python 연결 리스트 빈칸 채우기 퀴즈
+- Enter로 채점, Ctrl+Enter로 전체 채점
+- 초록색=정답, 빨간색=오답, 노란색=수정 후 정답`;
+
+// ========== Page Context Extraction ==========
+/**
+ * Extract current page quiz context from DOM
+ * Works for any quiz page automatically
+ */
+function getCurrentPageContext() {
+    const context = {
+        title: document.title || '',
+        roundName: '',
+        subtitle: '',
+        code: '',
+        answers: [],
+        currentScore: '',
+        totalQuestions: 0
+    };
+
+    // Get header info
+    const h1 = document.querySelector('header h1, h1');
+    if (h1) context.roundName = h1.textContent.trim();
+
+    const subtitle = document.querySelector('.subtitle, header p');
+    if (subtitle) context.subtitle = subtitle.textContent.trim();
+
+    // Get code from pre element (the quiz code block)
+    const codeBlock = document.querySelector('.code-block pre, pre[id^="code-"]');
+    if (codeBlock) {
+        // Get text content without input values interfering
+        context.code = codeBlock.textContent.trim().slice(0, 2000); // Limit to 2000 chars
+    }
+
+    // Get answers from answer grid
+    const answerItems = document.querySelectorAll('.answer-item');
+    answerItems.forEach(item => {
+        context.answers.push(item.textContent.trim());
+    });
+    context.totalQuestions = context.answers.length;
+
+    // Get current score
+    const scoreEl = document.querySelector('.score-num');
+    const totalEl = document.querySelector('.score-total');
+    if (scoreEl && totalEl) {
+        context.currentScore = `${scoreEl.textContent}${totalEl.textContent}`;
+    }
+
+    return context;
+}
+
+/**
+ * Build dynamic system prompt with current page context
+ */
+function buildSystemPrompt() {
+    const ctx = getCurrentPageContext();
+
+    let prompt = BASE_SYSTEM_PROMPT;
+
+    // Add current page context if available
+    if (ctx.roundName || ctx.code) {
+        prompt += `\n\n=== 현재 페이지 정보 ===`;
+
+        if (ctx.roundName) {
+            prompt += `\n회차: ${ctx.roundName}`;
+        }
+        if (ctx.subtitle) {
+            prompt += `\n주제: ${ctx.subtitle}`;
+        }
+        if (ctx.currentScore) {
+            prompt += `\n현재 점수: ${ctx.currentScore}`;
+        }
+        if (ctx.totalQuestions) {
+            prompt += `\n총 문제 수: ${ctx.totalQuestions}개`;
+        }
+        if (ctx.code) {
+            prompt += `\n\n현재 퀴즈 코드:\n\`\`\`python\n${ctx.code}\n\`\`\``;
+        }
+        if (ctx.answers.length > 0) {
+            prompt += `\n\n정답 목록 (참고용, 사용자에게 직접 공개하지 말 것):\n${ctx.answers.slice(0, 20).join(', ')}`;
+            if (ctx.answers.length > 20) {
+                prompt += ` ... 외 ${ctx.answers.length - 20}개`;
+            }
+        }
+
+        prompt += `\n\n사용자가 현재 문제에 대해 물어볼 수 있습니다. 힌트를 주되 직접적인 정답은 피하세요.`;
+    }
+
+    return prompt;
+}
 
 // ========== State ==========
 let chatPanelOpen = false;
@@ -347,10 +449,13 @@ async function callGeminiAPI(userMessage) {
     const apiKey = getApiKey();
     const url = `${GEMINI_CONFIG.baseUrl}/${GEMINI_CONFIG.model}:generateContent?key=${apiKey}`;
 
+    // Build dynamic system prompt with current page context
+    const systemPrompt = buildSystemPrompt();
+
     // Build conversation with system prompt
     const contents = [
-        { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-        { role: 'model', parts: [{ text: '네, 이해했습니다. 퀴즈 앱 AI 도우미로서 도움을 드리겠습니다.' }] },
+        { role: 'user', parts: [{ text: systemPrompt }] },
+        { role: 'model', parts: [{ text: '네, 이해했습니다. 현재 페이지의 퀴즈 정보를 확인했어요. 도움이 필요하시면 말씀해주세요!' }] },
         ...chatHistory
     ];
 
