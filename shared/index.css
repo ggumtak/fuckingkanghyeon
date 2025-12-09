@@ -25,9 +25,9 @@ body {
     gap: 8px;
     margin-bottom: 16px;
     padding: 10px 14px;
-    background: #111827;
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-btn {
@@ -145,48 +145,81 @@ body {
     font-weight: 600;
 }
 
-/* === Folder Grid - Clean Cards === */
+/* === Folder Grid - File Card Style (Unified) === */
 .folder-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    max-width: 600px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 .folder-card {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 20px 16px;
+    padding: 14px 12px;
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
+    transition: all 0.25s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glow effect on hover */
+.folder-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.08) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
 .folder-card:hover {
-    background: #222;
-    border-color: #333;
+    background: linear-gradient(145deg, #1e3a5f 0%, #0f172a 100%);
+    border-color: rgba(96, 165, 250, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
+}
+
+.folder-card:hover::before {
+    opacity: 1;
 }
 
 .folder-icon {
-    font-size: 2rem;
+    font-size: 1.6rem;
+    position: relative;
+    z-index: 1;
 }
 
 .folder-name {
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: #e4e4e7;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #e2e8f0;
     text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.folder-card:hover .folder-name {
+    color: #93c5fd;
 }
 
 .folder-stats {
-    font-size: 0.75rem;
-    color: #71717a;
+    font-size: 0.7rem;
+    color: #94a3b8;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 /* === File View === */
