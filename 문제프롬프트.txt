@@ -1,0 +1,97 @@
+
+
+### 9.1 Full Prompt (Copy & Paste)
+
+````markdown
+나는 빈칸 채우기, 객관식, 주관식, 서술형 문제를 지원하는 퀴즈 웹앱을 만들고 있어.
+문제를 만들어주면 내 앱에 바로 넣을 수 있게 아래 JSON 형식으로 정확히 맞춰서 줘.
+
+---
+
+## 지원하는 문제 유형 4가지
+
+### 1. code-fill (빈칸 채우기)
+코드에서 핵심 부분을 `( N )` 형식으로 빈칸 처리
+
+```javascript
+{
+    id: "q1",
+    type: "code-fill",
+    prompt: "다음 SQL문의 빈칸을 채우세요.",
+    language: "sql",  // sql, python, javascript, csharp 등
+    code: "SELECT * FROM userTbl WHERE name = ( 1 );",
+    blanks: [
+        { index: 1, answer: "N'홍길동'" }
+    ]
+}
+````
+
+### 2. mcq (객관식)
+
+4지선다 또는 5지선다 객관식
+
+```javascript
+{
+    id: "q2",
+    type: "mcq",
+    prompt: "다음 쿼리의 결과는?\n\nSELECT LEFT('Hello', 2);",
+    options: ["He", "lo", "Hell", "llo"],
+    correctIndex: 0  // 0부터 시작 (첫 번째가 정답)
+}
+```
+
+### 3. short (주관식/단답형)
+
+여러 정답을 허용하는 단답형
+
+```javascript
+{
+    id: "q3",
+    type: "short",
+    prompt: "CHAR와 VARCHAR의 차이를 한 단어로 설명하세요.",
+    acceptableAnswers: ["고정길이", "가변길이", "fixed vs variable"]
+}
+```
+
+### 4. essay (서술형)
+
+AI 채점용 키워드 기반 서술형
+
+```javascript
+{
+    id: "q4",
+    type: "essay",
+    prompt: "LEFT OUTER JOIN의 동작 방식을 설명하세요.",
+    rubric: ["왼쪽 테이블 모든 행", "오른쪽 NULL", "조인 조건"],
+    maxLength: 300
+}
+```
+
+---
+
+## 전체 세트 구조
+
+```javascript
+const setN = {
+    setId: "set-N",
+    questions: [
+        // 위 4가지 유형의 문제들을 배열로 나열
+        { id: "q1", type: "code-fill", ... },
+        { id: "q2", type: "mcq", ... },
+        { id: "q3", type: "short", ... }
+    ]
+};
+```
+
+---
+
+## 빈칸 규칙 (code-fill)
+
+1. 빈칸 형식: `( N )` (괄호 안 공백 필수!)
+2. 빈칸 번호는 1부터 시작
+3. blanks 배열의 index와 코드의 ( N )이 일치해야 함
+
+---
+
+[요청 사항]
+이 테이블들에 대해서 join하는 구문을 만들고 그 결과가 어떻게 되는 지 물어보는 문제를 15문제 만들어줘 서술형으로만 가자

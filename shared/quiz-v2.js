@@ -475,20 +475,27 @@ function moveToNextV2Blank(currentInput) {
 /**
  * Move focus to next input field (blank or short answer)
  * Works for all question types with input fields
+ * Fixed: Now correctly finds next input even when current input was just made readonly
  */
 function moveToNextV2Input(currentInput) {
-    const allInputs = Array.from(document.querySelectorAll('.v2-blank:not([readonly]), .v2-short:not([readonly])'));
+    // Get ALL inputs (including readonly) to find current position
+    const allInputs = Array.from(document.querySelectorAll('.v2-blank, .v2-short'));
     const currentIndex = allInputs.indexOf(currentInput);
 
-    if (currentIndex >= 0 && currentIndex < allInputs.length - 1) {
-        // Move to next input
-        allInputs[currentIndex + 1].focus();
-    } else if (currentIndex === allInputs.length - 1) {
-        // Last input - move to next question
-        const card = currentInput.closest('.question-card');
-        if (card) {
-            moveToNextQuestion(card);
+    if (currentIndex < 0) return;
+
+    // Find next non-readonly input after current position
+    for (let i = currentIndex + 1; i < allInputs.length; i++) {
+        if (!allInputs[i].readOnly) {
+            allInputs[i].focus();
+            return;
         }
+    }
+
+    // No more editable inputs - move to next question
+    const card = currentInput.closest('.question-card');
+    if (card) {
+        moveToNextQuestion(card);
     }
 }
 
