@@ -1,157 +1,91 @@
 /**
- * Database Midterm Quiz - Set 4 (Round 4)
+ * Database Quiz - Set 4 (계산 연습)
  * File: quizzes/database/data/set4.js
+ * 날짜 및 시간 계산 + 순위/분석 함수 + 형변환 함수
  */
 const set4 = {
     setId: "set-4",
     questions: [
+        // ---------------------------------------------------------
+        // 3. 날짜 및 시간 계산 (07-2)
+        // ---------------------------------------------------------
         {
-            id: "dml-merge-01",
+            id: "c11",
             type: "short",
-            prompt: "다음은 `MERGE` 문을 사용하여 `userTbl_New`의 데이터를 `userTbl`에 병합하는 구문입니다. 매칭되지 않는 데이터가 있을 때 새로운 행을 추가하려면 빈칸에 무엇을 넣어야 합니까?\n\nMERGE userTbl AS T\nUSING userTbl_New AS S\nON T.userID = S.userID\nWHEN MATCHED THEN\n    UPDATE SET T.name = S.name\nWHEN NOT MATCHED THEN\n    (  ) (userID, name) VALUES (S.userID, S.name);",
-            acceptableAnswers: ["INSERT", "insert"],
-            explanation: "조건이 맞지 않을 때(데이터가 없을 때) 새로운 행을 추가하려면 INSERT 문을 사용합니다.",
-            meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "MERGE" }
+            prompt: "다음 SQL문의 실행 결과를 YYYY-MM-DD 형식으로 쓰세요.\n\nSELECT DATEADD(day, 3, '2024-01-30');",
+            acceptableAnswers: ["2024-02-02"]
         },
         {
-            id: "func-window-01",
+            id: "c12",
             type: "short",
-            prompt: "`userTbl`에서 키(`height`)가 큰 순서대로 순위를 매기되, 키가 같으면 같은 등수로 처리하고 다음 등수는 건너뛰는(예: 1, 2, 2, 4등) 윈도우 함수 이름은?\n\nSELECT name, height,\n       (  )() OVER (ORDER BY height DESC) AS 등수\nFROM userTbl;",
-            acceptableAnswers: ["RANK", "rank"],
-            explanation: "RANK() 함수는 동점자 발생 시 같은 순위를 부여하고, 그 수만큼 다음 순위를 건너뜁니다.",
-            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "Window Functions" }
+            prompt: "다음 SQL문의 실행 결과를 정수로 쓰세요. (두 날짜 사이의 일수 차이)\n\nSELECT DATEDIFF(day, '2024-01-01', '2024-01-10');",
+            acceptableAnswers: ["9"]
         },
         {
-            id: "func-window-02",
-            type: "mcq",
-            prompt: "다음 윈도우 함수 중, 정렬된 데이터 그룹을 지정된 숫자만큼의 그룹(버킷)으로 나누어 번호를 부여하는 함수는?",
-            options: [
-                "① ROW_NUMBER()",
-                "② RANK()",
-                "③ NTILE()",
-                "④ DENSE_RANK()"
-            ],
-            correctIndex: 2,
-            explanation: "NTILE(n) 함수는 데이터를 n개의 그룹으로 분할하여 그룹 번호를 반환합니다.",
-            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
-        },
-        {
-            id: "func-window-03",
+            id: "c13",
             type: "short",
-            prompt: "키(`height`) 순으로 정렬했을 때, 바로 앞 행의 키 값을 가져와서 현재 행과 비교하려고 합니다. 이때 사용하는 분석 함수 이름은?",
-            acceptableAnswers: ["LAG", "LAG()"],
-            explanation: "LAG() 함수는 현재 행을 기준으로 이전 행의 데이터를 참조할 때 사용합니다.",
-            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
+            prompt: "다음 SQL문의 실행 결과를 정수로 쓰세요. (해당 날짜의 '월' 부분 추출)\n\nSELECT MONTH('2024-12-25');",
+            acceptableAnswers: ["12"]
         },
         {
-            id: "func-json-01",
-            type: "mcq",
-            prompt: "행(Row) 데이터를 열(Column)로 회전시켜 통계 데이터를 보기 쉽게 만드는 연산자는 무엇인가?",
-            options: [
-                "① UNPIVOT",
-                "② PIVOT",
-                "③ MERGE",
-                "④ ROLLUP"
-            ],
-            correctIndex: 1,
-            explanation: "PIVOT 연산자는 행 데이터를 열 데이터로 변환하여 집계 결과를 보여줍니다.",
-            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "PIVOT" }
-        },
-        {
-            id: "dtype-special-01",
+            id: "c14",
             type: "short",
-            prompt: "테이블의 행이 수정될 때마다 자동으로 갱신되는 고유한 이진 숫자를 저장하며, 주로 낙관적 잠금(Optimistic Locking)에 사용되는 데이터 타입은?",
-            acceptableAnswers: ["ROWVERSION", "TIMESTAMP"],
-            explanation: "ROWVERSION(구 TIMESTAMP)은 데이터 변경 시 자동으로 값이 변하는 유니크한 이진 값을 가집니다.",
-            meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "Data Types" }
+            prompt: "다음 SQL문의 실행 결과를 쓰세요. (해당 달의 마지막 날짜)\n\nSELECT EOMONTH('2024-02-10');\n(2024년은 윤년입니다)",
+            acceptableAnswers: ["2024-02-29"]
         },
+
+        // ---------------------------------------------------------
+        // 4. 순위 함수 결과 예측 - 데이터 가정형 (07-3)
+        // ---------------------------------------------------------
         {
-            id: "dtype-special-02",
+            id: "c15",
             type: "short",
-            prompt: "전 세계적으로 유일한 값을 생성하는 GUID(Globally Unique Identifier)를 저장하기 위한 데이터 타입은?",
-            acceptableAnswers: ["UNIQUEIDENTIFIER"],
-            explanation: "GUID를 저장하는 타입은 UNIQUEIDENTIFIER이며 `NEWID()` 함수로 생성합니다.",
-            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Data Types" }
+            prompt: "[가정 데이터: 점수 테이블]\n학생A: 100점\n학생B: 90점\n학생C: 90점\n학생D: 80점\n\n위 데이터를 가지고 다음 쿼리를 실행했을 때 '학생D'의 순위(RANK)는 몇 등입니까?\n\nSELECT RANK() OVER(ORDER BY 점수 DESC) ...",
+            acceptableAnswers: ["4", "4등"]
         },
         {
-            id: "join-cte-01",
+            id: "c16",
             type: "short",
-            prompt: "다음은 CTE(Common Table Expression)를 사용하여 사용자별 총 구매액을 구하는 구문입니다. GROUP BY 뒤에 올 컬럼명은?\n\nWITH UserBuySum (userID, total)\nAS\n(\n    SELECT userID, SUM(price * amount)\n    FROM buyTbl\n    GROUP BY (  )\n)\nSELECT * FROM UserBuySum ORDER BY total DESC;",
-            acceptableAnswers: ["userID", "userid"],
-            explanation: "사용자별 합계를 구하려면 userID로 그룹화(GROUP BY)해야 합니다.",
-            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "CTE" }
+            prompt: "[가정 데이터: 점수 테이블]\n학생A: 100점\n학생B: 90점\n학생C: 90점\n학생D: 80점\n\n위 데이터를 가지고 다음 쿼리를 실행했을 때 '학생D'의 순위(DENSE_RANK)는 몇 등입니까?\n\nSELECT DENSE_RANK() OVER(ORDER BY 점수 DESC) ...",
+            acceptableAnswers: ["3", "3등"]
         },
         {
-            id: "join-cte-02",
-            type: "mcq",
-            prompt: "재귀적 CTE(Recursive CTE)를 사용할 때 필수적인 요소가 **아닌** 것은?",
-            options: [
-                "① 앵커 멤버 (초기값 쿼리)",
-                "② 재귀 멤버 (자기 자신을 참조하는 쿼리)",
-                "③ UNION ALL",
-                "④ CROSS JOIN"
-            ],
-            correctIndex: 3,
-            explanation: "재귀적 CTE는 앵커 멤버와 재귀 멤버를 `UNION ALL`로 결합하여 구성합니다. CROSS JOIN은 필수가 아닙니다.",
-            meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "Recursive CTE" }
-        },
-        {
-            id: "dtype-xml-01",
+            id: "c17",
             type: "short",
-            prompt: "반정형 데이터인 XML 문서를 테이블의 컬럼에 저장하기 위해 제공되는 데이터 타입 이름은?",
-            acceptableAnswers: ["XML"],
-            explanation: "SQL Server는 XML 데이터를 저장하고 쿼리할 수 있는 XML 데이터 타입을 제공합니다.",
-            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "Data Types" }
+            prompt: "[가정 데이터: 10명의 회원]\n10명의 회원을 성적순으로 정렬한 뒤, 3개의 그룹으로 나누려 합니다.\n\nSELECT NTILE(3) OVER(...) ...\n\n이때, 1등이 속한 '첫 번째 그룹'에는 몇 명이 배정됩니까?",
+            acceptableAnswers: ["4", "4명"]
         },
+
+        // ---------------------------------------------------------
+        // 5. 분석 함수 결과 예측 (07-3)
+        // ---------------------------------------------------------
         {
-            id: "func-agg-01",
+            id: "c18",
             type: "short",
-            prompt: "그룹별 소계와 총계를 자동으로 구해주는 `GROUP BY`의 확장 기능에서, 빈칸에 들어갈 함수명은?\n\nSELECT groupName, SUM(price * amount)\nFROM buyTbl\nGROUP BY (  ) (groupName);",
-            acceptableAnswers: ["ROLLUP", "rollup"],
-            explanation: "ROLLUP 함수는 지정된 컬럼에 대해 소계와 총합 행을 추가로 생성합니다.",
-            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "GROUP BY Extensions" }
+            prompt: "[가정 데이터: 연도별 매출]\n2020년: 100원\n2021년: 200원\n2022년: 300원\n\n현재 행이 '2021년(200원)'일 때, 다음 쿼리의 결과값은 무엇입니까?\n\nSELECT LEAD(매출, 1, 0) OVER(ORDER BY 연도 ASC) ...",
+            acceptableAnswers: ["300"]
         },
         {
-            id: "dml-create-schema-01",
+            id: "c19",
             type: "short",
-            prompt: "데이터베이스 내에서 테이블, 뷰 등의 객체를 논리적으로 그룹화하여 관리하는 컨테이너인 '스키마(SCHEMA)'를 생성하는 명령어를 작성하시오.",
-            acceptableAnswers: ["CREATE SCHEMA"],
-            explanation: "스키마 생성 구문은 `CREATE SCHEMA 스키마명` 입니다.",
-            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "Schema" }
+            prompt: "[가정 데이터: 연도별 매출]\n2020년: 100원\n2021년: 200원\n2022년: 300원\n\n현재 행이 '2020년(100원)'일 때, 다음 쿼리의 결과값은 무엇입니까?\n(이전 행이 없으면 0을 반환하도록 설정됨)\n\nSELECT LAG(매출, 1, 0) OVER(ORDER BY 연도 ASC) ...",
+            acceptableAnswers: ["0"]
         },
+
+        // ---------------------------------------------------------
+        // 6. 형변환 함수 (07-2)
+        // ---------------------------------------------------------
         {
-            id: "dml-identity-02",
-            type: "mcq",
-            prompt: "가장 최근에 생성된 IDENTITY 값을 확인하기 위해 사용하는 전역 변수는?",
-            options: [
-                "① @@VERSION",
-                "② @@IDENTITY",
-                "③ @@SERVERNAME",
-                "④ @@SPID"
-            ],
-            correctIndex: 1,
-            explanation: "`@@IDENTITY`는 현재 세션에서 마지막으로 생성된 ID 값을 반환합니다.",
-            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "IDENTITY Variables" }
-        },
-        {
-            id: "join-pivot-01",
+            id: "c20",
             type: "short",
-            prompt: "`pivotTest` 테이블에서 계절(`season`)을 열로 변환하여 수량(`amount`)의 합계를 구하는 PIVOT 구문에서, 집계 함수 부분은?\n\nSELECT *\nFROM pivotTest\nPIVOT ((  )(amount) FOR season IN ([봄], [여름], [가을], [겨울])) AS pvt;",
-            acceptableAnswers: ["SUM", "sum"],
-            explanation: "PIVOT에서 집계 함수로 SUM, COUNT, AVG 등을 사용할 수 있습니다.",
-            meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "PIVOT Syntax" }
+            prompt: "다음 쿼리의 실행 결과를 쓰세요. (문자열 -> 날짜 변환)\n\nSELECT PARSE('2024년 5월 5일' AS DATE);",
+            acceptableAnswers: ["2024-05-05"]
         },
         {
-            id: "func-json-02",
-            type: "essay",
-            prompt: "`DENSE_RANK()`와 `ROW_NUMBER()`의 차이점을 순위 부여 방식을 기준으로 설명하시오.",
-            rubric: [
-                "ROW_NUMBER는 값의 중복 여부와 상관없이 1, 2, 3, 4 처럼 고유한 순번을 매김",
-                "DENSE_RANK는 값이 같으면 같은 순위를 주되, 중간에 비어있는 번호 없이(1, 1, 2, ...) 순위를 매김"
-            ],
-            answer: "ROW_NUMBER()는 값의 중복 여부와 상관없이 1, 2, 3, 4처럼 항상 고유한 순번을 매깁니다. DENSE_RANK()는 값이 같으면 같은 순위를 부여하되, 중간에 비어있는 번호 없이(예: 1, 1, 2, 3) 빽빽한 순위를 매깁니다. RANK()와 달리 순위를 건너뛰지 않습니다.",
-            maxLength: 300,
-            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
+            id: "c21",
+            type: "short",
+            prompt: "다음 쿼리의 실행 결과를 쓰세요. (변환 실패 시 NULL 반환 함수)\n\nSELECT TRY_CONVERT(INT, '오백원');",
+            acceptableAnswers: ["NULL", "null"]
         }
     ]
 };
