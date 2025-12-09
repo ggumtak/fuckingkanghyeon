@@ -294,7 +294,7 @@ function gradeV2CodeFill(input, round) {
         input.value = correctAnswer;
         input.readOnly = true;
         v2States.set(key, 'shown');
-        moveToNextV2Blank(input);
+        moveToNextV2Input(input);
     } else if (!state || state !== 'correct') {
         input.classList.remove('correct', 'wrong', 'retry');
         if (userAnswer) {
@@ -302,7 +302,7 @@ function gradeV2CodeFill(input, round) {
                 input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
                 input.readOnly = true;
                 v2States.set(key, 'correct');
-                moveToNextV2Blank(input);
+                moveToNextV2Input(input);
             } else {
                 input.classList.add('wrong');
                 v2WasEverWrong.add(key);
