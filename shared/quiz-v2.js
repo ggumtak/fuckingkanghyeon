@@ -177,13 +177,22 @@ function renderShortQuestion(q, container) {
     prompt.innerHTML = parseMarkdownPrompt(q.prompt);
     container.appendChild(prompt);
 
+    // Calculate input width based on longest acceptable answer
+    let inputWidth = 400; // default max
+    if (q.acceptableAnswers && q.acceptableAnswers.length > 0) {
+        const maxLen = Math.max(...q.acceptableAnswers.map(a => a.length));
+        // ~10px per character + padding, min 200px, max 100%
+        inputWidth = Math.min(Math.max(maxLen * 10 + 40, 200), 800);
+    }
+
     const inputWrapper = document.createElement('div');
     inputWrapper.className = 'short-answer-wrapper';
     inputWrapper.innerHTML = `
         <input type="text" class="short-answer-input v2-short" 
                data-question="${q.id}" 
                placeholder="답을 입력하세요..."
-               enterkeyhint="done">
+               enterkeyhint="done"
+               style="width: ${inputWidth}px; max-width: 100%;">
     `;
     container.appendChild(inputWrapper);
 }

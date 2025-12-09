@@ -59,7 +59,10 @@ const QUIZ_CONFIG = {
                 { id: 'set6', title: '세트 6', subtitle: 'Round 6', count: 30, icon: '📊', file: 'database-set6.html' },
                 { id: 'set7', title: '세트 7', subtitle: '종합 1', count: 33, icon: '✍️', file: 'database-set7.html' },
                 { id: 'set8', title: '세트 8', subtitle: '종합 2', count: 33, icon: '✍️', file: 'database-set8.html' },
-                { id: 'set9', title: '세트 9', subtitle: 'JOIN 쿼리', count: 15, icon: '🔗', file: 'database-set9.html' }
+                { id: 'set9', title: '세트 9', subtitle: 'JOIN 쿼리', count: 15, icon: '🔗', file: 'database-set9.html' },
+                { id: 'set10', title: '세트 10', subtitle: '시험 연습', count: 33, icon: '📝', file: 'database-set10.html' },
+                { id: 'set11', title: '세트 11', subtitle: '시험 연습 2', count: 33, icon: '📝', file: 'database-set11.html' },
+                { id: 'set12', title: '세트 12', subtitle: '종합 연습', count: 33, icon: '📋', file: 'database-set12.html' }
             ]
         },
         {
