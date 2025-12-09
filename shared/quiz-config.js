@@ -68,7 +68,10 @@ const QUIZ_CONFIG = {
                 { id: 'set15', title: '세트 15', subtitle: '종합 연습 3', count: 33, icon: '📋', file: 'database-set15.html' },
                 { id: 'set16', title: '세트 16', subtitle: '시험 연습 4', count: 33, icon: '📝', file: 'database-set16.html' },
                 { id: 'set17', title: '세트 17', subtitle: '시험 연습 5', count: 33, icon: '📝', file: 'database-set17.html' },
-                { id: 'set18', title: '세트 18', subtitle: '종합 연습 4', count: 33, icon: '📋', file: 'database-set18.html' }
+                { id: 'set18', title: '세트 18', subtitle: '종합 연습 4', count: 33, icon: '📋', file: 'database-set18.html' },
+                { id: 'set19', title: '세트 19', subtitle: '기말 대비 1', count: 28, icon: '🎯', file: 'database-set19.html' },
+                { id: 'set20', title: '세트 20', subtitle: '기말 대비 2', count: 28, icon: '🎯', file: 'database-set20.html' },
+                { id: 'set21', title: '세트 21', subtitle: '실전 응용편', count: 28, icon: '🚀', file: 'database-set21.html' }
             ]
         },
         {

@@ -1,0 +1,34 @@
+// File: quizzes/database/data/set21.js
+const set21 = {
+    setId: "set-21",
+    questions: [
+        { "id": "q1-1", "type": "code-fill", "prompt": "[주제1] userTbl에 새로운 회원 '성동일(SDI)'을 추가합니다. 나머지 정보는 '서울', '011', '1234567' 등입니다. 빈칸을 채우세요.", "language": "sql", "code": "INSERT INTO userTbl (userID, name, birthYear, addr, mobile1, mobile2)\nVALUES ( ( 1 ), N'성동일', 1967, ( 2 ), '011', '1234567' );", "blanks": [{ "index": 1, "answer": "'SDI'" }, { "index": 2, "answer": "N'서울'" }] },
+        { "id": "q1-2", "type": "code-fill", "prompt": "[주제1] buyTbl에 아이디 'JYP'가 '기타'(Guitar)를 구매한 내역을 넣습니다. 분류는 '악기', 단가는 200, 수량은 1입니다. (순번은 자동입력된다고 가정)", "language": "sql", "code": "INSERT INTO buyTbl (userID, prodName, groupName, price, amount)\nVALUES ( 'JYP', ( 1 ), N'악기', 200, ( 2 ) );", "blanks": [{ "index": 1, "answer": "N'기타'" }, { "index": 2, "answer": "1" }] },
+        { "id": "q1-3", "type": "code-fill", "prompt": "[주제1] userTbl의 모든 컬럼 값을 순서대로 빠짐없이 입력할 때 사용하는 구문입니다. 키(height)는 180, 가입일은 오늘 날짜(GETDATE())를 사용하세요.", "language": "sql", "code": "INSERT INTO userTbl \nVALUES ('KHD', '강호동', 1970, '경북', NULL, NULL, ( 1 ), ( 2 ) );", "blanks": [{ "index": 1, "answer": "180" }, { "index": 2, "answer": "GETDATE()" }] },
+        { "id": "q1-4", "type": "code-fill", "prompt": "[주제1] 특정 컬럼(userID, name)만 값을 지정하고, 나머지는 NULL 또는 Default로 들어가게 하는 구문입니다.", "language": "sql", "code": "INSERT INTO userTbl ( ( 1 ), ( 2 ) )\nVALUES ('PSY', '박재상');", "blanks": [{ "index": 1, "answer": "userID" }, { "index": 2, "answer": "name" }] },
+        { "id": "q2-1", "type": "code-fill", "prompt": "[주제2] buyTbl에서 'BBK'(바비킴)이 구매한 모든 물품의 수량(amount)을 2배로 늘리는 구문입니다.", "language": "sql", "code": "UPDATE buyTbl\nSET amount = amount * 2\nWHERE ( 1 ) = 'BBK';", "blanks": [{ "index": 1, "answer": "userID" }] },
+        { "id": "q2-2", "type": "code-fill", "prompt": "[주제2] userTbl에서 지역(addr)이 '서울'인 사람들의 국번(mobile1)을 일괄적으로 '02'로 변경하세요.", "language": "sql", "code": "UPDATE userTbl\nSET mobile1 = '02'\nWHERE addr = ( 1 );", "blanks": [{ "index": 1, "answer": "N'서울'" }] },
+        { "id": "q2-3", "type": "code-fill", "prompt": "[주제2] buyTbl에서 분류(groupName)가 '서적'인 데이터의 분류명을 '도서'로 수정하는 구문입니다.", "language": "sql", "code": "UPDATE buyTbl\nSET groupName = N'도서'\nWHERE groupName = ( 1 );", "blanks": [{ "index": 1, "answer": "N'서적'" }] },
+        { "id": "q2-4", "type": "code-fill", "prompt": "[주제2] userTbl에서 이름이 '김경호'인 회원의 키(height)를 178로, 지역을 '제주'로 동시에 수정하세요.", "language": "sql", "code": "UPDATE userTbl\nSET height = 178, ( 1 ) = N'제주'\nWHERE name = N'김경호';", "blanks": [{ "index": 1, "answer": "addr" }] },
+        { "id": "q3-1", "type": "code-fill", "prompt": "[주제3] userTbl에서 국번(mobile1)이 NULL인(없는) 사용자를 모두 삭제하는 구문입니다.", "language": "sql", "code": "DELETE FROM userTbl\nWHERE mobile1 ( 1 );", "blanks": [{ "index": 1, "answer": "IS NULL" }] },
+        { "id": "q3-2", "type": "code-fill", "prompt": "[주제3] buyTbl에서 단가(price)가 100 이상이면서 500 이하인 구매 내역을 삭제하세요.", "language": "sql", "code": "DELETE FROM buyTbl\nWHERE price >= 100 ( 1 ) price <= 500;", "blanks": [{ "index": 1, "answer": "AND" }] },
+        { "id": "q3-3", "type": "code-fill", "prompt": "[주제3] userTbl에서 생년(birthYear)이 1970년과 1979년 사이인 사용자를 삭제하세요. (BETWEEN 사용)", "language": "sql", "code": "DELETE FROM userTbl\nWHERE birthYear ( 1 ) 1970 AND 1979;", "blanks": [{ "index": 1, "answer": "BETWEEN" }] },
+        { "id": "q3-4", "type": "code-fill", "prompt": "[주제3] buyTbl에서 제품명(prodName)이 '운동화'인 데이터를 찾아서 삭제하세요.", "language": "sql", "code": "DELETE FROM buyTbl\nWHERE prodName = ( 1 );", "blanks": [{ "index": 1, "answer": "N'운동화'" }] },
+        { "id": "q4-1", "type": "short", "prompt": "[주제4] 다음 SQL문의 결과값을 숫자로 적으시오.\n\nSELECT LEN('MySQL');", "acceptableAnswers": ["5"] },
+        { "id": "q4-2", "type": "mcq", "prompt": "[주제4] 다음 중 문자열의 공백을 제거하는 함수가 아닌 것은?", "options": ["LTRIM", "RTRIM", "TRIM", "SUBSTRING"], "correctIndex": 3 },
+        { "id": "q4-3", "type": "short", "prompt": "[주제4] 반올림 함수 ROUND(123.4567, 2)의 실행 결과는?", "acceptableAnswers": ["123.46"] },
+        { "id": "q4-4", "type": "mcq", "prompt": "[주제4] 날짜에 특정 기간을 더하는 함수는?", "options": ["DATEADD", "DATEDIFF", "GETDATE", "YEAR"], "correctIndex": 0 },
+        { "id": "q5-1", "type": "short", "prompt": "[주제5] 날짜와 시각(시,분,초,밀리초)을 모두 저장할 수 있는 SQL Server의 데이터 타입은? (DATETIME 제외)", "acceptableAnswers": ["DATETIME2", "datetime2"] },
+        { "id": "q5-2", "type": "essay", "prompt": "[주제5] CHAR(5)와 VARCHAR(5)에 똑같이 'ABC'를 저장했을 때, 내부 저장 방식의 차이를 설명하세요.", "rubric": ["CHAR는 5바이트 고정(공백채움)", "VARCHAR는 실제 데이터 길이만큼만 사용", "공간 효율 차이"], "maxLength": 150 },
+        { "id": "q5-3", "type": "mcq", "prompt": "[주제5] 0 또는 1의 값만 가질 수 있는 논리형 데이터 타입은?", "options": ["INT", "BIT", "TINYINT", "BINARY"], "correctIndex": 1 },
+        { "id": "q5-4", "type": "short", "prompt": "[주제5] 유니코드 문자열을 저장하며, 가변 길이를 지원하는 데이터 타입은?", "acceptableAnswers": ["NVARCHAR", "nvarchar"] },
+        { "id": "q6-1", "type": "code-fill", "prompt": "[주제6] 'average'라는 컬럼을 만듭니다. 000.0 (총 4자리, 소수점 1자리) 형태의 실수를 저장하려면 빈칸에 무엇을 써야 합니까?", "language": "sql", "code": "CREATE TABLE gradeTbl (\n    average ( 1 ) NULL\n);", "blanks": [{ "index": 1, "answer": "DECIMAL(4, 1)" }] },
+        { "id": "q6-2", "type": "code-fill", "prompt": "[주제6] 'birthDate' 컬럼을 날짜만 저장하는 타입으로 생성하고, NULL을 허용하지 않으려면?", "language": "sql", "code": "CREATE TABLE userTbl (\n    birthDate ( 1 ) NOT NULL\n);", "blanks": [{ "index": 1, "answer": "DATE" }] },
+        { "id": "q6-3", "type": "code-fill", "prompt": "[주제6] 'age' 컬럼을 정수형(INT)으로 만들고, 0 이상의 값만 들어오도록 CHECK 제약조건을 설정하는 구문입니다.", "language": "sql", "code": "CREATE TABLE userTbl (\n    age INT CHECK ( age ( 1 ) 0 )\n);", "blanks": [{ "index": 1, "answer": ">=" }] },
+        { "id": "q6-4", "type": "code-fill", "prompt": "[주제6] 'intro'라는 컬럼을 만들어 자기소개를 저장하려 합니다. 길이가 매우 길 수 있으므로 최대 크기 가변 문자열 타입을 사용하세요.", "language": "sql", "code": "CREATE TABLE userTbl (\n    intro ( 1 )\n);", "blanks": [{ "index": 1, "answer": "VARCHAR(MAX)" }] },
+        { "id": "q7-1", "type": "mcq", "prompt": "[주제7] userTbl(10명)과 buyTbl(12건)을 LEFT OUTER JOIN 했습니다. 이때 생성되는 총 행(Row)의 개수는?\n(힌트: 구매 내역 12건 + 구매 안 한 회원 5명)", "options": ["10", "12", "17", "22"], "correctIndex": 2 },
+        { "id": "q7-2", "type": "short", "prompt": "[주제7] 다음 쿼리의 실행 결과에서 출력되는 회원의 이름은 누구인가?\n\nSELECT U.name \nFROM userTbl U \nLEFT JOIN buyTbl B ON U.userID = B.userID \nWHERE B.prodName IS NULL AND U.addr = '경남';", "acceptableAnswers": ["윤종신"] },
+        { "id": "q7-3", "type": "code-fill", "prompt": "[주제7] 두 테이블을 JOIN할 때, 양쪽 테이블에 모두 데이터가 있는 경우만 출력하는 조인 방식은?", "language": "sql", "code": "SELECT * FROM TableA ( 1 ) JOIN TableB ON TableA.ID = TableB.ID;", "blanks": [{ "index": 1, "answer": "INNER" }] },
+        { "id": "q7-4", "type": "essay", "prompt": "[주제7] CROSS JOIN(상호 조인)을 수행했을 때 결과 행의 개수가 어떻게 계산되는지 설명하세요. (userTbl 10행, buyTbl 12행일 때 예시 포함)", "rubric": ["두 테이블 행의 곱", "10 * 12 = 120행", "모든 경우의 수 조합"], "maxLength": 150 }
+    ]
+};
