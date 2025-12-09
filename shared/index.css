@@ -106,287 +106,87 @@ body {
     color: #60A5FA;
 }
 
-/* === Header - Premium Glassmorphic Design (Teal Accent) === */
+/* === Header - Clean Minimal Design === */
 .header {
     text-align: center;
-    padding: 40px 24px;
-    margin-bottom: 28px;
-    background: linear-gradient(165deg,
-            rgba(13, 27, 30, 0.98) 0%,
-            rgba(10, 20, 23, 0.99) 50%,
-            rgba(13, 27, 30, 0.95) 100%);
-    border-radius: 24px;
-    border: 1px solid rgba(56, 189, 192, 0.15);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(20px);
-    box-shadow:
-        0 4px 30px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-/* Top shimmer line */
-.header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg,
-            transparent 10%,
-            #38BDC0 30%,
-            #4DD4D8 50%,
-            #38BDC0 70%,
-            transparent 90%);
-    animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-
-    0%,
-    100% {
-        opacity: 0.7;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}
-
-/* Floating gradient orbs */
-.header::after {
-    content: '';
-    position: absolute;
-    top: -100%;
-    left: -50%;
-    width: 200%;
-    height: 300%;
-    background:
-        radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.12) 0%, transparent 40%),
-        radial-gradient(ellipse at 70% 80%, rgba(167, 139, 250, 0.08) 0%, transparent 40%);
-    pointer-events: none;
-    animation: float 8s ease-in-out infinite;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(10px) rotate(1deg);
-    }
+    padding: 40px 24px 24px;
+    margin-bottom: 24px;
 }
 
 .header h1 {
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
-    background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-    font-weight: 800;
-    position: relative;
-    z-index: 1;
-    animation: gradientShift 4s ease infinite;
-    letter-spacing: -0.02em;
-}
-
-@keyframes gradientShift {
-
-    0%,
-    100% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
+    font-size: 1.5rem;
+    color: #e4e4e7;
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .header p {
-    color: #94a3b8;
-    font-size: 1rem;
-    position: relative;
-    z-index: 1;
-    max-width: 400px;
-    margin: 0 auto;
-    line-height: 1.5;
+    color: #71717a;
+    font-size: 0.9rem;
+    margin: 0;
 }
 
-/* Stats pills */
+/* Stats - minimal */
 .stats {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 1;
+    gap: 16px;
+    margin-top: 12px;
 }
 
 .stat {
-    background: rgba(15, 23, 42, 0.8);
-    padding: 10px 18px;
-    border-radius: 24px;
     font-size: 0.85rem;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s ease;
-}
-
-.stat:hover {
-    transform: translateY(-2px);
-    border-color: rgba(96, 165, 250, 0.3);
-    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.15);
-}
-
-.stat-label {
-    color: #64748b;
+    color: #71717a;
 }
 
 .stat-value {
-    color: #60A5FA;
-    font-weight: 700;
+    color: #a1a1aa;
+    font-weight: 600;
 }
 
-/* === Folder Grid - Premium Cards === */
+/* === Folder Grid - Clean Cards === */
 .folder-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .folder-card {
-    aspect-ratio: 1;
-    background: linear-gradient(160deg,
-            rgba(13, 27, 30, 0.98) 0%,
-            rgba(10, 20, 23, 0.99) 100%);
-    border: 1px solid rgba(56, 189, 192, 0.12);
-    border-radius: 24px;
-    padding: 28px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px 16px;
     cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.15s, border-color 0.15s;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 14px;
-    position: relative;
-    overflow: hidden;
-    /* Staggered entrance animation */
-    animation: cardEntrance 0.4s ease-out backwards;
-}
-
-/* Staggered delays for entrance animation */
-.folder-card:nth-child(1) {
-    animation-delay: 0.05s;
-}
-
-.folder-card:nth-child(2) {
-    animation-delay: 0.1s;
-}
-
-.folder-card:nth-child(3) {
-    animation-delay: 0.15s;
-}
-
-.folder-card:nth-child(4) {
-    animation-delay: 0.2s;
-}
-
-@keyframes cardEntrance {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Radial glow on hover */
-.folder-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 30%, rgba(56, 189, 192, 0.12) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-/* Border gradient on hover */
-.folder-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(56, 189, 192, 0.3), transparent 50%, rgba(77, 212, 216, 0.2));
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+    gap: 8px;
 }
 
 .folder-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: rgba(56, 189, 192, 0.35);
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.5),
-        0 0 40px rgba(56, 189, 192, 0.12);
-}
-
-.folder-card:hover::before,
-.folder-card:hover::after {
-    opacity: 1;
+    background: #222;
+    border-color: #333;
 }
 
 .folder-icon {
-    font-size: 3.2rem;
-    position: relative;
-    z-index: 1;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    transition: transform 0.3s ease;
-}
-
-.folder-card:hover .folder-icon {
-    transform: scale(1.1);
+    font-size: 2rem;
 }
 
 .folder-name {
-    font-weight: 700;
-    font-size: 1.15rem;
-    color: #f1f5f9;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #e4e4e7;
     text-align: center;
-    position: relative;
-    z-index: 1;
 }
 
 .folder-stats {
-    font-size: 0.8rem;
-    color: #64748b;
+    font-size: 0.75rem;
+    color: #71717a;
     text-align: center;
-    position: relative;
-    z-index: 1;
 }
 
 /* === File View === */
