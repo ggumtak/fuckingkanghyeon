@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB 세트 18 | 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="../../shared/quiz-v2-styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>DB 세트 18: 종합 연습 4</h1>
+            <p class="subtitle">DML, 함수, 데이터타입, JOIN</p>
+        </header>
+        <a href="../../index.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <!-- 참고 테이블(접이식) -->
+        <div class="reference-tables-inline" style="display:block; margin-bottom:24px;">
+            <details open>
+                <summary
+                    style="cursor:pointer; padding:12px; background:var(--bg-tertiary); border-radius:8px; font-weight:600;">
+                    ▼ 참고 테이블(클릭하여 열기/접기)</summary>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
+                    <div class="table-wrapper">
+                        <h4 style="color:var(--accent); margin-bottom:8px;">userTbl</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>userID</th>
+                                    <th>name</th>
+                                    <th>birthYear</th>
+                                    <th>addr</th>
+                                    <th>mobile1</th>
+                                    <th>mobile2</th>
+                                    <th>height</th>
+                                    <th>mDate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LSG</td>
+                                    <td>이승기</td>
+                                    <td>1987</td>
+                                    <td>서울</td>
+                                    <td>11</td>
+                                    <td>1111111</td>
+                                    <td>182</td>
+                                    <td>2008-08-08</td>
+                                </tr>
+                                <tr>
+                                    <td>KBS</td>
+                                    <td>김범수</td>
+                                    <td>1979</td>
+                                    <td>경남</td>
+                                    <td>11</td>
+                                    <td>2222222</td>
+                                    <td>173</td>
+                                    <td>2012-04-04</td>
+                                </tr>
+                                <tr>
+                                    <td>KKH</td>
+                                    <td>김경호</td>
+                                    <td>1971</td>
+                                    <td>전남</td>
+                                    <td>19</td>
+                                    <td>3333333</td>
+                                    <td>177</td>
+                                    <td>2007-07-07</td>
+                                </tr>
+                                <tr>
+                                    <td>JYP</td>
+                                    <td>조용필</td>
+                                    <td>1950</td>
+                                    <td>경기</td>
+                                    <td>11</td>
+                                    <td>4444444</td>
+                                    <td>166</td>
+                                    <td>2009-04-04</td>
+                                </tr>
+                                <tr>
+                                    <td>SSK</td>
+                                    <td>성시경</td>
+                                    <td>1979</td>
+                                    <td>서울</td>
+                                    <td>NULL</td>
+                                    <td>NULL</td>
+                                    <td>186</td>
+                                    <td>2013-12-12</td>
+                                </tr>
+                                <tr>
+                                    <td>LJB</td>
+                                    <td>임재범</td>
+                                    <td>1963</td>
+                                    <td>서울</td>
+                                    <td>16</td>
+                                    <td>6666666</td>
+                                    <td>182</td>
+                                    <td>2009-09-09</td>
+                                </tr>
+                                <tr>
+                                    <td>YJS</td>
+                                    <td>윤종신</td>
+                                    <td>1969</td>
+                                    <td>경남</td>
+                                    <td>NULL</td>
+                                    <td>NULL</td>
+                                    <td>170</td>
+                                    <td>2005-05-05</td>
+                                </tr>
+                                <tr>
+                                    <td>EJW</td>
+                                    <td>은지원</td>
+                                    <td>1972</td>
+                                    <td>경북</td>
+                                    <td>11</td>
+                                    <td>8888888</td>
+                                    <td>174</td>
+                                    <td>2014-03-03</td>
+                                </tr>
+                                <tr>
+                                    <td>JKW</td>
+                                    <td>조관우</td>
+                                    <td>1965</td>
+                                    <td>경기</td>
+                                    <td>18</td>
+                                    <td>9999999</td>
+                                    <td>172</td>
+                                    <td>2010-10-10</td>
+                                </tr>
+                                <tr>
+                                    <td>BBK</td>
+                                    <td>바비킴</td>
+                                    <td>1973</td>
+                                    <td>서울</td>
+                                    <td>10</td>
+                                    <td>0</td>
+                                    <td>176</td>
+                                    <td>2013-05-05</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-wrapper">
+                        <h4 style="color:var(--accent); margin-bottom:8px;">buyTbl</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>num</th>
+                                    <th>userID</th>
+                                    <th>prodName</th>
+                                    <th>groupName</th>
+                                    <th>price</th>
+                                    <th>amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>KBS</td>
+                                    <td>운동화</td>
+                                    <td>NULL</td>
+                                    <td>30</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>KBS</td>
+                                    <td>노트북</td>
+                                    <td>전자</td>
+                                    <td>1000</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>JYP</td>
+                                    <td>모니터</td>
+                                    <td>전자</td>
+                                    <td>200</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>BBK</td>
+                                    <td>모니터</td>
+                                    <td>전자</td>
+                                    <td>200</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>KBS</td>
+                                    <td>청바지</td>
+                                    <td>의류</td>
+                                    <td>50</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>BBK</td>
+                                    <td>메모리</td>
+                                    <td>전자</td>
+                                    <td>80</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>SSK</td>
+                                    <td>책</td>
+                                    <td>서적</td>
+                                    <td>15</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>
+                                    <td>EJW</td>
+                                    <td>책</td>
+                                    <td>서적</td>
+                                    <td>15</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td>EJW</td>
+                                    <td>청바지</td>
+                                    <td>의류</td>
+                                    <td>50</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>
+                                    <td>BBK</td>
+                                    <td>운동화</td>
+                                    <td>NULL</td>
+                                    <td>30</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>
+                                    <td>EJW</td>
+                                    <td>책</td>
+                                    <td>서적</td>
+                                    <td>15</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>
+                                    <td>BBK</td>
+                                    <td>운동화</td>
+                                    <td>NULL</td>
+                                    <td>30</td>
+                                    <td>2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div id="v2-quiz-container"></div>
+        <div class="controls">
+            <button class="btn btn-primary" onclick="gradeAllV2()">✅ 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllV2Answers()">💡 전체 정답</button>
+            <button class="btn btn-primary" onclick="reviewWrongV2()">🔄 틀린 문제 복습</button>
+            <button class="btn btn-secondary" onclick="resetV2Quiz()">🔃 초기화</button>
+        </div>
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="v2-score">0</span><span class="score-total"> / <span
+                        id="v2-total">0</span></span></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="../../shared/quiz-v2.js"></script>
+    <script src="data/set18.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof set18 !== 'undefined') {
+                renderQuizRound(set18);
+            }
+        });
+    </script>
+</body>
+
+</html>

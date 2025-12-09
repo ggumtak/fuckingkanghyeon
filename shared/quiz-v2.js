@@ -557,12 +557,26 @@ function moveToNextQuestion(currentCard) {
     }, 100); // Small delay to allow scroll animation
 }
 
-// Normalize answer for flexible comparison (ignore whitespace only, preserve case)
-function normalizeAnswer(str) {
+// Helper: Check if current page is a database quiz (case-insensitive grading)
+function isDatabaseQuiz() {
+    const path = window.location.pathname.toLowerCase();
+    return path.includes('/database/') || path.includes('database-set');
+}
+
+// Normalize answer for flexible comparison
+// Database quizzes: ignore whitespace AND case (SQL is case-insensitive)
+// Other quizzes: ignore whitespace only, preserve case
+function normalizeAnswer(str, forceCaseInsensitive = false) {
     if (!str) return '';
     // Remove ALL whitespace for comparison (so "a = b" matches "a=b")
-    // Case is preserved! (None != none)
-    return str.replace(/\s+/g, '');
+    let normalized = str.replace(/\s+/g, '');
+
+    // For database quizzes, also ignore case (SQL keywords/table names are case-insensitive)
+    if (forceCaseInsensitive || isDatabaseQuiz()) {
+        normalized = normalized.toLowerCase();
+    }
+
+    return normalized;
 }
 
 /**
