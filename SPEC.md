@@ -480,6 +480,7 @@ export const quizRound = {
  * @extends BaseQuestion
  * @property {'essay'} type
  * @property {string[]} rubric - Grading criteria keywords
+ * @property {string} [answer] - Model answer (displayed when user clicks "정답 예시 보기")
  * @property {number} [maxLength=500] - Max character count
  */
 
@@ -487,11 +488,14 @@ export const quizRound = {
 {
     id: 'q4',
     type: 'essay',
-    prompt: 'insertNode 함수가 head.data == findData일 때의 처리 과정을 설명하세요.',
-    rubric: ['새 노드 생성', 'link를 기존 head로', 'head를 새 노드로'],
+    prompt: "SQL Server의 'DATETIME' 데이터 형식에 대해 설명하세요.",
+    rubric: ['날짜와 시간', 'YYYY-MM-DD hh:mm:ss', '3.33ms 정밀도'],
+    answer: 'DATETIME은 날짜와 시간을 함께 저장하는 타입입니다. 8바이트를 사용하며 1753-01-01부터 9999-12-31까지의 날짜를 저장합니다.',
     maxLength: 300
 }
 ```
+
+
 
 ---
 

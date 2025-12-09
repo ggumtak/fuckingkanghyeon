@@ -367,12 +367,28 @@ function showEssayAnswer(q) {
     answerDiv.className = 'essay-answer-example show';
 
     let content = '';
-    if (q.rubric?.length) content = `<strong>채점 기준:</strong><br>` + q.rubric.map(r => `• ${r}`).join('<br>');
-    if (q.acceptableAnswers?.length) content += `<br><br><strong>정답 예시:</strong><br>` + q.acceptableAnswers.join(' / ');
+
+    // Show model answer first if available
+    if (q.answer) {
+        content = `<strong>모범 답안:</strong><br>${q.answer}`;
+    }
+
+    // Show rubric (grading criteria)
+    if (q.rubric?.length) {
+        if (content) content += '<br><br>';
+        content += `<strong>채점 기준:</strong><br>` + q.rubric.map(r => `• ${r}`).join('<br>');
+    }
+
+    // Show acceptable answers for short answer type
+    if (q.acceptableAnswers?.length) {
+        if (content) content += '<br><br>';
+        content += `<strong>정답 예시:</strong><br>` + q.acceptableAnswers.join(' / ');
+    }
 
     answerDiv.innerHTML = content || '정답 예시가 없습니다.';
     card.querySelector('.question-body').appendChild(answerDiv);
 }
+
 
 function bindV2Events(round) {
     document.querySelectorAll('.v2-blank').forEach(input => {
