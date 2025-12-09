@@ -57,7 +57,7 @@
 
 .question-type-badge.essay {
     background: rgba(245, 158, 11, 0.2);
-    color: #FBBF24;
+    color: var(--warning);
 }
 
 .question-points {

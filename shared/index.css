@@ -143,8 +143,15 @@ body {
 }
 
 @keyframes shimmer {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 /* Floating gradient orbs */
@@ -163,8 +170,15 @@ body {
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(10px) rotate(1deg); }
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(10px) rotate(1deg);
+    }
 }
 
 .header h1 {
@@ -183,8 +197,15 @@ body {
 }
 
 @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .header p {
@@ -227,8 +248,14 @@ body {
     box-shadow: 0 4px 12px rgba(96, 165, 250, 0.15);
 }
 
-.stat-label { color: #64748b; }
-.stat-value { color: #60A5FA; font-weight: 700; }
+.stat-label {
+    color: #64748b;
+}
+
+.stat-value {
+    color: #60A5FA;
+    font-weight: 700;
+}
 
 /* === Folder Grid - Premium Cards === */
 .folder-grid {
@@ -259,19 +286,31 @@ body {
 }
 
 /* Staggered delays for entrance animation */
-.folder-card:nth-child(1) { animation-delay: 0.05s; }
-.folder-card:nth-child(2) { animation-delay: 0.1s; }
-.folder-card:nth-child(3) { animation-delay: 0.15s; }
-.folder-card:nth-child(4) { animation-delay: 0.2s; }
+.folder-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.folder-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.folder-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.folder-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
 
 @keyframes cardEntrance {
-    from { 
-        opacity: 0; 
-        transform: translateY(20px) scale(0.95); 
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
     }
-    to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -361,8 +400,13 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .file-grid {
@@ -457,7 +501,7 @@ body {
 
 .file-progress {
     font-size: 1rem;
-    color: #4ade80;
+    color: var(--success);
     font-weight: 700;
     position: relative;
     z-index: 1;
@@ -470,11 +514,19 @@ body {
     border-radius: 14px;
 }
 
-.view-small .file-icon { font-size: 2rem; }
-.view-small .file-name { font-size: 0.9rem; }
+.view-small .file-icon {
+    font-size: 2rem;
+}
+
+.view-small .file-name {
+    font-size: 0.9rem;
+}
+
 .view-small .file-meta,
 .view-small .file-progress,
-.view-small .badge { display: none; }
+.view-small .badge {
+    display: none;
+}
 
 /* Medium icon view */
 .view-medium .file-card {
@@ -482,9 +534,17 @@ body {
     gap: 10px;
 }
 
-.view-medium .file-icon { font-size: 2.6rem; }
-.view-medium .file-name { font-size: 1.05rem; }
-.view-medium .file-meta { display: none; }
+.view-medium .file-icon {
+    font-size: 2.6rem;
+}
+
+.view-medium .file-name {
+    font-size: 1.05rem;
+}
+
+.view-medium .file-meta {
+    display: none;
+}
 
 /* Large icon view */
 .view-large .file-card {
@@ -493,8 +553,13 @@ body {
     aspect-ratio: 1;
 }
 
-.view-large .file-icon { font-size: 3.2rem; }
-.view-large .file-name { font-size: 1.15rem; }
+.view-large .file-icon {
+    font-size: 3.2rem;
+}
+
+.view-large .file-name {
+    font-size: 1.15rem;
+}
 
 /* List view */
 .view-list .file-card {
@@ -513,10 +578,23 @@ body {
     border-color: rgba(96, 165, 250, 0.3);
 }
 
-.view-list .file-icon { font-size: 1.6rem; }
-.view-list .file-name { flex: 1; font-size: 1.05rem; }
-.view-list .file-meta { font-size: 0.85rem; margin-left: auto; }
-.view-list .file-progress { font-size: 0.95rem; }
+.view-list .file-icon {
+    font-size: 1.6rem;
+}
+
+.view-list .file-name {
+    flex: 1;
+    font-size: 1.05rem;
+}
+
+.view-list .file-meta {
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.view-list .file-progress {
+    font-size: 0.95rem;
+}
 
 /* === Difficulty Badges === */
 .badge {
@@ -528,67 +606,107 @@ body {
 
 .badge-easy {
     background: rgba(74, 222, 128, 0.15);
-    color: #4ade80;
+    color: var(--success);
 }
 
 .badge-medium {
     background: rgba(251, 191, 36, 0.15);
-    color: #fbbf24;
+    color: var(--warning);
 }
 
 .badge-hard {
     background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    color: var(--error);
 }
 
-.view-small .badge { display: none; }
+.view-small .badge {
+    display: none;
+}
 
 /* === Responsive - Galaxy S7+ Tablet (800px+) === */
 @media (min-width: 800px) {
-    .container { padding: 24px; }
+    .container {
+        padding: 24px;
+    }
+
     .folder-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 24px;
     }
-    .header { padding: 40px 32px; }
-    .header h1 { font-size: 2.4rem; }
+
+    .header {
+        padding: 40px 32px;
+    }
+
+    .header h1 {
+        font-size: 2.4rem;
+    }
 }
 
 /* === Responsive - Galaxy S23 Ultra (360-414px) === */
 @media (max-width: 480px) {
-    .container { padding: 12px; }
+    .container {
+        padding: 12px;
+    }
+
     .nav-bar {
         padding: 8px 10px;
         margin-bottom: 12px;
     }
+
     .nav-btn {
         width: 32px;
         height: 32px;
     }
-    .nav-path { font-size: 0.8rem; }
+
+    .nav-path {
+        font-size: 0.8rem;
+    }
+
     .header {
         padding: 24px 16px;
         margin-bottom: 16px;
         border-radius: 16px;
     }
-    .header h1 { font-size: 1.5rem; }
-    .header p { font-size: 0.85rem; }
-    .stats { gap: 8px; }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .header p {
+        font-size: 0.85rem;
+    }
+
+    .stats {
+        gap: 8px;
+    }
+
     .stat {
         padding: 6px 12px;
         font-size: 0.75rem;
     }
+
     .folder-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
+
     .folder-card {
         padding: 16px;
         border-radius: 14px;
     }
-    .folder-icon { font-size: 2.2rem; }
-    .folder-name { font-size: 0.9rem; }
-    .folder-stats { font-size: 0.7rem; }
+
+    .folder-icon {
+        font-size: 2.2rem;
+    }
+
+    .folder-name {
+        font-size: 0.9rem;
+    }
+
+    .folder-stats {
+        font-size: 0.7rem;
+    }
 }
 
 /* === Responsive - Extra Small (< 360px) === */
@@ -597,13 +715,23 @@ body {
         grid-template-columns: 1fr;
         gap: 10px;
     }
+
     .folder-card {
         aspect-ratio: auto;
         flex-direction: row;
         padding: 14px;
         gap: 14px;
     }
-    .folder-icon { font-size: 2rem; }
-    .folder-name { text-align: left; }
-    .folder-stats { text-align: left; }
+
+    .folder-icon {
+        font-size: 2rem;
+    }
+
+    .folder-name {
+        text-align: left;
+    }
+
+    .folder-stats {
+        text-align: left;
+    }
 }

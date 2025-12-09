@@ -9,6 +9,21 @@ const v2States = new Map();
 const v2WasEverWrong = new Set();
 let currentV2Round = null;
 
+// ========== Scroll Utility ==========
+/**
+ * Scroll element to upper-center of viewport (about 35% from top)
+ * Used for quiz inputs when focused
+ */
+function scrollToUpperCenterV2(element) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const targetY = window.scrollY + rect.top - (window.innerHeight * 0.35);
+    window.scrollTo({
+        top: Math.max(0, targetY),
+        behavior: 'smooth'
+    });
+}
+
 // Get localStorage key for current quiz
 function getV2StorageKey() {
     const setId = currentV2Round?.setId || 'unknown';
@@ -548,7 +563,11 @@ function showEssayAnswer(q) {
 
 
 function bindV2Events(round) {
+    // v2-blank (code-fill inputs)
     document.querySelectorAll('.v2-blank').forEach(input => {
+        // Focus: scroll to upper-center
+        input.addEventListener('focus', () => scrollToUpperCenterV2(input));
+
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.ctrlKey) {
                 e.preventDefault();
@@ -564,7 +583,11 @@ function bindV2Events(round) {
         radio.addEventListener('change', () => gradeV2Mcq(radio, round));
     });
 
+    // v2-short (short answer inputs)
     document.querySelectorAll('.v2-short').forEach(input => {
+        // Focus: scroll to upper-center
+        input.addEventListener('focus', () => scrollToUpperCenterV2(input));
+
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -575,6 +598,9 @@ function bindV2Events(round) {
 
     // Essay: Tab key moves to next question
     document.querySelectorAll('.v2-essay').forEach(textarea => {
+        // Focus: scroll to upper-center
+        textarea.addEventListener('focus', () => scrollToUpperCenterV2(textarea));
+
         textarea.addEventListener('keydown', (e) => {
             if (e.key === 'Tab' && !e.shiftKey) {
                 e.preventDefault();
