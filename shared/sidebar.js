@@ -154,17 +154,44 @@ function renderSidebarNav() {
 }
 
 /**
- * Get quiz progress from localStorage (matches index.html logic)
+ * Get quiz progress from localStorage (supports both v1 and v2 quiz formats)
  */
 function getQuizProgress(quizId) {
-    // Extract quiz number from quizId like "quiz-1" or just "1"
-    const quizNum = String(quizId).replace(/[^0-9]/g, '') || quizId;
-    const data = localStorage.getItem(`quiz_progress_${quizNum}`);
+    // Try v2 format first (for database and other v2 quizzes)
+    // quizId format: 'set1', 'set2', etc.
+    const setId = quizId.startsWith('set') ? quizId.replace('set', 'set-') : `set-${quizId}`;
+    const v2Data = localStorage.getItem(`v2_quiz_progress_${setId}`);
 
-    if (!data) return { solved: 0, total: 0 };
+    if (v2Data) {
+        try {
+            const progress = JSON.parse(v2Data);
+            let solved = 0;
+            let total = 0;
+
+            if (progress.states) {
+                for (const [key, state] of Object.entries(progress.states)) {
+                    total++;
+                    // v2 uses string values: 'correct', 'self-correct' for correct answers
+                    if (state === 'correct' || state === 'self-correct') {
+                        solved++;
+                    }
+                }
+            }
+
+            return { solved, total };
+        } catch (e) {
+            // Fall through to v1 format
+        }
+    }
+
+    // Try v1 format (for linked list quizzes)
+    const quizNum = String(quizId).replace(/[^0-9]/g, '') || quizId;
+    const v1Data = localStorage.getItem(`quiz_progress_${quizNum}`);
+
+    if (!v1Data) return { solved: 0, total: 0 };
 
     try {
-        const progress = JSON.parse(data);
+        const progress = JSON.parse(v1Data);
         let solved = 0;
         let total = 0;
 

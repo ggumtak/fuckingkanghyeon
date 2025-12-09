@@ -61,7 +61,7 @@ const QUIZ_CONFIG = {
                 { id: 'set4', title: '함수 (4/4)', subtitle: '날짜·순위·분석', count: 11, icon: '📊', file: 'database-set4.html' },
                 { id: 'set22', title: '함수 예측', subtitle: '결과 예측 문제', count: 30, icon: '🔮', file: 'database-set22.html' },
                 // 시험 유형 5: 데이터 타입 설명
-                { id: 'set23', title: '데이터 타입', subtitle: '타입 설명 문제', count: 30, icon: '📖', file: 'database-set23.html' },
+                { id: 'set23', title: '데이터 타입', subtitle: '타입 설명 문제', count: 16, icon: '📖', file: 'database-set23.html' },
                 // 시험 유형 6: 필드 작성
                 { id: 'set24', title: '필드 작성 (1/4)', subtitle: '타입+제약조건', count: 30, icon: '🏗️', file: 'database-set24.html' },
                 { id: 'set8', title: '필드 작성 (2/4)', subtitle: '기본 필드 정의', count: 15, icon: '🔧', file: 'database-set8.html' },

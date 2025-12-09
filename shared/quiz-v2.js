@@ -831,6 +831,11 @@ function updateV2Score() {
             total++;
             const key = q.type === 'mcq' ? `mcq-${q.id}` : `short-${q.id}`;
             if (v2States.get(key) === 'correct') correct++;
+        } else if (q.type === 'essay') {
+            // Essay questions count with self-grading
+            total++;
+            const essayState = v2States.get(`essay-${q.id}`);
+            if (essayState === 'self-correct') correct++;
         }
     });
     const scoreEl = document.getElementById('v2-score');
