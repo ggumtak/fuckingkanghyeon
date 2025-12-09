@@ -62,7 +62,9 @@ const QUIZ_CONFIG = {
                 { id: 'set9', title: '세트 9', subtitle: 'JOIN 쿼리', count: 15, icon: '🔗', file: 'database-set9.html' },
                 { id: 'set10', title: '세트 10', subtitle: '시험 연습', count: 33, icon: '📝', file: 'database-set10.html' },
                 { id: 'set11', title: '세트 11', subtitle: '시험 연습 2', count: 33, icon: '📝', file: 'database-set11.html' },
-                { id: 'set12', title: '세트 12', subtitle: '종합 연습', count: 33, icon: '📋', file: 'database-set12.html' }
+                { id: 'set12', title: '세트 12', subtitle: '종합 연습', count: 33, icon: '📋', file: 'database-set12.html' },
+                { id: 'set13', title: '세트 13', subtitle: '종합 연습 2', count: 33, icon: '📋', file: 'database-set13.html' },
+                { id: 'set14', title: '세트 14', subtitle: '시험 연습 3', count: 33, icon: '📝', file: 'database-set14.html' }
             ]
         },
         {
