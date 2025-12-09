@@ -25,9 +25,9 @@ body {
     gap: 8px;
     margin-bottom: 16px;
     padding: 10px 14px;
-    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    background: #1a1a1a;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #2a2a2a;
 }
 
 .nav-btn {
@@ -145,7 +145,7 @@ body {
     font-weight: 600;
 }
 
-/* === Folder Grid - File Card Style (Unified) === */
+/* === Folder Grid - Clean Cards === */
 .folder-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -155,71 +155,41 @@ body {
 }
 
 .folder-card {
-    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
     border-radius: 12px;
     padding: 14px 12px;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 6px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Glow effect on hover */
-.folder-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.08) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.3s;
 }
 
 .folder-card:hover {
-    background: linear-gradient(145deg, #1e3a5f 0%, #0f172a 100%);
-    border-color: rgba(96, 165, 250, 0.5);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
-}
-
-.folder-card:hover::before {
-    opacity: 1;
+    background: #222;
+    border-color: #333;
+    transform: translateY(-2px);
 }
 
 .folder-icon {
     font-size: 1.6rem;
-    position: relative;
-    z-index: 1;
 }
 
 .folder-name {
     font-weight: 600;
     font-size: 0.8rem;
-    color: #e2e8f0;
+    color: #e4e4e7;
     text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-.folder-card:hover .folder-name {
-    color: #93c5fd;
 }
 
 .folder-stats {
     font-size: 0.7rem;
-    color: #94a3b8;
+    color: #71717a;
     text-align: center;
-    position: relative;
-    z-index: 1;
 }
 
 /* === File View === */
@@ -269,75 +239,47 @@ body {
 }
 
 .file-card {
-    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
     border-radius: 12px;
     padding: 14px 12px;
     text-decoration: none;
-    color: #e2e8f0;
-    transition: all 0.25s ease;
+    color: #e4e4e7;
+    transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 6px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Glow effect on hover */
-.file-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.08) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.3s;
 }
 
 .file-card:hover {
-    background: linear-gradient(145deg, #1e3a5f 0%, #0f172a 100%);
-    border-color: rgba(96, 165, 250, 0.5);
-    color: #93c5fd;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
-}
-
-.file-card:hover::before {
-    opacity: 1;
+    background: #222;
+    border-color: #333;
+    transform: translateY(-2px);
 }
 
 .file-icon {
     font-size: 1.6rem;
-    position: relative;
-    z-index: 1;
 }
 
 .file-name {
     font-weight: 600;
     font-size: 0.8rem;
+    color: #e4e4e7;
     word-break: break-word;
-    position: relative;
-    z-index: 1;
 }
 
 .file-meta {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    position: relative;
-    z-index: 1;
+    font-size: 0.7rem;
+    color: #71717a;
 }
 
 .file-progress {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--success);
     font-weight: 700;
-    position: relative;
-    z-index: 1;
 }
 
 /* Small icon view */

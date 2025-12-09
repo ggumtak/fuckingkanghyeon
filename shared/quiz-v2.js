@@ -11,13 +11,14 @@ let currentV2Round = null;
 
 // ========== Scroll Utility ==========
 /**
- * Scroll element to upper-center of viewport (about 35% from top)
- * Used for quiz inputs when focused
+ * Scroll element to center-ish of viewport (about 45% from top)
+ * More comfortable position for mobile input
+ * Uses slow scroll to prevent bounce effect
  */
 function scrollToUpperCenterV2(element) {
     if (!element) return;
     const rect = element.getBoundingClientRect();
-    const targetY = window.scrollY + rect.top - (window.innerHeight * 0.35);
+    const targetY = window.scrollY + rect.top - (window.innerHeight * 0.45);
     window.scrollTo({
         top: Math.max(0, targetY),
         behavior: 'smooth'
@@ -877,7 +878,7 @@ function moveToNextV2Input(currentInput) {
         const nextInput = card.querySelector('.v2-blank:not([readonly]), .v2-short:not([readonly])');
         if (nextInput) {
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => nextInput.focus(), 100);
+            setTimeout(() => nextInput.focus(), 250);
             return;
         }
 
@@ -892,7 +893,7 @@ function moveToNextV2Input(currentInput) {
                 setTimeout(() => {
                     const firstRadio = card.querySelector('input[type="radio"]:not(:disabled)');
                     if (firstRadio) firstRadio.focus();
-                }, 100);
+                }, 250);
                 return;
             }
         }
@@ -901,7 +902,7 @@ function moveToNextV2Input(currentInput) {
         const nextEssay = card.querySelector('.v2-essay');
         if (nextEssay && questionType === 'essay') {
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => nextEssay.focus(), 100);
+            setTimeout(() => nextEssay.focus(), 250);
             return;
         }
     }

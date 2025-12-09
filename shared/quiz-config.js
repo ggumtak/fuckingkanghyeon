@@ -51,33 +51,39 @@ const QUIZ_CONFIG = {
             folder: 'quizzes/database',
             type: 'v2',
             quizzes: [
+                // 시험 유형 1-3: DML (INSERT/UPDATE/DELETE)
+                { id: 'set12', title: 'INSERT 구문', subtitle: '데이터 삽입', count: 15, icon: '➕', file: 'database-set12.html' },
+                { id: 'set13', title: 'UPDATE/DELETE', subtitle: '수정/삭제 구문', count: 15, icon: '✏️', file: 'database-set13.html' },
+                // 시험 유형 4: 함수 결과 예측
                 { id: 'set1', title: '함수 (1/4)', subtitle: '형변환·수치·문자열', count: 17, icon: '🔢', file: 'database-set1.html' },
                 { id: 'set2', title: '함수 (2/4)', subtitle: '문자열·날짜·MAX', count: 16, icon: '📅', file: 'database-set2.html' },
                 { id: 'set3', title: '함수 (3/4)', subtitle: '수치·문자열 계산', count: 10, icon: '🧮', file: 'database-set3.html' },
                 { id: 'set4', title: '함수 (4/4)', subtitle: '날짜·순위·분석', count: 11, icon: '📊', file: 'database-set4.html' },
                 { id: 'set22', title: '함수 예측', subtitle: '결과 예측 문제', count: 30, icon: '🔮', file: 'database-set22.html' },
+                // 시험 유형 5: 데이터 타입 설명
                 { id: 'set23', title: '데이터 타입', subtitle: '타입 설명 문제', count: 30, icon: '📖', file: 'database-set23.html' },
+                // 시험 유형 6: 필드 작성
                 { id: 'set24', title: '필드 작성 (1/4)', subtitle: '타입+제약조건', count: 30, icon: '🏗️', file: 'database-set24.html' },
                 { id: 'set8', title: '필드 작성 (2/4)', subtitle: '기본 필드 정의', count: 15, icon: '🔧', file: 'database-set8.html' },
                 { id: 'set9', title: '필드 작성 (3/4)', subtitle: '심화 필드 정의', count: 15, icon: '⚙️', file: 'database-set9.html' },
                 { id: 'set10', title: '필드 작성 (4/4)', subtitle: '제약조건 필드', count: 15, icon: '🛠️', file: 'database-set10.html' },
-                { id: 'set11', title: '종합 (6/6)', subtitle: 'DML+함수+타입+JOIN', count: 33, icon: '📝', file: 'database-set11.html' },
-                { id: 'set12', title: '시험 (1/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set12.html' },
-                { id: 'set13', title: '시험 (2/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set13.html' },
-                { id: 'set14', title: '시험 (3/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set14.html' },
-                { id: 'set15', title: '시험 (4/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set15.html' },
-                { id: 'set16', title: '시험 (5/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set16.html' },
-                { id: 'set17', title: '시험 (6/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set17.html' },
-                { id: 'set18', title: '시험 (7/7)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set18.html' },
-                { id: 'set19', title: '기말 (1/3)', subtitle: 'DML·함수·타입·JOIN', count: 28, icon: '🎯', file: 'database-set19.html' },
-                { id: 'set20', title: '기말 (2/3)', subtitle: 'DML·함수·타입·JOIN', count: 28, icon: '🎯', file: 'database-set20.html' },
-                { id: 'set21', title: '기말 (3/3)', subtitle: '실전 응용편', count: 28, icon: '🚀', file: 'database-set21.html' },
+                // 시험 유형 7: JOIN 결과
+                { id: 'set11', title: 'JOIN 결과', subtitle: 'INNER/LEFT/RIGHT', count: 15, icon: '🔗', file: 'database-set11.html' },
+                { id: 'set26', title: 'JOIN 집중', subtitle: '조인 쿼리 모음', count: 15, icon: '🔗', file: 'database-set26.html' },
+                // 종합/시험/기말
                 { id: 'set5', title: '종합 (1/6)', subtitle: 'DML+함수+타입+JOIN', count: 30, icon: '📝', file: 'database-set5.html' },
                 { id: 'set6', title: '종합 (2/6)', subtitle: 'DML+함수+타입+JOIN', count: 30, icon: '📝', file: 'database-set6.html' },
                 { id: 'set7', title: '종합 (3/6)', subtitle: 'DML+함수+타입+JOIN', count: 33, icon: '📝', file: 'database-set7.html' },
                 { id: 'set25', title: '종합 (4/6)', subtitle: 'DML+함수+타입+JOIN', count: 33, icon: '📝', file: 'database-set25.html' },
-                { id: 'set26', title: 'JOIN 집중', subtitle: '조인 쿼리 모음', count: 15, icon: '🔗', file: 'database-set26.html' },
-                { id: 'set27', title: '종합 (5/6)', subtitle: 'DML+함수+타입+JOIN', count: 33, icon: '📝', file: 'database-set27.html' }
+                { id: 'set27', title: '종합 (5/6)', subtitle: 'DML+함수+타입+JOIN', count: 33, icon: '📝', file: 'database-set27.html' },
+                { id: 'set14', title: '최종 점검 (1/3)', subtitle: 'DML+함수+타입+필드+JOIN', count: 25, icon: '🎯', file: 'database-set14.html' },
+                { id: 'set15', title: '최종 점검 (2/3)', subtitle: 'DML+함수+타입+필드+JOIN', count: 25, icon: '🎯', file: 'database-set15.html' },
+                { id: 'set16', title: '최종 점검 (3/3)', subtitle: 'DML+함수+타입+필드+JOIN', count: 25, icon: '🎯', file: 'database-set16.html' },
+                { id: 'set17', title: '시험 (4/5)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set17.html' },
+                { id: 'set18', title: '시험 (5/5)', subtitle: 'DML/타입/함수/JOIN', count: 33, icon: '✍️', file: 'database-set18.html' },
+                { id: 'set19', title: '기말 (1/3)', subtitle: 'DML·함수·타입·JOIN', count: 28, icon: '🎯', file: 'database-set19.html' },
+                { id: 'set20', title: '기말 (2/3)', subtitle: 'DML·함수·타입·JOIN', count: 28, icon: '🎯', file: 'database-set20.html' },
+                { id: 'set21', title: '기말 (3/3)', subtitle: '실전 응용편', count: 28, icon: '🚀', file: 'database-set21.html' }
             ]
         },
         {
@@ -95,6 +101,16 @@ const QUIZ_CONFIG = {
                 { id: 'set6', title: '세트 6', subtitle: 'Pandas 기초', count: 14, icon: '🐼', file: 'math-set6.html' },
                 { id: 'set7', title: '세트 7', subtitle: 'Pandas 심화', count: 11, icon: '📊', file: 'math-set7.html' },
                 { id: 'set8', title: '세트 8', subtitle: 'Numpy', count: 13, icon: '🔢', file: 'math-set8.html' }
+            ]
+        },
+        {
+            id: 'web_projecting',
+            name: '웹기획',
+            icon: '🌐',
+            folder: 'quizzes/web_projecting',
+            type: 'v2',
+            quizzes: [
+                { id: 'set1', title: '객관식 세트 1', subtitle: 'RFP/WBS/IA/UX/페르소나', count: 30, icon: '📋', file: 'web-set1.html' }
             ]
         }
     ]
