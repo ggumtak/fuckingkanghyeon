@@ -135,7 +135,7 @@ function renderCodeFillQuestion(q, container) {
     blankPlaceholders.forEach((blankIndex, placeholder) => {
         const blank = q.blanks.find(b => b.index === blankIndex);
         const placeholderText = blank?.placeholder || `(${blankIndex})`;
-        const inputHtml = `<input type="text" class="blank-input v2-blank" data-question="${q.id}" data-blank="${blankIndex}" placeholder="${placeholderText}">`;
+        const inputHtml = `<input type="text" class="blank-input v2-blank" data-question="${q.id}" data-blank="${blankIndex}" placeholder="${placeholderText}" enterkeyhint="done">`;
         highlightedHtml = highlightedHtml.replace(placeholder, inputHtml);
     });
 
@@ -182,7 +182,8 @@ function renderShortQuestion(q, container) {
     inputWrapper.innerHTML = `
         <input type="text" class="short-answer-input v2-short" 
                data-question="${q.id}" 
-               placeholder="답을 입력하세요...">
+               placeholder="답을 입력하세요..."
+               enterkeyhint="done">
     `;
     container.appendChild(inputWrapper);
 }
