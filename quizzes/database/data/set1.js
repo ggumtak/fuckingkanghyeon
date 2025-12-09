@@ -8,49 +8,33 @@ const set1 = {
     questions: [
         {
             id: "dml-insert-01",
-            type: "code-fill",
-            prompt: "다음은 `userTbl`에 새로운 회원 데이터를 삽입하는 구문입니다. 빈칸을 채워 완성하세요.\n- 아이디: 'SJH'\n- 이름: '서장훈'\n- 출생년도: 1974\n- 지역: '서울'",
-            language: "sql",
-            code: "INSERT INTO userTbl (userID, name, birthYear, addr)\nVALUES ( ( 1 ), ( 2 ), ( 3 ), ( 4 ) );",
-            blanks: [
-                { index: 1, answer: "'SJH'", explanation: "문자열 값은 작은따옴표로 감싸야 합니다." },
-                { index: 2, answer: "'서장훈'", explanation: "이름 문자열도 작은따옴표로 감싸야 합니다." },
-                { index: 3, answer: "1974", explanation: "숫자형 데이터(INT)는 따옴표 없이 입력합니다." },
-                { index: 4, answer: "'서울'", explanation: "문자열 데이터입니다." }
-            ],
+            type: "short",
+            prompt: "다음은 `userTbl`에 새로운 회원 데이터를 삽입하는 구문입니다. 아이디 값 'SJH'를 VALUES 안에 어떻게 표기해야 합니까? (따옴표 포함)\n\nINSERT INTO userTbl (userID, name, birthYear, addr)\nVALUES ((  ), '서장훈', 1974, '서울');",
+            acceptableAnswers: ["'SJH'"],
+            explanation: "문자열 값은 작은따옴표로 감싸야 합니다.",
             meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "INSERT Syntax" }
         },
         {
             id: "dml-update-01",
-            type: "code-fill",
-            prompt: "`buyTbl`에서 제품명(prodName)이 '운동화'인 제품의 단가(price)를 10% 인상하는 구문을 작성하세요.",
-            language: "sql",
-            code: "UPDATE buyTbl\nSET price = price * ( 1 )\nWHERE prodName = ( 2 );",
-            blanks: [
-                { index: 1, answer: "1.1", explanation: "10% 인상은 원래 가격에 1.1을 곱하는 것과 같습니다." },
-                { index: 2, answer: "'운동화'", explanation: "조건절에서 문자열 리터럴은 작은따옴표를 사용합니다." }
-            ],
+            type: "short",
+            prompt: "`buyTbl`에서 제품명(prodName)이 '운동화'인 제품의 단가(price)를 10% 인상하는 구문에서, price에 곱해야 할 값은?\n\nUPDATE buyTbl\nSET price = price * (  )\nWHERE prodName = '운동화';",
+            acceptableAnswers: ["1.1"],
+            explanation: "10% 인상은 원래 가격에 1.1을 곱하는 것과 같습니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "UPDATE Logic" }
         },
         {
             id: "dml-delete-01",
-            type: "code-fill",
-            prompt: "`userTbl`에서 지역(addr)이 '경기'인 모든 회원의 정보를 삭제하는 구문을 작성하세요.",
-            language: "sql",
-            code: "DELETE FROM ( 1 )\nWHERE ( 2 ) = '경기';",
-            blanks: [
-                { index: 1, answer: "userTbl", explanation: "삭제할 대상 테이블 이름을 지정합니다." },
-                { index: 2, answer: "addr", explanation: "지역 정보를 담고 있는 컬럼명은 addr입니다." }
-            ],
+            type: "short",
+            prompt: "`userTbl`에서 지역(addr)이 '경기'인 모든 회원의 정보를 삭제하는 구문에서, DELETE FROM 뒤에 올 테이블명은?",
+            acceptableAnswers: ["userTbl"],
+            explanation: "삭제할 대상 테이블 이름을 지정합니다.",
             meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "DELETE Syntax" }
         },
         {
             id: "dml-insert-02",
-            type: "code-fill",
-            prompt: "`buyTbl`에 데이터를 삽입하려 합니다. 컬럼명을 생략하고 모든 값을 순서대로 입력할 때의 구문을 완성하세요.\n(순번, 아이디, 물품명, 분류, 단가, 수량 순서)",
-            language: "sql",
-            code: "INSERT INTO buyTbl\nVALUES ( NULL, 'KBS', '티셔츠', '의류', 30, 2 );",
-            blanks: [],
+            type: "short",
+            prompt: "`buyTbl`에 데이터를 삽입하려 합니다. 컬럼명을 생략하고 모든 값을 순서대로 입력할 때, INSERT INTO buyTbl 다음에 오는 키워드는?",
+            acceptableAnswers: ["VALUES"],
             meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "INSERT All Columns" }
         },
         {
@@ -184,6 +168,7 @@ const set1 = {
                 "VARCHAR는 가변 길이로, 'A'를 저장하면 실제 데이터 길이만큼만 저장됨",
                 "데이터 길이가 일정하면 CHAR, 들쑥날쑥하면 VARCHAR가 유리함"
             ],
+            answer: "CHAR(10)은 고정 길이로, 'A' 1글자를 저장해도 항상 10바이트(나머지는 공백 패딩)를 차지합니다. VARCHAR(10)은 가변 길이로, 'A'를 저장하면 실제 데이터 길이(1바이트 + 길이 정보)만큼만 사용합니다. 따라서 데이터 길이가 일정하면 CHAR, 가변이면 VARCHAR가 공간 효율적입니다.",
             maxLength: 300,
             explanation: "CHAR는 고정 길이, VARCHAR는 가변 길이입니다.",
             meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Data Types" }
@@ -274,13 +259,10 @@ const set1 = {
         },
         {
             id: "join-interp-02",
-            type: "code-fill",
-            prompt: "`userTbl`을 기준으로 `buyTbl`을 조인하되, **구매 기록이 없는 회원도 모두 출력**하고자 합니다. 빈칸을 채우세요.",
-            language: "sql",
-            code: "SELECT u.name, b.prodName\nFROM userTbl u\n( 1 ) OUTER JOIN buyTbl b\nON u.userID = b.userID;",
-            blanks: [
-                { index: 1, answer: "LEFT", explanation: "왼쪽 테이블(`userTbl`)의 모든 데이터를 유지하려면 `LEFT OUTER JOIN`을 사용합니다." }
-            ],
+            type: "short",
+            prompt: "`userTbl`을 기준으로 `buyTbl`을 조인하되, **구매 기록이 없는 회원도 모두 출력**하고자 합니다. 빈칸에 들어갈 키워드는?\n\nSELECT u.name, b.prodName\nFROM userTbl u\n(  ) OUTER JOIN buyTbl b\nON u.userID = b.userID;",
+            acceptableAnswers: ["LEFT", "left"],
+            explanation: "왼쪽 테이블(`userTbl`)의 모든 데이터를 유지하려면 `LEFT OUTER JOIN`을 사용합니다.",
             meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "OUTER JOIN" }
         },
         {
@@ -314,6 +296,7 @@ const set1 = {
                 "LEFT OUTER JOIN은 구매 기록이 없더라도 모든 회원을 출력함",
                 "LEFT JOIN 시 구매 기록이 없는 회원의 buyTbl 컬럼은 NULL로 표시됨"
             ],
+            answer: "INNER JOIN은 두 테이블에 공통으로 존재하는 데이터(교집합)만 출력합니다. 즉 구매 기록이 있는 회원만 나옵니다. LEFT OUTER JOIN은 왼쪽 테이블(userTbl)의 모든 회원을 출력하며, 구매 기록이 없는 회원도 포함됩니다. 이때 buyTbl 쪽 컬럼은 NULL로 표시됩니다.",
             maxLength: 300,
             explanation: "INNER JOIN은 교집합, OUTER JOIN은 기준 테이블 전체를 포함합니다.",
             meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "JOIN Differences" }

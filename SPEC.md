@@ -474,13 +474,17 @@ export const quizRound = {
 
 #### 4.2.6 Essay (EssayQuestion)
 
+> [!IMPORTANT]
+> Essay 문제에는 반드시 `answer` 필드(모범 답안)를 포함해야 합니다.
+> 사용자가 "정답 예시 보기" 버튼을 클릭하면 이 답안이 표시됩니다.
+
 ```javascript
 /**
  * @typedef {Object} EssayQuestion
  * @extends BaseQuestion
  * @property {'essay'} type
  * @property {string[]} rubric - Grading criteria keywords
- * @property {string} [answer] - Model answer (displayed when user clicks "정답 예시 보기")
+ * @property {string} answer - Model answer (REQUIRED - displayed when user clicks "정답 예시 보기")
  * @property {number} [maxLength=500] - Max character count
  */
 
