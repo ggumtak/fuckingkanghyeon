@@ -7,24 +7,18 @@ const set4 = {
     questions: [
         {
             id: "dml-merge-01",
-            type: "code-fill",
-            prompt: "다음은 `MERGE` 문을 사용하여 `userTbl_New`의 데이터를 `userTbl`에 병합하는 구문입니다. 매칭되는 데이터가 있으면 업데이트하고, 없으면 삽입하는 빈칸을 채우세요.",
-            language: "sql",
-            code: "MERGE userTbl AS T\nUSING userTbl_New AS S\nON T.userID = S.userID\nWHEN MATCHED THEN\n    UPDATE SET T.name = S.name\nWHEN NOT MATCHED THEN\n    ( 1 ) (userID, name) VALUES (S.userID, S.name);",
-            blanks: [
-                { index: 1, answer: "INSERT", explanation: "조건이 맞지 않을 때(데이터가 없을 때) 새로운 행을 추가하려면 INSERT 문을 사용합니다." }
-            ],
+            type: "short",
+            prompt: "다음은 `MERGE` 문을 사용하여 `userTbl_New`의 데이터를 `userTbl`에 병합하는 구문입니다. 매칭되지 않는 데이터가 있을 때 새로운 행을 추가하려면 빈칸에 무엇을 넣어야 합니까?\n\nMERGE userTbl AS T\nUSING userTbl_New AS S\nON T.userID = S.userID\nWHEN MATCHED THEN\n    UPDATE SET T.name = S.name\nWHEN NOT MATCHED THEN\n    (  ) (userID, name) VALUES (S.userID, S.name);",
+            acceptableAnswers: ["INSERT", "insert"],
+            explanation: "조건이 맞지 않을 때(데이터가 없을 때) 새로운 행을 추가하려면 INSERT 문을 사용합니다.",
             meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "MERGE" }
         },
         {
             id: "func-window-01",
-            type: "code-fill",
-            prompt: "`userTbl`에서 키(`height`)가 큰 순서대로 순위를 매기되, 키가 같으면 같은 등수로 처리하고 다음 등수는 건너뛰는(예: 1, 2, 2, 4등) 윈도우 함수를 사용하려고 합니다.",
-            language: "sql",
-            code: "SELECT name, height,\n       ( 1 )() OVER (ORDER BY height DESC) AS 등수\nFROM userTbl;",
-            blanks: [
-                { index: 1, answer: "RANK", explanation: "RANK() 함수는 동점자 발생 시 같은 순위를 부여하고, 그 수만큼 다음 순위를 건너뜁니다." }
-            ],
+            type: "short",
+            prompt: "`userTbl`에서 키(`height`)가 큰 순서대로 순위를 매기되, 키가 같으면 같은 등수로 처리하고 다음 등수는 건너뛰는(예: 1, 2, 2, 4등) 윈도우 함수 이름은?\n\nSELECT name, height,\n       (  )() OVER (ORDER BY height DESC) AS 등수\nFROM userTbl;",
+            acceptableAnswers: ["RANK", "rank"],
+            explanation: "RANK() 함수는 동점자 발생 시 같은 순위를 부여하고, 그 수만큼 다음 순위를 건너뜁니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "Window Functions" }
         },
         {
@@ -81,13 +75,10 @@ const set4 = {
         },
         {
             id: "join-cte-01",
-            type: "code-fill",
-            prompt: "다음은 CTE(Common Table Expression)를 사용하여 사용자별 총 구매액을 구하는 구문입니다. 빈칸을 채우세요.",
-            language: "sql",
-            code: "WITH UserBuySum (userID, total)\nAS\n(\n    SELECT userID, SUM(price * amount)\n    FROM buyTbl\n    GROUP BY ( 1 )\n)\nSELECT * FROM UserBuySum ORDER BY total DESC;",
-            blanks: [
-                { index: 1, answer: "userID", explanation: "사용자별 합계를 구하려면 userID로 그룹화(GROUP BY)해야 합니다." }
-            ],
+            type: "short",
+            prompt: "다음은 CTE(Common Table Expression)를 사용하여 사용자별 총 구매액을 구하는 구문입니다. GROUP BY 뒤에 올 컬럼명은?\n\nWITH UserBuySum (userID, total)\nAS\n(\n    SELECT userID, SUM(price * amount)\n    FROM buyTbl\n    GROUP BY (  )\n)\nSELECT * FROM UserBuySum ORDER BY total DESC;",
+            acceptableAnswers: ["userID", "userid"],
+            explanation: "사용자별 합계를 구하려면 userID로 그룹화(GROUP BY)해야 합니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "CTE" }
         },
         {
@@ -114,13 +105,10 @@ const set4 = {
         },
         {
             id: "func-agg-01",
-            type: "code-fill",
-            prompt: "그룹별 소계와 총계를 자동으로 구해주는 `GROUP BY`의 확장 기능을 사용하려 합니다. 빈칸을 채우세요.",
-            language: "sql",
-            code: "SELECT groupName, SUM(price * amount)\nFROM buyTbl\nGROUP BY ( 1 ) (groupName);",
-            blanks: [
-                { index: 1, answer: "ROLLUP", explanation: "ROLLUP 함수는 지정된 컬럼에 대해 소계와 총합 행을 추가로 생성합니다." }
-            ],
+            type: "short",
+            prompt: "그룹별 소계와 총계를 자동으로 구해주는 `GROUP BY`의 확장 기능에서, 빈칸에 들어갈 함수명은?\n\nSELECT groupName, SUM(price * amount)\nFROM buyTbl\nGROUP BY (  ) (groupName);",
+            acceptableAnswers: ["ROLLUP", "rollup"],
+            explanation: "ROLLUP 함수는 지정된 컬럼에 대해 소계와 총합 행을 추가로 생성합니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "GROUP BY Extensions" }
         },
         {
@@ -147,11 +135,10 @@ const set4 = {
         },
         {
             id: "join-pivot-01",
-            type: "code-fill",
-            prompt: "`pivotTest` 테이블에서 계절(`season`)을 열로 변환하여 수량(`amount`)의 합계를 구하는 PIVOT 구문입니다.",
-            language: "sql",
-            code: "SELECT *\nFROM pivotTest\nPIVOT ( SUM(amount) FOR season IN ([봄], [여름], [가을], [겨울]) ) AS pvt;",
-            blanks: [],
+            type: "short",
+            prompt: "`pivotTest` 테이블에서 계절(`season`)을 열로 변환하여 수량(`amount`)의 합계를 구하는 PIVOT 구문에서, 집계 함수 부분은?\n\nSELECT *\nFROM pivotTest\nPIVOT ((  )(amount) FOR season IN ([봄], [여름], [가을], [겨울])) AS pvt;",
+            acceptableAnswers: ["SUM", "sum"],
+            explanation: "PIVOT에서 집계 함수로 SUM, COUNT, AVG 등을 사용할 수 있습니다.",
             meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "PIVOT Syntax" }
         },
         {
@@ -162,8 +149,8 @@ const set4 = {
                 "ROW_NUMBER는 값의 중복 여부와 상관없이 1, 2, 3, 4 처럼 고유한 순번을 매김",
                 "DENSE_RANK는 값이 같으면 같은 순위를 주되, 중간에 비어있는 번호 없이(1, 1, 2, ...) 순위를 매김"
             ],
+            answer: "ROW_NUMBER()는 값의 중복 여부와 상관없이 1, 2, 3, 4처럼 항상 고유한 순번을 매깁니다. DENSE_RANK()는 값이 같으면 같은 순위를 부여하되, 중간에 비어있는 번호 없이(예: 1, 1, 2, 3) 빽빽한 순위를 매깁니다. RANK()와 달리 순위를 건너뛰지 않습니다.",
             maxLength: 300,
-            explanation: "ROW_NUMBER는 단순 일련번호, DENSE_RANK는 빽빽한(건너뜀 없는) 순위입니다.",
             meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
         }
     ]

@@ -7,36 +7,26 @@ const set3 = {
     questions: [
         {
             id: "dml-seq-01",
-            type: "code-fill",
-            prompt: "다음은 시퀀스(SEQUENCE) 객체를 사용하여 `userTbl`에 데이터를 삽입하는 구문입니다. `userSeq` 시퀀스에서 다음 값을 가져오도록 빈칸을 채우세요.",
-            language: "sql",
-            code: "INSERT INTO userTbl (userID, name)\nVALUES ( ( 1 ) FOR userSeq, '홍길동' );",
-            blanks: [
-                { index: 1, answer: "NEXT VALUE", explanation: "시퀀스의 다음 값을 가져오는 구문은 `NEXT VALUE FOR 시퀀스명`입니다." }
-            ],
+            type: "short",
+            prompt: "다음은 시퀀스(SEQUENCE) 객체를 사용하여 `userTbl`에 데이터를 삽입하는 구문입니다. 빈칸에 들어갈 키워드 두 단어는?\n\nINSERT INTO userTbl (userID, name)\nVALUES ((  ) FOR userSeq, '홍길동');",
+            acceptableAnswers: ["NEXT VALUE", "next value"],
+            explanation: "시퀀스의 다음 값을 가져오는 구문은 `NEXT VALUE FOR 시퀀스명`입니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "SEQUENCE" }
         },
         {
             id: "dml-identity-01",
-            type: "code-fill",
-            prompt: "`IDENTITY` 속성이 설정된 `buyTbl`의 `num` 컬럼에 강제로 값을 입력하려고 합니다. 빈칸을 채워 설정을 변경하고 입력하세요.",
-            language: "sql",
-            code: "SET IDENTITY_INSERT buyTbl ( 1 );\nINSERT INTO buyTbl (num, userID, prodName) VALUES (100, 'ABC', '책');\nSET IDENTITY_INSERT buyTbl ( 2 );",
-            blanks: [
-                { index: 1, answer: "ON", explanation: "IDENTITY 컬럼에 값을 직접 입력하려면 `IDENTITY_INSERT` 옵션을 ON으로 켜야 합니다." },
-                { index: 2, answer: "OFF", explanation: "입력이 끝난 후에는 다시 OFF로 꺼야 합니다." }
-            ],
+            type: "short",
+            prompt: "`IDENTITY` 속성이 설정된 `buyTbl`의 `num` 컬럼에 강제로 값을 입력하려고 합니다. 첫 번째 빈칸에 들어갈 값(설정을 켜는 키워드)은?\n\nSET IDENTITY_INSERT buyTbl (  );\nINSERT INTO buyTbl (num, userID, prodName) VALUES (100, 'ABC', '책');\nSET IDENTITY_INSERT buyTbl OFF;",
+            acceptableAnswers: ["ON", "on"],
+            explanation: "IDENTITY 컬럼에 값을 직접 입력하려면 `IDENTITY_INSERT` 옵션을 ON으로 켜야 합니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "IDENTITY_INSERT" }
         },
         {
             id: "dml-update-05",
-            type: "code-fill",
-            prompt: "`buyTbl`에서 '전자' 분류(`groupName`)에 속하는 제품들의 단가(`price`)를 50씩 인하하는 구문을 작성하세요.",
-            language: "sql",
-            code: "UPDATE buyTbl\nSET price = price - 50\nWHERE ( 1 ) = '전자';",
-            blanks: [
-                { index: 1, answer: "groupName", explanation: "분류를 나타내는 컬럼명은 groupName입니다." }
-            ],
+            type: "short",
+            prompt: "`buyTbl`에서 '전자' 분류에 속하는 제품들의 단가를 50씩 인하하는 구문에서, WHERE 절의 빈칸에 들어갈 컬럼명은?\n\nUPDATE buyTbl\nSET price = price - 50\nWHERE (  ) = '전자';",
+            acceptableAnswers: ["groupName", "groupname"],
+            explanation: "분류를 나타내는 컬럼명은 groupName입니다.",
             meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "UPDATE Logic" }
         },
         {
@@ -151,13 +141,10 @@ const set3 = {
         },
         {
             id: "join-op-02",
-            type: "code-fill",
-            prompt: "`userTbl`과 `buyTbl`을 조인하되, 조건이 일치하지 않는 양쪽 테이블의 모든 데이터를 포함하여 출력하고자 합니다. 빈칸을 채우세요.",
-            language: "sql",
-            code: "SELECT u.name, b.prodName\nFROM userTbl u\n( 1 ) JOIN buyTbl b\nON u.userID = b.userID;",
-            blanks: [
-                { index: 1, answer: "FULL OUTER", explanation: "양쪽 테이블의 모든 행을 포함하려면 FULL OUTER JOIN을 사용합니다." }
-            ],
+            type: "short",
+            prompt: "`userTbl`과 `buyTbl`을 조인하되, 조건이 일치하지 않는 양쪽 테이블의 모든 데이터를 포함하여 출력하고자 합니다. 빈칸에 들어갈 두 단어는?\n\nSELECT u.name, b.prodName\nFROM userTbl u\n(  ) JOIN buyTbl b\nON u.userID = b.userID;",
+            acceptableAnswers: ["FULL OUTER", "full outer"],
+            explanation: "양쪽 테이블의 모든 행을 포함하려면 FULL OUTER JOIN을 사용합니다.",
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "OUTER JOIN" }
         },
         {
@@ -169,8 +156,8 @@ const set3 = {
                 "차이점: INTERSECT는 두 SELECT문의 결과 열 개수와 타입이 일치해야 한다.",
                 "차이점: INNER JOIN은 특정 컬럼(ON 조건)을 기준으로 테이블을 옆으로 결합한다."
             ],
+            answer: "공통점: 두 데이터 집합의 공통된(교집합) 부분만 추출합니다. 차이점: INTERSECT는 두 SELECT문의 결과 열 개수와 타입이 동일해야 하며 행 단위로 비교합니다. INNER JOIN은 ON 조건을 기준으로 두 테이블을 옆으로 결합하여 새로운 열을 만듭니다.",
             maxLength: 300,
-            explanation: "INTERSECT는 집합 연산자로 행 단위 비교를, INNER JOIN은 테이블 결합을 수행합니다.",
             meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "Set Operators vs JOIN" }
         }
     ]

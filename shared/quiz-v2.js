@@ -43,10 +43,14 @@ function saveV2Progress() {
         progress.mcqSelections[radio.name] = radio.value;
     });
 
-    // Save essay values
+    // Save essay values (including self-grading state)
     document.querySelectorAll('.v2-essay').forEach(textarea => {
         const qId = textarea.dataset.question;
-        progress.values[`essay-${qId}`] = { value: textarea.value };
+        progress.values[`essay-${qId}`] = {
+            value: textarea.value,
+            readOnly: textarea.readOnly,
+            classList: Array.from(textarea.classList).filter(c => ['correct', 'wrong', 'retry'].includes(c))
+        };
     });
 
     try {
@@ -99,8 +103,31 @@ function restoreV2Progress() {
             } else if (key.startsWith('essay-')) {
                 const qId = key.replace('essay-', '');
                 const textarea = document.querySelector(`.v2-essay[data-question="${qId}"]`);
+                const card = document.getElementById(`q-${qId}`);
                 if (textarea && data) {
                     textarea.value = data.value || '';
+                    textarea.readOnly = data.readOnly || false;
+                    data.classList?.forEach(cls => textarea.classList.add(cls));
+
+                    // Restore self-grading UI state
+                    const state = v2States.get(`essay-${qId}`);
+                    if (state === 'self-correct' || state === 'self-wrong') {
+                        const selfCheckWrapper = card?.querySelector('.essay-self-check');
+                        if (selfCheckWrapper) {
+                            const isCorrect = state === 'self-correct';
+                            selfCheckWrapper.innerHTML = `
+                                <span style="color: var(--${isCorrect ? 'success' : 'error'}); font-size: 0.9em; font-weight: 500;">
+                                    ${isCorrect ? '✓ 정답 처리됨' : '✗ 오답 처리됨'}
+                                </span>
+                                <button type="button" class="btn btn-sm essay-self-reset" data-question="${qId}"
+                                        style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); font-size: 0.8em;">
+                                    취소
+                                </button>
+                            `;
+                            const resetBtn = selfCheckWrapper.querySelector('.essay-self-reset');
+                            if (resetBtn) resetBtn.onclick = () => resetSelfGradeEssay(qId);
+                        }
+                    }
                 }
             } else if (key.includes('-')) {
                 const [qId, blankIdx] = key.split('-');
@@ -346,11 +373,145 @@ function renderEssayQuestion(q, container) {
     `;
     container.appendChild(textareaWrapper);
 
+    // Button container for essay actions
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'essay-btn-group';
+    btnGroup.style.cssText = 'display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;';
+
+    // Show answer button
     const showBtn = document.createElement('button');
     showBtn.className = 'btn btn-sm btn-show-answer';
     showBtn.textContent = '정답 예시 보기';
     showBtn.onclick = () => showEssayAnswer(q);
-    container.appendChild(showBtn);
+    btnGroup.appendChild(showBtn);
+
+    // Self-check buttons
+    const selfCheckWrapper = document.createElement('div');
+    selfCheckWrapper.className = 'essay-self-check';
+    selfCheckWrapper.style.cssText = 'display: flex; gap: 6px; align-items: center;';
+    selfCheckWrapper.innerHTML = `
+        <span style="color: var(--text-muted); font-size: 0.85em; margin-right: 4px;">자기 채점:</span>
+        <button type="button" class="btn btn-sm essay-self-correct" data-question="${q.id}" 
+                style="background: var(--success-dim); color: var(--success); border: 1px solid var(--success);">
+            ✓ 맞았어요
+        </button>
+        <button type="button" class="btn btn-sm essay-self-wrong" data-question="${q.id}"
+                style="background: var(--error-dim); color: var(--error); border: 1px solid var(--error);">
+            ✗ 틀렸어요
+        </button>
+    `;
+    btnGroup.appendChild(selfCheckWrapper);
+    container.appendChild(btnGroup);
+
+    // Bind self-check events
+    setTimeout(() => {
+        const correctBtn = container.querySelector('.essay-self-correct');
+        const wrongBtn = container.querySelector('.essay-self-wrong');
+        if (correctBtn) correctBtn.onclick = () => selfGradeEssay(q.id, true);
+        if (wrongBtn) wrongBtn.onclick = () => selfGradeEssay(q.id, false);
+    }, 0);
+}
+
+/**
+ * Self-grade essay question
+ */
+function selfGradeEssay(questionId, isCorrect) {
+    const card = document.getElementById(`q-${questionId}`);
+    if (!card) return;
+
+    const textarea = card.querySelector('.v2-essay');
+    const selfCheckWrapper = card.querySelector('.essay-self-check');
+    const key = `essay-${questionId}`;
+
+    // Remove existing state
+    card.classList.remove('essay-self-correct-state', 'essay-self-wrong-state');
+    textarea?.classList.remove('correct', 'wrong', 'retry');
+
+    if (isCorrect) {
+        card.classList.add('essay-self-correct-state');
+        textarea?.classList.add('correct');
+        if (textarea) textarea.readOnly = true;
+        v2States.set(key, 'self-correct');
+
+        // Update button states
+        if (selfCheckWrapper) {
+            selfCheckWrapper.innerHTML = `
+                <span style="color: var(--success); font-size: 0.9em; font-weight: 500;">
+                    ✓ 정답 처리됨
+                </span>
+                <button type="button" class="btn btn-sm essay-self-reset" data-question="${questionId}"
+                        style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); font-size: 0.8em;">
+                    취소
+                </button>
+            `;
+            const resetBtn = selfCheckWrapper.querySelector('.essay-self-reset');
+            if (resetBtn) resetBtn.onclick = () => resetSelfGradeEssay(questionId);
+        }
+    } else {
+        card.classList.add('essay-self-wrong-state');
+        textarea?.classList.add('wrong');
+        if (textarea) textarea.readOnly = true;
+        v2States.set(key, 'self-wrong');
+        v2WasEverWrong.add(key);
+
+        // Update button states
+        if (selfCheckWrapper) {
+            selfCheckWrapper.innerHTML = `
+                <span style="color: var(--error); font-size: 0.9em; font-weight: 500;">
+                    ✗ 오답 처리됨
+                </span>
+                <button type="button" class="btn btn-sm essay-self-reset" data-question="${questionId}"
+                        style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); font-size: 0.8em;">
+                    취소
+                </button>
+            `;
+            const resetBtn = selfCheckWrapper.querySelector('.essay-self-reset');
+            if (resetBtn) resetBtn.onclick = () => resetSelfGradeEssay(questionId);
+        }
+    }
+
+    updateV2Score();
+    saveV2Progress();
+}
+
+/**
+ * Reset self-grade for essay question
+ */
+function resetSelfGradeEssay(questionId) {
+    const card = document.getElementById(`q-${questionId}`);
+    if (!card) return;
+
+    const textarea = card.querySelector('.v2-essay');
+    const selfCheckWrapper = card.querySelector('.essay-self-check');
+    const key = `essay-${questionId}`;
+
+    // Remove states
+    card.classList.remove('essay-self-correct-state', 'essay-self-wrong-state');
+    textarea?.classList.remove('correct', 'wrong', 'retry');
+    if (textarea) textarea.readOnly = false;
+    v2States.delete(key);
+
+    // Restore buttons
+    if (selfCheckWrapper) {
+        selfCheckWrapper.innerHTML = `
+            <span style="color: var(--text-muted); font-size: 0.85em; margin-right: 4px;">자기 채점:</span>
+            <button type="button" class="btn btn-sm essay-self-correct" data-question="${questionId}" 
+                    style="background: var(--success-dim); color: var(--success); border: 1px solid var(--success);">
+                ✓ 맞았어요
+            </button>
+            <button type="button" class="btn btn-sm essay-self-wrong" data-question="${questionId}"
+                    style="background: var(--error-dim); color: var(--error); border: 1px solid var(--error);">
+                ✗ 틀렸어요
+            </button>
+        `;
+        const correctBtn = selfCheckWrapper.querySelector('.essay-self-correct');
+        const wrongBtn = selfCheckWrapper.querySelector('.essay-self-wrong');
+        if (correctBtn) correctBtn.onclick = () => selfGradeEssay(questionId, true);
+        if (wrongBtn) wrongBtn.onclick = () => selfGradeEssay(questionId, false);
+    }
+
+    updateV2Score();
+    saveV2Progress();
 }
 
 function showEssayAnswer(q) {

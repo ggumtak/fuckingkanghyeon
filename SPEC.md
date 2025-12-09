@@ -31,7 +31,13 @@
 >      - Reference materials in the `resources/` folder
 >      - Quiz question prompts and explanations shown in the UI
 >
-> 5. **If you are a new agent (or new to this project):**
+> 5. **Python Tooling (Available)**
+>    - Python is available for batch operations, code generation, and optimization tasks.
+>    - Use cases: bulk file updates, data processing, quiz set generation, code refactoring.
+>    - **Delete temp scripts after use** (do not commit utility scripts to repo).
+>    - Document significant Python-based changes in this file.
+>
+> 6. **If you are a new agent (or new to this project):**
 >    - Open this file and **first read all sections whose titles end with:**
 >      - `[AI MUST READ]`
 >      - `[AI MUST READ WHEN EDITING]`
@@ -162,6 +168,7 @@ testpractice-main/
 │
 ├── shared/                      # 🔧 Shared modules
 │   ├── styles.css               # Main styles (global theme)
+│   ├── index.css                # Main dashboard styles
 │   ├── quiz-v2-styles.css       # v2 quiz styles
 │   ├── quiz-app.js              # v1 quiz engine
 │   ├── quiz-v2.js               # v2 quiz engine
@@ -205,6 +212,7 @@ testpractice-main/
 | `nav-config.js`  | Sidebar menu structure definition      | LocalStorage integration              |
 | `ai-chat.js`     | Gemini API integration, chat UI        | API key in LocalStorage               |
 | `styles.css`     | Global design system                   | Use CSS variables only                |
+| `index.css`      | Main dashboard styles                  | Folder/file card grid, animations     |
 
 ---
 

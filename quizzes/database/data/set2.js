@@ -7,49 +7,30 @@ const set2 = {
     questions: [
         {
             id: "dml-insert-03",
-            type: "code-fill",
-            prompt: "`buyTbl`에 새로운 구매 내역을 추가하려 합니다. `num`(순번)은 자동 증가(IDENTITY) 열이라고 가정할 때, 이를 제외하고 데이터를 삽입하는 구문을 완성하세요.\n- 아이디: 'JYP'\n- 제품명: '이어폰'\n- 분류: '전자'\n- 단가: 50\n- 수량: 1",
-            language: "sql",
-            code: "INSERT INTO buyTbl (userID, prodName, groupName, price, amount)\nVALUES ( ( 1 ), ( 2 ), ( 3 ), 50, 1 );",
-            blanks: [
-                { index: 1, answer: "'JYP'", explanation: "사용자 아이디는 문자열이므로 작은따옴표로 감싸야 합니다." },
-                { index: 2, answer: "'이어폰'", explanation: "제품명 문자열입니다." },
-                { index: 3, answer: "'전자'", explanation: "분류 문자열입니다." }
-            ],
+            type: "short",
+            prompt: "`buyTbl`에 새로운 구매 내역을 추가하려 합니다. `num`(순번)은 자동 증가(IDENTITY) 열이라고 가정할 때, VALUES 안의 첫번째 값(아이디 'JYP')을 어떻게 표기해야 합니까?\n\nINSERT INTO buyTbl (userID, prodName, groupName, price, amount)\nVALUES ((  ), '이어폰', '전자', 50, 1);",
+            acceptableAnswers: ["'JYP'"],
             meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "INSERT Syntax" }
         },
         {
             id: "dml-update-03",
-            type: "code-fill",
-            prompt: "`userTbl`에서 아이디가 'LSG'인 회원의 전화번호 국번(`mobile1`)을 '011'로, 전화번호 뒷자리(`mobile2`)를 '1234567'로 변경하는 구문을 완성하세요.",
-            language: "sql",
-            code: "UPDATE userTbl\nSET ( 1 ) = '011', mobile2 = '1234567'\nWHERE ( 2 ) = 'LSG';",
-            blanks: [
-                { index: 1, answer: "mobile1", explanation: "변경할 컬럼명은 mobile1입니다." },
-                { index: 2, answer: "userID", explanation: "조건절에서 식별자로 사용되는 컬럼은 userID입니다." }
-            ],
+            type: "short",
+            prompt: "`userTbl`에서 아이디가 'LSG'인 회원의 전화번호 국번을 '011'로 변경하는 구문에서, SET 뒤에 올 컬럼명은?\n\nUPDATE userTbl\nSET (  ) = '011', mobile2 = '1234567'\nWHERE userID = 'LSG';",
+            acceptableAnswers: ["mobile1"],
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "UPDATE Logic" }
         },
         {
             id: "dml-delete-03",
-            type: "code-fill",
-            prompt: "`buyTbl`에서 분류(`groupName`)가 지정되지 않은(NULL인) 모든 구매 기록을 삭제하는 구문을 작성하세요.",
-            language: "sql",
-            code: "DELETE FROM buyTbl\nWHERE groupName ( 1 );",
-            blanks: [
-                { index: 1, answer: "IS NULL", explanation: "NULL 값을 비교할 때는 `=`가 아닌 `IS NULL` 연산자를 사용해야 합니다." }
-            ],
+            type: "short",
+            prompt: "`buyTbl`에서 분류(`groupName`)가 지정되지 않은(NULL인) 모든 구매 기록을 삭제하는 구문에서, WHERE 절에 들어갈 조건은?\n\nDELETE FROM buyTbl\nWHERE groupName (  );",
+            acceptableAnswers: ["IS NULL", "is null"],
             meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "DELETE NULL Handling" }
         },
         {
             id: "dml-insert-04",
-            type: "code-fill",
-            prompt: "다른 테이블 `buyTbl_Backup`이 이미 존재한다고 가정할 때, `buyTbl`의 모든 데이터를 백업 테이블로 복사(삽입)하는 구문을 작성하세요.",
-            language: "sql",
-            code: "INSERT INTO buyTbl_Backup\nSELECT ( 1 ) FROM buyTbl;",
-            blanks: [
-                { index: 1, answer: "*", explanation: "모든 컬럼을 선택하여 삽입하려면 와일드카드(*)를 사용합니다." }
-            ],
+            type: "short",
+            prompt: "다른 테이블 `buyTbl_Backup`이 이미 존재한다고 가정할 때, `buyTbl`의 모든 데이터를 백업 테이블로 복사하는 구문에서 SELECT 뒤에 올 기호는?\n\nINSERT INTO buyTbl_Backup\nSELECT (  ) FROM buyTbl;",
+            acceptableAnswers: ["*"],
             meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "INSERT INTO ... SELECT" }
         },
         {
@@ -183,8 +164,8 @@ const set2 = {
                 "사용하던 디스크 공간이 즉시 반납됨",
                 "제약 조건 등이 있을 경우 삭제 순서에 주의해야 할 수 있음"
             ],
+            answer: "DROP TABLE은 데이터뿐만 아니라 테이블의 구조(스키마)까지 모두 삭제합니다. 사용하던 디스크 공간이 즉시 반납되며, 외래키 등 제약 조건이 있을 경우 참조하는 테이블을 먼저 삭제하거나 제약 조건을 제거해야 합니다.",
             maxLength: 300,
-            explanation: "DROP은 객체 자체를 파괴합니다.",
             meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "DDL Commands" }
         },
         {
@@ -273,14 +254,9 @@ const set2 = {
         },
         {
             id: "join-interp-08",
-            type: "code-fill",
-            prompt: "세 개의 테이블 `Student`(학생), `Class`(수업), `Enrollment`(수강신청)을 조인하여 학생 이름과 수업 이름을 출력하려 합니다. 빈칸을 채우세요.",
-            language: "sql",
-            code: "SELECT s.stdName, c.className\nFROM Student s\n( 1 ) JOIN Enrollment e ON s.stdID = e.stdID\n( 2 ) JOIN Class c ON e.classID = c.classID;",
-            blanks: [
-                { index: 1, answer: "INNER", explanation: "학생과 수강신청 정보를 연결합니다. (수강신청한 학생만)" },
-                { index: 2, answer: "INNER", explanation: "수강신청 정보와 수업 정보를 연결합니다." }
-            ],
+            type: "short",
+            prompt: "세 개의 테이블 `Student`(학생), `Class`(수업), `Enrollment`(수강신청)을 조인하여 학생 이름과 수업 이름을 출력하려 합니다. 첫 번째 빈칸에 들어갈 JOIN 종류는?\n\nSELECT s.stdName, c.className\nFROM Student s\n(  ) JOIN Enrollment e ON s.stdID = e.stdID\nINNER JOIN Class c ON e.classID = c.classID;",
+            acceptableAnswers: ["INNER", "inner"],
             meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "Multi-table JOIN" }
         },
         {
@@ -314,8 +290,8 @@ const set2 = {
                 "조인 결과, 구매 내역이 없는 회원은 buyTbl 측 컬럼(예: prodName)이 NULL이 된다",
                 "WHERE 절에서 buyTbl의 컬럼이 IS NULL인 행만 필터링한다"
             ],
+            answer: "먼저 userTbl을 기준으로 buyTbl을 LEFT OUTER JOIN 합니다. 조인 결과, 구매 내역이 없는 회원은 buyTbl 측 컬럼(예: userID, prodName)이 NULL이 됩니다. 그 후 WHERE 절에서 buyTbl.userID IS NULL 조건으로 미구매 회원만 필터링합니다.",
             maxLength: 300,
-            explanation: "LEFT JOIN 후 우측 테이블의 PK나 필수 컬럼이 NULL인 것을 찾으면 매칭되지 않은 행(미구매자)을 찾을 수 있습니다.",
             meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "Exclusive JOIN" }
         },
         {
