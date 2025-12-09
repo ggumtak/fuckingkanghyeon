@@ -9,6 +9,132 @@ const v2States = new Map();
 const v2WasEverWrong = new Set();
 let currentV2Round = null;
 
+// Get localStorage key for current quiz
+function getV2StorageKey() {
+    const setId = currentV2Round?.setId || 'unknown';
+    return `v2_quiz_progress_${setId}`;
+}
+
+// Save v2 quiz progress to localStorage
+function saveV2Progress() {
+    if (!currentV2Round) return;
+
+    const progress = {
+        states: Object.fromEntries(v2States),
+        wasEverWrong: Array.from(v2WasEverWrong),
+        values: {},
+        mcqSelections: {}
+    };
+
+    // Save input values
+    document.querySelectorAll('.v2-blank, .v2-short').forEach(input => {
+        const key = input.classList.contains('v2-short')
+            ? `short-${input.dataset.question}`
+            : `${input.dataset.question}-${input.dataset.blank}`;
+        progress.values[key] = {
+            value: input.value,
+            readOnly: input.readOnly,
+            classList: Array.from(input.classList).filter(c => ['correct', 'wrong', 'retry'].includes(c))
+        };
+    });
+
+    // Save MCQ selections
+    document.querySelectorAll('.mcq-option input[type="radio"]:checked').forEach(radio => {
+        progress.mcqSelections[radio.name] = radio.value;
+    });
+
+    // Save essay values
+    document.querySelectorAll('.v2-essay').forEach(textarea => {
+        const qId = textarea.dataset.question;
+        progress.values[`essay-${qId}`] = { value: textarea.value };
+    });
+
+    try {
+        localStorage.setItem(getV2StorageKey(), JSON.stringify(progress));
+    } catch (e) {
+        console.warn('Failed to save v2 progress:', e);
+    }
+}
+
+// Load v2 quiz progress from localStorage
+function loadV2Progress() {
+    try {
+        const stored = localStorage.getItem(getV2StorageKey());
+        if (!stored) return null;
+        return JSON.parse(stored);
+    } catch (e) {
+        console.warn('Failed to load v2 progress:', e);
+        return null;
+    }
+}
+
+// Restore v2 quiz progress after rendering
+function restoreV2Progress() {
+    const progress = loadV2Progress();
+    if (!progress) return;
+
+    // Restore states
+    if (progress.states) {
+        for (const [key, value] of Object.entries(progress.states)) {
+            v2States.set(key, value);
+        }
+    }
+
+    // Restore wasEverWrong
+    if (progress.wasEverWrong) {
+        progress.wasEverWrong.forEach(key => v2WasEverWrong.add(key));
+    }
+
+    // Restore input values
+    if (progress.values) {
+        for (const [key, data] of Object.entries(progress.values)) {
+            if (key.startsWith('short-')) {
+                const qId = key.replace('short-', '');
+                const input = document.querySelector(`.v2-short[data-question="${qId}"]`);
+                if (input && data) {
+                    input.value = data.value || '';
+                    input.readOnly = data.readOnly || false;
+                    data.classList?.forEach(cls => input.classList.add(cls));
+                }
+            } else if (key.startsWith('essay-')) {
+                const qId = key.replace('essay-', '');
+                const textarea = document.querySelector(`.v2-essay[data-question="${qId}"]`);
+                if (textarea && data) {
+                    textarea.value = data.value || '';
+                }
+            } else if (key.includes('-')) {
+                const [qId, blankIdx] = key.split('-');
+                const input = document.querySelector(`.v2-blank[data-question="${qId}"][data-blank="${blankIdx}"]`);
+                if (input && data) {
+                    input.value = data.value || '';
+                    input.readOnly = data.readOnly || false;
+                    data.classList?.forEach(cls => input.classList.add(cls));
+                }
+            }
+        }
+    }
+
+    // Restore MCQ selections
+    if (progress.mcqSelections) {
+        for (const [name, value] of Object.entries(progress.mcqSelections)) {
+            const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+            if (radio) {
+                radio.checked = true;
+                // Also apply visual state
+                const option = radio.closest('.mcq-option');
+                const state = v2States.get(`mcq-${name.replace('mcq-', '')}`);
+                if (state === 'correct') {
+                    option?.classList.add('correct');
+                } else if (state === 'wrong') {
+                    option?.classList.add('wrong');
+                }
+            }
+        }
+    }
+
+    updateV2Score();
+}
+
 /**
  * Render a v2 quiz round
  * @param {Object} round - QuizRound object
@@ -74,6 +200,10 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
 
     // Bind v2 events
     bindV2Events(round);
+
+    // Restore saved progress from localStorage
+    restoreV2Progress();
+
     updateV2Score();
 }
 
@@ -320,6 +450,7 @@ function gradeV2CodeFill(input, round) {
         }
     }
     updateV2Score();
+    saveV2Progress();
 }
 
 function gradeV2Mcq(radio, round) {
@@ -348,6 +479,7 @@ function gradeV2Mcq(radio, round) {
 
     card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
     updateV2Score();
+    saveV2Progress();
 
     // Auto-focus to next question after MCQ is answered
     moveToNextQuestion(card);
@@ -387,6 +519,7 @@ function gradeV2Short(input, round) {
         }
     }
     updateV2Score();
+    saveV2Progress();
 }
 
 function gradeAllV2() {
@@ -421,6 +554,11 @@ function resetV2Quiz() {
     v2States.clear();
     v2WasEverWrong.clear();
     updateV2Score();
+
+    // Clear saved progress
+    try {
+        localStorage.removeItem(getV2StorageKey());
+    } catch (e) { }
 }
 
 function showAllV2Answers() {
@@ -454,6 +592,7 @@ function showAllV2Answers() {
         }
     });
     updateV2Score();
+    saveV2Progress();
 }
 
 function updateV2Score() {
@@ -635,6 +774,7 @@ function reviewWrongV2() {
 
     v2WasEverWrong.clear();
     updateV2Score();
+    saveV2Progress();
 
     if (!hasWrong) {
         alert('복습할 문제가 없습니다! 🎉');
