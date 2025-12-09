@@ -12,7 +12,7 @@ git config user.name 2>nul || git config --global user.name "ggumtak"
 
 if not exist ".git" git init
 git remote remove origin 2>nul
-git remote add origin https://github.com/ggumtak/testpractice.git
+git remote add origin https://github.com/ggumtak/fuckingkanghyeon.git
 
 git add .
 git commit -m "Update %date% %time:~0,5%" 2>nul
@@ -21,6 +21,6 @@ git push -u origin main --force
 
 echo.
 echo === Done! ===
-echo URL: https://ggumtak.github.io/testpractice
+echo URL: https://ggumtak.github.io/fuckingkanghyeon
 echo.
 pause
