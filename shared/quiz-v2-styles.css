@@ -96,6 +96,24 @@
     word-break: break-word;
 }
 
+/* ========== Markdown Code Block in Prompts ========== */
+.hljs-code-block {
+    background: var(--code-bg, #1E1E1E);
+    border: 1px solid var(--code-border, rgba(68, 71, 70, 0.5));
+    border-radius: var(--radius-sm, 8px);
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.hljs-code-block code {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 /* V2 Blank inputs inside code */
 .v2-blank {
     font-family: 'JetBrains Mono', 'Consolas', monospace;

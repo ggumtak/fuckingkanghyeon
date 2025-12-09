@@ -83,7 +83,7 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
 function renderCodeFillQuestion(q, container) {
     const prompt = document.createElement('div');
     prompt.className = 'question-prompt';
-    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    prompt.innerHTML = parseMarkdownPrompt(q.prompt);
     container.appendChild(prompt);
 
     const codeBlock = document.createElement('div');
@@ -148,7 +148,7 @@ function renderCodeFillQuestion(q, container) {
 function renderMcqQuestion(q, container) {
     const prompt = document.createElement('div');
     prompt.className = 'question-prompt';
-    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    prompt.innerHTML = parseMarkdownPrompt(q.prompt);
     container.appendChild(prompt);
 
     const options = document.createElement('div');
@@ -174,7 +174,7 @@ function renderMcqQuestion(q, container) {
 function renderShortQuestion(q, container) {
     const prompt = document.createElement('div');
     prompt.className = 'question-prompt';
-    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    prompt.innerHTML = parseMarkdownPrompt(q.prompt);
     container.appendChild(prompt);
 
     const inputWrapper = document.createElement('div');
@@ -194,7 +194,7 @@ function renderShortQuestion(q, container) {
 function renderEssayQuestion(q, container) {
     const prompt = document.createElement('div');
     prompt.className = 'question-prompt';
-    prompt.innerHTML = q.prompt.replace(/\n/g, '<br>');
+    prompt.innerHTML = parseMarkdownPrompt(q.prompt);
     container.appendChild(prompt);
 
     const textareaWrapper = document.createElement('div');
@@ -257,6 +257,19 @@ function bindV2Events(round) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 gradeV2Short(input, round);
+            }
+        });
+    });
+
+    // Essay: Tab key moves to next question
+    document.querySelectorAll('.v2-essay').forEach(textarea => {
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab' && !e.shiftKey) {
+                e.preventDefault();
+                const card = textarea.closest('.question-card');
+                if (card) {
+                    moveToNextQuestion(card);
+                }
             }
         });
     });
@@ -326,6 +339,9 @@ function gradeV2Mcq(radio, round) {
 
     card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
     updateV2Score();
+
+    // Auto-focus to next question after MCQ is answered
+    moveToNextQuestion(card);
 }
 
 function gradeV2Short(input, round) {
@@ -341,9 +357,11 @@ function gradeV2Short(input, round) {
     );
 
     if (state === 'graded' && input.classList.contains('wrong')) {
+        // Second Enter on wrong answer: show correct answer and move to next
         input.value = question.acceptableAnswers[0];
         input.readOnly = true;
         v2States.set(key, 'shown');
+        moveToNextV2Input(input);
     } else if (!state || state !== 'correct') {
         input.classList.remove('correct', 'wrong', 'retry');
         if (userAnswer) {
@@ -351,6 +369,7 @@ function gradeV2Short(input, round) {
                 input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
                 input.readOnly = true;
                 v2States.set(key, 'correct');
+                moveToNextV2Input(input);
             } else {
                 input.classList.add('wrong');
                 v2WasEverWrong.add(key);
@@ -450,11 +469,76 @@ function updateV2Score() {
 }
 
 function moveToNextV2Blank(currentInput) {
-    const allBlanks = Array.from(document.querySelectorAll('.v2-blank:not([readonly]), .v2-short:not([readonly])'));
-    const currentIndex = allBlanks.indexOf(currentInput);
-    if (currentIndex >= 0 && currentIndex < allBlanks.length - 1) {
-        allBlanks[currentIndex + 1].focus();
+    moveToNextV2Input(currentInput);
+}
+
+/**
+ * Move focus to next input field (blank or short answer)
+ * Works for all question types with input fields
+ */
+function moveToNextV2Input(currentInput) {
+    const allInputs = Array.from(document.querySelectorAll('.v2-blank:not([readonly]), .v2-short:not([readonly])'));
+    const currentIndex = allInputs.indexOf(currentInput);
+
+    if (currentIndex >= 0 && currentIndex < allInputs.length - 1) {
+        // Move to next input
+        allInputs[currentIndex + 1].focus();
+    } else if (currentIndex === allInputs.length - 1) {
+        // Last input - move to next question
+        const card = currentInput.closest('.question-card');
+        if (card) {
+            moveToNextQuestion(card);
+        }
     }
+}
+
+/**
+ * Move focus to the next question card
+ * Handles all question types: code-fill, mcq, short, essay
+ * @param {HTMLElement} currentCard - Current question card element
+ */
+function moveToNextQuestion(currentCard) {
+    if (!currentCard) return;
+
+    const nextCard = currentCard.nextElementSibling;
+    if (!nextCard || !nextCard.classList.contains('question-card')) {
+        // No more questions - show completion message briefly
+        return;
+    }
+
+    // Scroll to next question
+    nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Focus on the first interactive element in next question
+    setTimeout(() => {
+        // Try code-fill blanks first
+        const nextBlank = nextCard.querySelector('.v2-blank:not([readonly])');
+        if (nextBlank) {
+            nextBlank.focus();
+            return;
+        }
+
+        // Try short answer input
+        const nextShort = nextCard.querySelector('.v2-short:not([readonly])');
+        if (nextShort) {
+            nextShort.focus();
+            return;
+        }
+
+        // Try MCQ radio buttons
+        const nextRadio = nextCard.querySelector('input[type="radio"]:not(:disabled)');
+        if (nextRadio) {
+            nextRadio.focus();
+            return;
+        }
+
+        // Try essay textarea
+        const nextEssay = nextCard.querySelector('.v2-essay');
+        if (nextEssay) {
+            nextEssay.focus();
+            return;
+        }
+    }, 100); // Small delay to allow scroll animation
 }
 
 // Normalize answer for flexible comparison (ignore whitespace only, preserve case)
@@ -594,6 +678,56 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+/**
+ * Parse markdown-style code blocks in prompt text and apply syntax highlighting
+ * Converts ```language\ncode\n``` to highlighted <pre><code> blocks
+ * @param {string} promptText - The raw prompt text
+ * @returns {string} - HTML with code blocks syntax highlighted
+ */
+function parseMarkdownPrompt(promptText) {
+    if (!promptText) return '';
+
+    // Pattern: ```language\ncode\n``` or ```\ncode\n```
+    const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+
+    let result = promptText;
+    let match;
+
+    while ((match = codeBlockRegex.exec(promptText)) !== null) {
+        const lang = match[1] || 'plaintext';
+        const code = match[2].trim();
+        const escapedCode = escapeHtml(code);
+
+        // Create highlighted code block
+        let highlightedCode = escapedCode;
+        if (typeof hljs !== 'undefined') {
+            try {
+                const langMap = {
+                    'python': 'python', 'py': 'python',
+                    'sql': 'sql',
+                    'javascript': 'javascript', 'js': 'javascript',
+                    'java': 'java',
+                    'csharp': 'csharp', 'cs': 'csharp',
+                    'cpp': 'cpp', 'c': 'c'
+                };
+                const hljsLang = langMap[lang.toLowerCase()] || lang || 'plaintext';
+                highlightedCode = hljs.highlight(code, { language: hljsLang }).value;
+            } catch (e) {
+                // Fallback if language not recognized
+                highlightedCode = escapedCode;
+            }
+        }
+
+        const codeBlockHtml = `<pre class="hljs-code-block"><code class="hljs language-${lang}">${highlightedCode}</code></pre>`;
+        result = result.replace(match[0], codeBlockHtml);
+    }
+
+    // Handle remaining line breaks (outside code blocks)
+    result = result.replace(/\n/g, '<br>');
+
+    return result;
 }
 
 // Initialize floating panel on DOMContentLoaded

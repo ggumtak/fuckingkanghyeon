@@ -1,36 +1,171 @@
 /**
- * Database Midterm Quiz - Set 4
+ * Database Midterm Quiz - Set 4 (Round 4)
+ * File: quizzes/database/data/set4.js
  */
 const set4 = {
     setId: "set-4",
     questions: [
-        { id: "s4-insert-1", type: "code-fill", prompt: "userTbl에 다음 값을 삽입하세요:\n아이디: JHY, 성명: 전혜연, 출생년도: 1990, 지역: 서울, mobile1/2: 11-5555555, 키: 167, 가입일: 2016-09-09", language: "sql", code: "INSERT INTO userTbl (userID, name, birthYear, addr, mobile1, mobile2, height, mDate)\nVALUES (( 1 ), ( 2 ), ( 3 ), ( 4 ), ( 5 ), ( 6 ), ( 7 ), ( 8 ));", blanks: [{ index: 1, answer: "'JHY'" }, { index: 2, answer: "N'전혜연'" }, { index: 3, answer: "1990" }, { index: 4, answer: "N'서울'" }, { index: 5, answer: "'11'" }, { index: 6, answer: "'5555555'" }, { index: 7, answer: "167" }, { index: 8, answer: "'2016-09-09'" }] },
-        { id: "s4-insert-2", type: "code-fill", prompt: "buyTbl에 다음 값을 삽입하세요:\nuserID: KBS, 제품명: 키보드, 분류: 전자, 가격: 70, 수량: 1", language: "sql", code: "INSERT INTO buyTbl (userID, prodName, groupName, price, amount)\nVALUES (( 1 ), ( 2 ), ( 3 ), ( 4 ), ( 5 ));", blanks: [{ index: 1, answer: "'KBS'" }, { index: 2, answer: "N'키보드'" }, { index: 3, answer: "N'전자'" }, { index: 4, answer: "70" }, { index: 5, answer: "1" }] },
-        { id: "s4-insert-3", type: "code-fill", prompt: "userTbl에 다음 값을 삽입하세요:\n아이디: CSJ, 성명: 최수정, 지역: 부산, 키: 170", language: "sql", code: "INSERT INTO userTbl (userID, name, addr, height)\nVALUES (( 1 ), ( 2 ), ( 3 ), ( 4 ));", blanks: [{ index: 1, answer: "'CSJ'" }, { index: 2, answer: "N'최수정'" }, { index: 3, answer: "N'부산'" }, { index: 4, answer: "170" }] },
-        { id: "s4-update-1", type: "code-fill", prompt: "userTbl에서 birthYear가 1979인 사용자의 지역(addr)을 '대구'로 수정하세요.", language: "sql", code: "UPDATE userTbl\nSET addr = ( 1 )\nWHERE birthYear = ( 2 );", blanks: [{ index: 1, answer: "N'대구'" }, { index: 2, answer: "1979" }] },
-        { id: "s4-update-2", type: "code-fill", prompt: "buyTbl에서 userID가 'JYP'인 전자 제품만 가격(price)을 50 인하하세요.", language: "sql", code: "UPDATE buyTbl\nSET price = price - ( 1 )\nWHERE userID = ( 2 ) AND groupName = ( 3 );", blanks: [{ index: 1, answer: "50" }, { index: 2, answer: "'JYP'" }, { index: 3, answer: "N'전자'" }] },
-        { id: "s4-update-3", type: "code-fill", prompt: "userTbl에서 가입일(mDate)이 '2013-12-12'인 사용자의 키(height)를 188로 수정하세요.", language: "sql", code: "UPDATE userTbl\nSET height = ( 1 )\nWHERE mDate = ( 2 );", blanks: [{ index: 1, answer: "188" }, { index: 2, answer: "'2013-12-12'" }] },
-        { id: "s4-delete-1", type: "code-fill", prompt: "buyTbl에서 amount가 5 이상인 레코드만 삭제하세요.", language: "sql", code: "DELETE FROM buyTbl\nWHERE amount >= ( 1 );", blanks: [{ index: 1, answer: "5" }] },
-        { id: "s4-delete-2", type: "code-fill", prompt: "userTbl에서 addr이 '서울'이고 키(height)가 170 미만인 사용자만 삭제하세요.", language: "sql", code: "DELETE FROM userTbl\nWHERE addr = ( 1 ) AND height < ( 2 );", blanks: [{ index: 1, answer: "N'서울'" }, { index: 2, answer: "170" }] },
-        { id: "s4-func-1", type: "mcq", prompt: "다음 쿼리의 결과는?\n\nSELECT RIGHT(N'데이터베이스', 2);", options: ["데이", "이스", "베이", "이스?"], correctIndex: 1 },
-        { id: "s4-func-2", type: "mcq", prompt: "다음 쿼리의 결과는?\n\nSELECT ROUND(15.555, 2);", options: ["15.55", "15.56", "15.6", "16.00"], correctIndex: 1 },
-        { id: "s4-func-3", type: "mcq", prompt: "다음 쿼리의 결과는?\n\nSELECT CAST(12345 AS CHAR(3));", options: ["123", "12345", "오류 발생", "12"], correctIndex: 0 },
-        { id: "s4-func-4", type: "mcq", prompt: "다음 쿼리의 결과는?\n\nSELECT LEN(N'서울특별시');", options: ["3", "4", "5", "6"], correctIndex: 2 },
-        { id: "s4-func-5", type: "mcq", prompt: "다음 쿼리의 결과는?\n\nSELECT MONTH('2021-11-09');", options: ["9", "10", "11", "12"], correctIndex: 2 },
-        { id: "s4-func-6", type: "mcq", prompt: "다음 쿼리의 결과는?\n\nSELECT DATEDIFF(day, '2025-01-01', '2025-01-11');", options: ["9", "10", "11", "12"], correctIndex: 1 },
-        { id: "s4-type-1", type: "short", prompt: "CHAR와 NCHAR의 차이를 간단히 설명하세요.", acceptableAnswers: ["NCHAR는 유니코드", "CHAR는 비유니코드, NCHAR는 유니코드"] },
-        { id: "s4-type-2", type: "short", prompt: "VARCHAR와 NCHAR 중 이름(한글)을 저장할 때 더 적절한 타입을 골라 이유를 설명하세요.", acceptableAnswers: ["NVARCHAR 또는 NCHAR가 유니코드라 적절", "유니코드 지원이 필요"] },
-        { id: "s4-type-3", type: "short", prompt: "DECIMAL 타입을 사용하는 이유를 설명하세요.", acceptableAnswers: ["정확한 소수 처리", "고정 정밀도 숫자 저장"] },
-        { id: "s4-type-4", type: "short", prompt: "INT와 DECIMAL의 용도 차이를 간단히 설명하세요.", acceptableAnswers: ["INT는 정수, DECIMAL은 소수 포함 정확한 값", "정수 vs 고정정밀도"] },
-        { id: "s4-type-5", type: "short", prompt: "VARCHAR(20)의 의미를 설명하세요.", acceptableAnswers: ["최대 20자 가변길이 문자열", "최대 20글자 저장"] },
-        { id: "s4-type-6", type: "short", prompt: "DATETIME과 TIMESTAMP(또는 DATE)의 차이를 한 문장으로 설명하세요.", acceptableAnswers: ["DATETIME은 날짜+시간, DATE는 날짜만", "시간 포함 여부 차이"] },
-        { id: "s4-field-1", type: "code-fill", prompt: "이자율을 저장할 interestTbl을 생성하세요.\nrate는 전체 6자리 중 소수 4자리까지 저장합니다.", language: "sql", code: "CREATE TABLE interestTbl (\n  bankID INT,\n  rate ( 1 )\n);", blanks: [{ index: 1, answer: "DECIMAL(6,4)" }] },
-        { id: "s4-field-2", type: "code-fill", prompt: "재고 수량과 단가를 계산할 costTbl을 생성하세요.\nunitCost는 전체 9자리 중 소수 2자리까지 저장합니다.", language: "sql", code: "CREATE TABLE costTbl (\n  itemID INT,\n  unitCost ( 1 )\n);", blanks: [{ index: 1, answer: "DECIMAL(9,2)" }] },
-        { id: "s4-field-3", type: "code-fill", prompt: "평균 점수를 저장할 avgTbl을 생성하세요.\navgScore는 전체 5자리 중 소수 2자리까지 저장합니다.", language: "sql", code: "CREATE TABLE avgTbl (\n  classID INT,\n  avgScore ( 1 )\n);", blanks: [{ index: 1, answer: "DECIMAL(5,2)" }] },
-        { id: "s4-join-1", type: "mcq", prompt: "다음 설명 중 LEFT OUTER JOIN의 특징으로 옳은 것은?", options: ["왼쪽 테이블의 모든 행을 포함한다", "오른쪽 테이블의 모든 행을 포함한다", "조건이 맞는 행만 포함한다", "항상 중복이 제거된다"], correctIndex: 0 },
-        { id: "s4-join-2", type: "mcq", prompt: "다음 쿼리 결과에 대한 설명으로 옳은 것은?\n\nSELECT U.userID, B.prodName\nFROM userTbl U\nINNER JOIN buyTbl B\nON U.userID = B.userID;", options: ["구매가 없는 사용자도 반드시 나온다", "구매가 있는 사용자와 구매 정보만 나온다", "userTbl만 단독 조회한 것과 같다", "buyTbl의 userID가 NULL인 행만 나온다"], correctIndex: 1 },
-        { id: "s4-join-3", type: "mcq", prompt: "FULL OUTER JOIN의 결과에 대한 설명으로 옳은 것은?", options: ["두 테이블의 일치 행만 포함한다", "왼쪽 테이블 행만 모두 포함한다", "오른쪽 테이블 행만 모두 포함한다", "일치/불일치와 관계없이 양쪽 테이블 행을 모두 포함한다"], correctIndex: 3 },
-        { id: "s4-join-4", type: "mcq", prompt: "다음 중 구매 이력이 없는 사용자를 찾는 가장 적절한 방법은?", options: ["INNER JOIN 후 WHERE B.userID IS NULL", "LEFT OUTER JOIN 후 WHERE B.userID IS NULL", "RIGHT OUTER JOIN 후 WHERE U.userID IS NULL", "CROSS JOIN 후 WHERE amount IS NULL"], correctIndex: 1 }
+        {
+            id: "dml-merge-01",
+            type: "code-fill",
+            prompt: "다음은 `MERGE` 문을 사용하여 `userTbl_New`의 데이터를 `userTbl`에 병합하는 구문입니다. 매칭되는 데이터가 있으면 업데이트하고, 없으면 삽입하는 빈칸을 채우세요.",
+            language: "sql",
+            code: "MERGE userTbl AS T\nUSING userTbl_New AS S\nON T.userID = S.userID\nWHEN MATCHED THEN\n    UPDATE SET T.name = S.name\nWHEN NOT MATCHED THEN\n    ( 1 ) (userID, name) VALUES (S.userID, S.name);",
+            blanks: [
+                { index: 1, answer: "INSERT", explanation: "조건이 맞지 않을 때(데이터가 없을 때) 새로운 행을 추가하려면 INSERT 문을 사용합니다." }
+            ],
+            meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "MERGE" }
+        },
+        {
+            id: "func-window-01",
+            type: "code-fill",
+            prompt: "`userTbl`에서 키(`height`)가 큰 순서대로 순위를 매기되, 키가 같으면 같은 등수로 처리하고 다음 등수는 건너뛰는(예: 1, 2, 2, 4등) 윈도우 함수를 사용하려고 합니다.",
+            language: "sql",
+            code: "SELECT name, height,\n       ( 1 )() OVER (ORDER BY height DESC) AS 등수\nFROM userTbl;",
+            blanks: [
+                { index: 1, answer: "RANK", explanation: "RANK() 함수는 동점자 발생 시 같은 순위를 부여하고, 그 수만큼 다음 순위를 건너뜁니다." }
+            ],
+            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "Window Functions" }
+        },
+        {
+            id: "func-window-02",
+            type: "mcq",
+            prompt: "다음 윈도우 함수 중, 정렬된 데이터 그룹을 지정된 숫자만큼의 그룹(버킷)으로 나누어 번호를 부여하는 함수는?",
+            options: [
+                "① ROW_NUMBER()",
+                "② RANK()",
+                "③ NTILE()",
+                "④ DENSE_RANK()"
+            ],
+            correctIndex: 2,
+            explanation: "NTILE(n) 함수는 데이터를 n개의 그룹으로 분할하여 그룹 번호를 반환합니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
+        },
+        {
+            id: "func-window-03",
+            type: "short",
+            prompt: "키(`height`) 순으로 정렬했을 때, 바로 앞 행의 키 값을 가져와서 현재 행과 비교하려고 합니다. 이때 사용하는 분석 함수 이름은?",
+            acceptableAnswers: ["LAG", "LAG()"],
+            explanation: "LAG() 함수는 현재 행을 기준으로 이전 행의 데이터를 참조할 때 사용합니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
+        },
+        {
+            id: "func-json-01",
+            type: "mcq",
+            prompt: "행(Row) 데이터를 열(Column)로 회전시켜 통계 데이터를 보기 쉽게 만드는 연산자는 무엇인가?",
+            options: [
+                "① UNPIVOT",
+                "② PIVOT",
+                "③ MERGE",
+                "④ ROLLUP"
+            ],
+            correctIndex: 1,
+            explanation: "PIVOT 연산자는 행 데이터를 열 데이터로 변환하여 집계 결과를 보여줍니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "PIVOT" }
+        },
+        {
+            id: "dtype-special-01",
+            type: "short",
+            prompt: "테이블의 행이 수정될 때마다 자동으로 갱신되는 고유한 이진 숫자를 저장하며, 주로 낙관적 잠금(Optimistic Locking)에 사용되는 데이터 타입은?",
+            acceptableAnswers: ["ROWVERSION", "TIMESTAMP"],
+            explanation: "ROWVERSION(구 TIMESTAMP)은 데이터 변경 시 자동으로 값이 변하는 유니크한 이진 값을 가집니다.",
+            meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "Data Types" }
+        },
+        {
+            id: "dtype-special-02",
+            type: "short",
+            prompt: "전 세계적으로 유일한 값을 생성하는 GUID(Globally Unique Identifier)를 저장하기 위한 데이터 타입은?",
+            acceptableAnswers: ["UNIQUEIDENTIFIER"],
+            explanation: "GUID를 저장하는 타입은 UNIQUEIDENTIFIER이며 `NEWID()` 함수로 생성합니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Data Types" }
+        },
+        {
+            id: "join-cte-01",
+            type: "code-fill",
+            prompt: "다음은 CTE(Common Table Expression)를 사용하여 사용자별 총 구매액을 구하는 구문입니다. 빈칸을 채우세요.",
+            language: "sql",
+            code: "WITH UserBuySum (userID, total)\nAS\n(\n    SELECT userID, SUM(price * amount)\n    FROM buyTbl\n    GROUP BY ( 1 )\n)\nSELECT * FROM UserBuySum ORDER BY total DESC;",
+            blanks: [
+                { index: 1, answer: "userID", explanation: "사용자별 합계를 구하려면 userID로 그룹화(GROUP BY)해야 합니다." }
+            ],
+            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "CTE" }
+        },
+        {
+            id: "join-cte-02",
+            type: "mcq",
+            prompt: "재귀적 CTE(Recursive CTE)를 사용할 때 필수적인 요소가 **아닌** 것은?",
+            options: [
+                "① 앵커 멤버 (초기값 쿼리)",
+                "② 재귀 멤버 (자기 자신을 참조하는 쿼리)",
+                "③ UNION ALL",
+                "④ CROSS JOIN"
+            ],
+            correctIndex: 3,
+            explanation: "재귀적 CTE는 앵커 멤버와 재귀 멤버를 `UNION ALL`로 결합하여 구성합니다. CROSS JOIN은 필수가 아닙니다.",
+            meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "Recursive CTE" }
+        },
+        {
+            id: "dtype-xml-01",
+            type: "short",
+            prompt: "반정형 데이터인 XML 문서를 테이블의 컬럼에 저장하기 위해 제공되는 데이터 타입 이름은?",
+            acceptableAnswers: ["XML"],
+            explanation: "SQL Server는 XML 데이터를 저장하고 쿼리할 수 있는 XML 데이터 타입을 제공합니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "Data Types" }
+        },
+        {
+            id: "func-agg-01",
+            type: "code-fill",
+            prompt: "그룹별 소계와 총계를 자동으로 구해주는 `GROUP BY`의 확장 기능을 사용하려 합니다. 빈칸을 채우세요.",
+            language: "sql",
+            code: "SELECT groupName, SUM(price * amount)\nFROM buyTbl\nGROUP BY ( 1 ) (groupName);",
+            blanks: [
+                { index: 1, answer: "ROLLUP", explanation: "ROLLUP 함수는 지정된 컬럼에 대해 소계와 총합 행을 추가로 생성합니다." }
+            ],
+            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "GROUP BY Extensions" }
+        },
+        {
+            id: "dml-create-schema-01",
+            type: "short",
+            prompt: "데이터베이스 내에서 테이블, 뷰 등의 객체를 논리적으로 그룹화하여 관리하는 컨테이너인 '스키마(SCHEMA)'를 생성하는 명령어를 작성하시오.",
+            acceptableAnswers: ["CREATE SCHEMA"],
+            explanation: "스키마 생성 구문은 `CREATE SCHEMA 스키마명` 입니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "Schema" }
+        },
+        {
+            id: "dml-identity-02",
+            type: "mcq",
+            prompt: "가장 최근에 생성된 IDENTITY 값을 확인하기 위해 사용하는 전역 변수는?",
+            options: [
+                "① @@VERSION",
+                "② @@IDENTITY",
+                "③ @@SERVERNAME",
+                "④ @@SPID"
+            ],
+            correctIndex: 1,
+            explanation: "`@@IDENTITY`는 현재 세션에서 마지막으로 생성된 ID 값을 반환합니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "IDENTITY Variables" }
+        },
+        {
+            id: "join-pivot-01",
+            type: "code-fill",
+            prompt: "`pivotTest` 테이블에서 계절(`season`)을 열로 변환하여 수량(`amount`)의 합계를 구하는 PIVOT 구문입니다.",
+            language: "sql",
+            code: "SELECT *\nFROM pivotTest\nPIVOT ( SUM(amount) FOR season IN ([봄], [여름], [가을], [겨울]) ) AS pvt;",
+            blanks: [],
+            meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "PIVOT Syntax" }
+        },
+        {
+            id: "func-json-02",
+            type: "essay",
+            prompt: "`DENSE_RANK()`와 `ROW_NUMBER()`의 차이점을 순위 부여 방식을 기준으로 설명하시오.",
+            rubric: [
+                "ROW_NUMBER는 값의 중복 여부와 상관없이 1, 2, 3, 4 처럼 고유한 순번을 매김",
+                "DENSE_RANK는 값이 같으면 같은 순위를 주되, 중간에 비어있는 번호 없이(1, 1, 2, ...) 순위를 매김"
+            ],
+            maxLength: 300,
+            explanation: "ROW_NUMBER는 단순 일련번호, DENSE_RANK는 빽빽한(건너뜀 없는) 순위입니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Window Functions" }
+        }
     ]
 };
 

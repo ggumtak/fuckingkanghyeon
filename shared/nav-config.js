@@ -90,7 +90,7 @@ function getPageUrl(subject, page) {
     const currentDirName = pathParts[pathParts.length - 2] || '';
 
     // Check if we're inside a quiz folder (linked_list, database, etc.)
-    const quizFolders = ['linked_list', 'database'];
+    const quizFolders = ['linked_list', 'database', 'computational_math'];
     const isInQuizFolder = quizFolders.includes(currentDirName);
 
     // Extract target folder name from subject.folder (e.g., 'quizzes/linked_list' -> 'linked_list')

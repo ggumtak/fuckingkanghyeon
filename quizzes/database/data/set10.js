@@ -1,36 +1,218 @@
 /**
- * Database Midterm Quiz - Set 10 (Essay/서술형 세트4)
+ * Database Midterm Quiz - Set 10 (Round 9)
+ * File: quizzes/database/data/set10.js
+ * 모든 예제는 userTbl, buyTbl 테이블을 기준으로 합니다.
  */
 const set10 = {
-    setId: "set-essay-4",
+    setId: "set-10",
     questions: [
-        { id: "essay-insert-4-1", type: "essay", prompt: "userTbl에 아이디 'ITZY', 이름 '있지'를 추가하세요. (나머지 컬럼은 모두 NULL로 입력된다고 가정)", acceptableAnswers: ["INSERT INTO userTbl (userID, name) VALUES ('ITZY', N'있지');"], rubric: ["INSERT INTO userTbl", "VALUES", "'ITZY'", "N'있지'"] },
-        { id: "essay-insert-4-2", type: "essay", prompt: "buyTbl에 아이디 'ITZY', 제품 '지갑', 분류 '잡화', 가격 30, 수량 5를 추가하는 쿼리를 작성하세요.", acceptableAnswers: ["INSERT INTO buyTbl (userID, prodName, groupName, price, amount) VALUES ('ITZY', N'지갑', N'잡화', 30, 5);"], rubric: ["INSERT INTO buyTbl", "VALUES", "'ITZY'", "N'지갑'", "N'잡화'"] },
-        { id: "essay-insert-4-3", type: "essay", prompt: "userTbl의 모든 데이터를 복사하여 'buyUserTbl'이라는 새로운 테이블로 삽입하는 쿼리를 작성하세요. (테이블 생성과 동시에 삽입)", acceptableAnswers: ["SELECT * INTO buyUserTbl FROM userTbl;"], rubric: ["SELECT * INTO", "FROM userTbl"] },
-        { id: "essay-update-4-1", type: "essay", prompt: "userTbl에서 출생년도(birthYear)가 1980년 이전인 회원들의 키(height)를 180으로 일괄 수정하세요.", acceptableAnswers: ["UPDATE userTbl SET height = 180 WHERE birthYear < 1980;"], rubric: ["UPDATE userTbl", "SET height", "180", "WHERE birthYear"] },
-        { id: "essay-update-4-2", type: "essay", prompt: "buyTbl에서 userID가 'KBS'이면서 제품명이 '청바지'인 행의 수량(amount)을 5로 변경하세요.", acceptableAnswers: ["UPDATE buyTbl SET amount = 5 WHERE userID = 'KBS' AND prodName = N'청바지';"], rubric: ["UPDATE buyTbl", "SET amount", "5", "AND prodName"] },
-        { id: "essay-update-4-3", type: "essay", prompt: "userTbl의 전화번호(mobile2) 컬럼 값을 모두 NULL로 초기화하는 쿼리를 작성하세요.", acceptableAnswers: ["UPDATE userTbl SET mobile2 = NULL;"], rubric: ["UPDATE userTbl", "SET mobile2", "NULL"] },
-        { id: "essay-delete-4-1", type: "essay", prompt: "userTbl에서 지역(addr)이 '경남'인 회원을 삭제하세요.", acceptableAnswers: ["DELETE FROM userTbl WHERE addr = N'경남';"], rubric: ["DELETE FROM userTbl", "WHERE addr", "N'경남'"] },
-        { id: "essay-delete-4-2", type: "essay", prompt: "buyTbl에서 가격(price)이 100 이상이면서 500 이하인 제품의 구매 기록을 삭제하세요.", acceptableAnswers: ["DELETE FROM buyTbl WHERE price BETWEEN 100 AND 500;"], rubric: ["DELETE FROM buyTbl", "WHERE price", "BETWEEN", "100", "500"] },
-        { id: "essay-func-4-1", type: "essay", prompt: "문자열의 왼쪽 공백만 제거하는 함수는?", acceptableAnswers: ["LTRIM"], rubric: ["LTRIM"] },
-        { id: "essay-func-4-2", type: "essay", prompt: "소수점 첫째 자리에서 반올림하여 정수로 만드는 함수 예시를 작성하세요. (값 3.6 기준)", acceptableAnswers: ["ROUND(3.6, 0)"], rubric: ["ROUND", "3.6", "0"] },
-        { id: "essay-func-4-3", type: "essay", prompt: "숫자 100을 문자열 '100'으로 변환하는 CONVERT 함수 구문을 작성하세요. (INT -> VARCHAR)", acceptableAnswers: ["CONVERT(VARCHAR, 100)"], rubric: ["CONVERT", "VARCHAR"] },
-        { id: "essay-func-4-4", type: "essay", prompt: "다음 중 집계 함수(Aggregate Function)가 아닌 것은? (SUM, AVG, MAX, LEN)", acceptableAnswers: ["LEN"], rubric: ["LEN"] },
-        { id: "essay-func-4-5", type: "essay", prompt: "문자열 내에서 특정 문자열의 시작 위치(인덱스)를 찾는 함수는?", acceptableAnswers: ["CHARINDEX"], rubric: ["CHARINDEX"] },
-        { id: "essay-func-4-6", type: "essay", prompt: "0 이상 1 미만의 난수(Random Number)를 발생시키는 함수는?", acceptableAnswers: ["RAND()"], rubric: ["RAND"] },
-        { id: "essay-type-4-1", type: "essay", prompt: "XML 데이터를 저장하기 위해 SQL Server에서 제공하는 전용 데이터 타입은?", acceptableAnswers: ["XML"], rubric: ["XML"] },
-        { id: "essay-type-4-2", type: "essay", prompt: "기하학적 공간 데이터(좌표, 도형 등)를 저장하기 위한 데이터 타입 중 하나를 쓰시오.", acceptableAnswers: ["GEOMETRY (또는 GEOGRAPHY)"], rubric: ["GEOMETRY", "GEOGRAPHY"] },
-        { id: "essay-type-4-3", type: "essay", prompt: "고정 길이 문자열 CHAR와 가변 길이 문자열 VARCHAR 중 검색 속도가 일반적으로 더 빠른 것은 무엇입니까?", acceptableAnswers: ["CHAR"], rubric: ["CHAR"] },
-        { id: "essay-type-4-4", type: "essay", prompt: "정수형 타입 중 가장 큰 범위를 가지며, 8바이트를 사용하는 것은?", acceptableAnswers: ["BIGINT"], rubric: ["BIGINT"] },
-        { id: "essay-type-4-5", type: "essay", prompt: "'2023-12-31 23:59:59.1234567'과 같이 정밀한 시간(나노초 단위)을 저장할 수 있는 데이터 타입은?", acceptableAnswers: ["DATETIME2"], rubric: ["DATETIME2"] },
-        { id: "essay-type-4-6", type: "essay", prompt: "데이터베이스 공간 절약을 위해 가변 길이 문자열을 사용하되, 유니코드를 지원하지 않는 타입은?", acceptableAnswers: ["VARCHAR"], rubric: ["VARCHAR"] },
-        { id: "essay-field-4-1", type: "essay", prompt: "이미 존재하는 테이블(userTbl)에 'email'이라는 컬럼(VARCHAR(50))을 추가하는 구문을 작성하세요.", acceptableAnswers: ["ALTER TABLE userTbl ADD email VARCHAR(50);"], rubric: ["ALTER TABLE", "ADD", "email", "VARCHAR"] },
-        { id: "essay-field-4-2", type: "essay", prompt: "테이블의 특정 컬럼을 삭제하는 명령어 구문은?", acceptableAnswers: ["ALTER TABLE ... DROP COLUMN ..."], rubric: ["ALTER TABLE", "DROP COLUMN"] },
-        { id: "essay-field-4-3", type: "essay", prompt: "두 개의 컬럼(col1, col2)을 합쳐서 기본키(Primary Key)로 설정하는 것을 무엇이라 합니까?", acceptableAnswers: ["복합키 (Composite Key)"], rubric: ["복합키", "Composite"] },
-        { id: "essay-join-4-1", type: "essay", prompt: "buyTbl에 구매 기록이 없는 userTbl의 회원을 찾기 위해 EXCEPT(차집합) 연산자를 사용하는 기본 구문을 설명하세요. (SELECT userID FROM userTbl ...)", acceptableAnswers: ["SELECT userID FROM userTbl EXCEPT SELECT userID FROM buyTbl"], rubric: ["EXCEPT", "SELECT"] },
-        { id: "essay-join-4-2", type: "essay", prompt: "서브쿼리(SubQuery)를 사용하여 '김범수' 회원이 구매한 제품의 목록을 조회하는 쿼리를 작성하세요.", acceptableAnswers: ["SELECT prodName FROM buyTbl WHERE userID = (SELECT userID FROM userTbl WHERE name = N'김범수');"], rubric: ["SELECT prodName", "WHERE userID =", "SELECT userID"] },
-        { id: "essay-join-4-3", type: "essay", prompt: "상관 서브쿼리(Correlated Subquery)란 무엇입니까? 간단히 서술하세요.", acceptableAnswers: ["메인 쿼리의 컬럼을 서브쿼리에서 참조하여, 메인 쿼리의 행마다 서브쿼리가 실행되는 구조"], rubric: ["메인 쿼리", "참조", "반복 실행"] },
-        { id: "essay-join-4-4", type: "essay", prompt: "JOIN을 사용하지 않고, WHERE 절에 콤마(,)로 테이블을 나열하여 조인하는 방식(예: FROM A, B WHERE A.id=B.id)은 권장됩니까? (O/X)", acceptableAnswers: ["X (ANSI 표준 조인 구문 사용 권장)"], rubric: ["X"] }
+        {
+            id: "r9-insert-01",
+            type: "code-fill",
+            prompt: "`userTbl`에 아이디 'Z1', 이름 '지원', 출생년도 2000, 지역 '제주'인 회원을 추가하는 구문입니다. 나머지 컬럼은 생략합니다.",
+            language: "sql",
+            code: "INSERT INTO userTbl (userID, name, birthYear, addr)\nVALUES ('Z1', '지원', 2000, ( 1 ));",
+            blanks: [
+                { index: 1, answer: "'제주'", explanation: "지역(addr)은 문자열 데이터이므로 작은따옴표로 감쌉니다." }
+            ],
+            meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "INSERT" }
+        },
+        {
+            id: "r9-insert-02",
+            type: "mcq",
+            prompt: "`INSERT` 문 수행 시 `VALUES` 대신 `SELECT` 문을 사용하여 데이터를 삽입하는 경우에 대한 설명으로 옳은 것은?",
+            options: [
+                "① 한 번에 한 행만 삽입할 수 있다.",
+                "② 대상 테이블이 미리 존재해야 한다.",
+                "③ 열의 개수와 데이터 타입이 일치하지 않아도 된다.",
+                "④ `INSERT INTO ... SELECT` 구문은 표준 SQL이 아니다."
+            ],
+            correctIndex: 1,
+            explanation: "`INSERT INTO ... SELECT`는 이미 만들어진 테이블에 대량의 데이터를 삽입할 때 사용하며, 열 개수와 타입이 호환되어야 합니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "INSERT" }
+        },
+        {
+            id: "r9-insert-03",
+            type: "code-fill",
+            prompt: "`buyTbl`에 데이터를 넣을 때 `price`와 `amount`를 곱한 값을 별도로 계산해서 넣는 것이 아니라, 값을 넣을 때 직접 연산하여 넣는 구문입니다.",
+            language: "sql",
+            code: "INSERT INTO buyTbl (userID, prodName, price, amount)\nVALUES ('KBS', '티셔츠', 20 * 2, ( 1 ));",
+            blanks: [
+                { index: 1, answer: "2", explanation: "단가(20) * 2 로 입력했으므로 수량은 2가 논리적으로 적합합니다. VALUES 절 안에서도 연산이 가능합니다." }
+            ],
+            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "INSERT" }
+        },
+        {
+            id: "r9-insert-04",
+            type: "short",
+            prompt: "기본키(PK) 제약조건이 설정된 `userID` 컬럼에 이미 존재하는 아이디 'KBS'를 다시 INSERT 하려고 하면 어떤 오류가 발생하는가? (키워드 중심 서술)",
+            acceptableAnswers: ["PK 위배", "중복 키 오류", "Primary Key Violation"],
+            explanation: "기본키는 중복된 값을 허용하지 않습니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "INSERT" }
+        },
+        {
+            id: "r9-update-01",
+            type: "code-fill",
+            prompt: "`userTbl`에서 2013년 이후(`>= 2013`)에 가입한 회원의 전화번호 국번(`mobile1`)을 일괄적으로 '010'으로 변경하는 구문입니다.",
+            language: "sql",
+            code: "UPDATE userTbl\nSET mobile1 = '010'\nWHERE YEAR(mDate) ( 1 ) 2013;",
+            blanks: [
+                { index: 1, answer: ">=", explanation: "2013년 이후(포함)이므로 `>=` 연산자를 사용합니다." }
+            ],
+            meta: { difficulty: "medium", skillTag: "[코드빈칸]", topic: "UPDATE" }
+        },
+        {
+            id: "r9-update-02",
+            type: "code-fill",
+            prompt: "`buyTbl`의 데이터를 수정하되, `userTbl`에 없는 회원(탈퇴 회원 등)이 남긴 구매 기록의 `userID`를 'UNKNOWN'으로 변경하는 구문입니다. (서브쿼리 활용)",
+            language: "sql",
+            code: "UPDATE buyTbl\nSET userID = 'UNKNOWN'\nWHERE userID NOT IN ( SELECT ( 1 ) FROM userTbl );",
+            blanks: [
+                { index: 1, answer: "userID", explanation: "회원 테이블에 존재하는 ID 목록을 가져와야 합니다." }
+            ],
+            meta: { difficulty: "hard", skillTag: "[코드빈칸]", topic: "UPDATE" }
+        },
+        {
+            id: "r9-update-03",
+            type: "short",
+            prompt: "`UPDATE` 문에서 값을 원래 값에 1을 더하는 형태(`col = col + 1`)가 가능한가? (O/X)",
+            acceptableAnswers: ["O", "가능", "예"],
+            explanation: "기존 컬럼 값을 참조하여 연산 후 다시 대입하는 것은 가능합니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "UPDATE" }
+        },
+        {
+            id: "r9-delete-01",
+            type: "code-fill",
+            prompt: "`userTbl`에서 지역(`addr`)이 '경남'이면서 키(`height`)가 175 이상인 회원을 삭제하는 구문입니다.",
+            language: "sql",
+            code: "DELETE FROM userTbl\nWHERE addr = '경남' ( 1 ) height >= 175;",
+            blanks: [
+                { index: 1, answer: "AND", explanation: "두 조건을 모두 만족해야 하므로 `AND` 연산자를 사용합니다." }
+            ],
+            meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "DELETE" }
+        },
+        {
+            id: "r9-delete-02",
+            type: "mcq",
+            prompt: "다음 중 `DELETE` 문에 대한 설명으로 틀린 것은?",
+            options: [
+                "① `WHERE` 절을 생략하면 테이블의 모든 데이터가 삭제된다.",
+                "② 삭제된 데이터는 트랜잭션 로그를 통해 복구할 수 있다.",
+                "③ `TOP` 구문과 함께 사용하여 일부만 삭제할 수 있다.",
+                "④ 테이블의 정의(스키마)까지 모두 삭제된다."
+            ],
+            correctIndex: 3,
+            explanation: "테이블의 정의까지 삭제하는 것은 `DROP TABLE`입니다. `DELETE`는 데이터만 삭제합니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "DELETE" }
+        },
+        {
+            id: "r9-func-01",
+            type: "short",
+            prompt: "다음 날짜 함수 쿼리의 결과는 몇 월인가? `SELECT MONTH('2025-05-05')`",
+            acceptableAnswers: ["5", "5월"],
+            explanation: "MONTH 함수는 월 부분을 정수로 반환합니다.",
+            meta: { difficulty: "easy", skillTag: "[결과예측]", topic: "Functions" }
+        },
+        {
+            id: "r9-func-02",
+            type: "mcq",
+            prompt: "`SELECT SUBSTRING('대한민국만세', 3, 2)`의 결과는?",
+            options: ["① 대한", "② 민국", "③ 만세", "④ 국만"],
+            correctIndex: 1,
+            explanation: "3번째 글자('민')부터 2글자를 가져오므로 '민국'입니다.",
+            meta: { difficulty: "easy", skillTag: "[결과예측]", topic: "Functions" }
+        },
+        {
+            id: "r9-func-03",
+            type: "code-fill",
+            prompt: "현재 날짜와 시간을 구하는 시스템 함수입니다.",
+            language: "sql",
+            code: "SELECT ( 1 )();",
+            blanks: [
+                { index: 1, answer: "GETDATE", explanation: "SQL Server에서 현재 시각은 `GETDATE()` 또는 `SYSDATETIME()`을 사용합니다." }
+            ],
+            meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "Functions" }
+        },
+        {
+            id: "r9-dtype-desc-01",
+            type: "short",
+            prompt: "`NVARCHAR(10)` 데이터 타입에 한글 '가나다' 3글자를 저장하면, 실제 데이터가 차지하는 공간(바이트)은 대략 얼마인가? (메타데이터 제외, 순수 데이터 기준)",
+            acceptableAnswers: ["6바이트", "6"],
+            explanation: "유니코드(N)는 한 글자당 2바이트를 사용하므로 3글자는 6바이트입니다.",
+            meta: { difficulty: "medium", skillTag: "[결과예측]", topic: "Data Types" }
+        },
+        {
+            id: "r9-dtype-desc-02",
+            type: "mcq",
+            prompt: "SQL Server의 날짜/시간 데이터 타입 중, 날짜뿐만 아니라 시간까지 포함하며 가장 높은 정밀도(소수점 이하 초)를 지원하는 타입은?",
+            options: ["① DATE", "② SMALLDATETIME", "③ DATETIME", "④ DATETIME2"],
+            correctIndex: 3,
+            explanation: "`DATETIME2`는 `DATETIME`보다 더 넓은 날짜 범위와 높은 정밀도를 지원합니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "Data Types" }
+        },
+        {
+            id: "r9-dtype-create-01",
+            type: "short",
+            prompt: "테이블 생성 시 `userID` 컬럼을 8글자 고정 길이 문자열로 정의하고 `PRIMARY KEY`로 설정하는 구문을 작성하시오.",
+            acceptableAnswers: ["userID CHAR(8) PRIMARY KEY"],
+            explanation: "CHAR(8)과 PRIMARY KEY 제약조건을 사용합니다.",
+            meta: { difficulty: "easy", skillTag: "[코드작성]", topic: "Create Field" }
+        },
+        {
+            id: "r9-dtype-create-02",
+            type: "short",
+            prompt: "컬럼 `height`를 작은 정수형(`SMALLINT`)으로 정의하고 NULL을 허용하지 않도록 설정하시오.",
+            acceptableAnswers: ["height SMALLINT NOT NULL"],
+            explanation: "SMALLINT NOT NULL 입니다.",
+            meta: { difficulty: "easy", skillTag: "[코드작성]", topic: "Create Field" }
+        },
+        {
+            id: "r9-join-01",
+            type: "code-fill",
+            prompt: "`buyTbl`을 기준으로 `userTbl`을 조인하되, 제품을 구매한 적이 있는 회원의 정보만 출력하는 `INNER JOIN` 구문입니다. (표준 구문)",
+            language: "sql",
+            code: "SELECT u.name, b.prodName\nFROM buyTbl b ( 1 ) JOIN userTbl u\nON b.userID = u.userID;",
+            blanks: [
+                { index: 1, answer: "INNER", explanation: "두 테이블의 교집합을 구하는 것은 INNER JOIN입니다." }
+            ],
+            meta: { difficulty: "easy", skillTag: "[코드빈칸]", topic: "JOIN" }
+        },
+        {
+            id: "r9-join-02",
+            type: "mcq",
+            prompt: "다음 `CROSS JOIN` 구문에 대한 설명으로 옳은 것은?\n`SELECT * FROM userTbl, buyTbl`",
+            options: [
+                "① 오류가 발생하는 구문이다.",
+                "② `userTbl`의 행 수와 `buyTbl`의 행 수를 더한 만큼 출력된다.",
+                "③ `userTbl`의 모든 행과 `buyTbl`의 모든 행이 결합(곱하기)되어 출력된다.",
+                "④ 두 테이블의 `userID`가 같은 행만 출력된다."
+            ],
+            correctIndex: 2,
+            explanation: "콤마(,)로 테이블을 나열하고 조건이 없으면 암시적인 CROSS JOIN(상호 조인)이 수행됩니다.",
+            meta: { difficulty: "medium", skillTag: "[개념응용]", topic: "JOIN" }
+        },
+        {
+            id: "r9-join-03",
+            type: "essay",
+            prompt: "`userTbl`과 `buyTbl`을 조인하여 '가입은 했으나 구매 기록이 없는 회원'의 목록을 뽑으려 합니다. `LEFT OUTER JOIN`과 `WHERE ... IS NULL`을 어떻게 조합해야 하는지 설명하시오.",
+            rubric: [
+                "`userTbl`을 왼쪽에 두고 `LEFT OUTER JOIN`을 수행한다",
+                "조인 조건은 `userID`로 한다",
+                "`WHERE` 절에서 `buyTbl`의 PK나 필수 컬럼(prodName 등)이 `NULL`인 것을 찾는다"
+            ],
+            maxLength: 300,
+            explanation: "LEFT JOIN 결과 중 우측 테이블 값이 NULL인 행이 매칭되지 않은(구매 없는) 회원입니다.",
+            meta: { difficulty: "hard", skillTag: "[개념응용]", topic: "JOIN" }
+        },
+        {
+            id: "r9-join-04",
+            type: "short",
+            prompt: "세 개의 테이블 A, B, C를 조인할 때 순서대로 A-B를 조인하고, 그 결과와 C를 조인합니다. 이때 사용하는 조인 연산자는 연속해서 무엇을 사용하는가? (가장 일반적인 내부 조인)",
+            acceptableAnswers: ["INNER JOIN"],
+            explanation: "`FROM A INNER JOIN B ON ... INNER JOIN C ON ...` 형태로 사용합니다.",
+            meta: { difficulty: "easy", skillTag: "[개념응용]", topic: "JOIN" }
+        }
     ]
 };
+
 if (typeof window !== 'undefined') window.set10 = set10;

@@ -51,18 +51,41 @@ const QUIZ_CONFIG = {
             folder: 'quizzes/database',
             type: 'v2',
             quizzes: [
-                { id: 'set1', title: '세트 1', subtitle: '빈칸', count: 27, icon: '📊', file: 'database-set1.html' },
-                { id: 'set2', title: '세트 2', subtitle: '빈칸', count: 27, icon: '📊', file: 'database-set2.html' },
-                { id: 'set3', title: '세트 3', subtitle: '빈칸', count: 27, icon: '📊', file: 'database-set3.html' },
-                { id: 'set4', title: '세트 4', subtitle: '빈칸', count: 27, icon: '📊', file: 'database-set4.html' },
-                { id: 'set5', title: '세트 5', subtitle: '빈칸', count: 27, icon: '📊', file: 'database-set5.html' },
-                { id: 'set6', title: '세트 6', subtitle: '빈칸', count: 27, icon: '📊', file: 'database-set6.html' },
-                { id: 'set7', title: '세트 7', subtitle: '서술형', count: 27, icon: '✍️', file: 'database-set7.html' },
-                { id: 'set8', title: '세트 8', subtitle: '서술형', count: 27, icon: '✍️', file: 'database-set8.html' },
-                { id: 'set9', title: '세트 9', subtitle: '서술형', count: 27, icon: '✍️', file: 'database-set9.html' },
-                { id: 'set10', title: '세트 10', subtitle: '서술형', count: 27, icon: '✍️', file: 'database-set10.html' },
-                { id: 'set11', title: '세트 11', subtitle: '서술형', count: 27, icon: '✍️', file: 'database-set11.html' },
-                { id: 'set12', title: '세트 12', subtitle: '서술형', count: 27, icon: '✍️', file: 'database-set12.html' }
+                { id: 'set1', title: '세트 1', subtitle: 'Round 1', count: 30, icon: '📊', file: 'database-set1.html' },
+                { id: 'set2', title: '세트 2', subtitle: 'Round 2', count: 30, icon: '📊', file: 'database-set2.html' },
+                { id: 'set3', title: '세트 3', subtitle: 'Round 3', count: 15, icon: '📊', file: 'database-set3.html' },
+                { id: 'set4', title: '세트 4', subtitle: 'Round 4', count: 15, icon: '📊', file: 'database-set4.html' },
+                { id: 'set5', title: '세트 5', subtitle: 'Round 5', count: 40, icon: '📊', file: 'database-set5.html' },
+                { id: 'set6', title: '세트 6', subtitle: 'Round 6', count: 32, icon: '📊', file: 'database-set6.html' },
+                { id: 'set7', title: '세트 7', subtitle: '종합', count: 30, icon: '✍️', file: 'database-set7.html' },
+                { id: 'set8', title: '세트 8', subtitle: 'Round 7', count: 26, icon: '✍️', file: 'database-set8.html' },
+                { id: 'set9', title: '세트 9', subtitle: 'Round 8', count: 26, icon: '✍️', file: 'database-set9.html' },
+                { id: 'set10', title: '세트 10', subtitle: 'Round 9', count: 21, icon: '✍️', file: 'database-set10.html' },
+                { id: 'set11', title: '세트 11', subtitle: 'Round 10', count: 17, icon: '✍️', file: 'database-set11.html' },
+                { id: 'set12', title: '세트 12', subtitle: '종합 2', count: 20, icon: '✍️', file: 'database-set12.html' },
+                { id: 'set13', title: '세트 13', subtitle: '종합 3', count: 10, icon: '🎯', file: 'database-set13.html' },
+                { id: 'set14', title: '세트 14', subtitle: 'Round 11', count: 23, icon: '🎯', file: 'database-set14.html' },
+                { id: 'set15', title: '세트 15', subtitle: 'Round 12', count: 17, icon: '🏆', file: 'database-set15.html' },
+                { id: 'set16', title: '세트 16', subtitle: '종합 4', count: 30, icon: '🏆', file: 'database-set16.html' },
+                { id: 'set17', title: '세트 17', subtitle: '종합 5', count: 30, icon: '🏆', file: 'database-set17.html' },
+                { id: 'set18', title: '세트 18', subtitle: '심화', count: 30, icon: '💎', file: 'database-set18.html' }
+            ]
+        },
+        {
+            id: 'computational_math',
+            name: '전산수학',
+            icon: '🔢',
+            folder: 'quizzes/computational_math',
+            type: 'v2',
+            quizzes: [
+                { id: 'set1', title: '세트 1', subtitle: '변수/문자열', count: 10, icon: '📝', file: 'math-set1.html' },
+                { id: 'set2', title: '세트 2', subtitle: '리스트/딕셔너리', count: 12, icon: '📋', file: 'math-set2.html' },
+                { id: 'set3', title: '세트 3', subtitle: '조건/반복/함수', count: 17, icon: '🔄', file: 'math-set3.html' },
+                { id: 'set4', title: '세트 4', subtitle: '함수 심화', count: 10, icon: '⚡', file: 'math-set4.html' },
+                { id: 'set5', title: '세트 5', subtitle: '클래스/모듈', count: 9, icon: '🏗️', file: 'math-set5.html' },
+                { id: 'set6', title: '세트 6', subtitle: 'Pandas 기초', count: 14, icon: '🐼', file: 'math-set6.html' },
+                { id: 'set7', title: '세트 7', subtitle: 'Pandas 심화', count: 11, icon: '📊', file: 'math-set7.html' },
+                { id: 'set8', title: '세트 8', subtitle: 'Numpy', count: 13, icon: '🔢', file: 'math-set8.html' }
             ]
         }
     ]

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전산수학 세트 4 | 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="../../shared/quiz-v2-styles.css">
+    <!-- Highlight.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>전산수학 세트 4</h1>
+            <p class="subtitle">함수 심화, collections, zip</p>
+        </header>
+        <a href="../../index.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <div id="v2-quiz-container"></div>
+        <div class="controls">
+            <button class="btn btn-primary" onclick="gradeAllV2()">✅ 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllV2Answers()">💡 전체 정답</button>
+            <button class="btn btn-primary" onclick="reviewWrongV2()">🔄 틀린 문제 복습</button>
+            <button class="btn btn-secondary" onclick="resetV2Quiz()">🔃 초기화</button>
+        </div>
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="v2-score">0</span><span class="score-total"> / <span
+                        id="v2-total">0</span></span></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="../../shared/quiz-v2.js"></script>
+    <script src="data/set4.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof set4 !== 'undefined') {
+                renderQuizRound(set4);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,44 +1,81 @@
-# Quiz App - Project Specification v2
+# Quiz App - Project Specification (spec.md)
 
-> [!CAUTION]
-> ## 🌐 Language Rules (MANDATORY)
-> **ALL code, comments, variable names, function names, and documentation must be written in ENGLISH.**
-> 
-> **Exceptions (Korean allowed):**
-> - Web UI text visible to users (buttons, labels, messages, prompts)
-> - Reference materials in `resources/` folder
-> - Quiz question prompts and explanations shown in the UI
-> 
-> This ensures consistency and AI-readability while maintaining Korean user experience.
-
-> [!CAUTION]
-> ## 🤖 AI Agent Must Read!
-> **This document is the Single Source of Truth for the project.**
-> Before creating/modifying files, always read Section 2 (Folder Structure) and Section 7 (AI Guidelines).
-> If code and this document conflict, **update this document first**, then align the code.
-
-> **Purpose**
-> - Enable **humans/AI** new to this project to quickly understand the structure,
-> - Provide a reference for **safely adding** new quizzes (MCQ/short answer/essay/fill-in-the-blank)
-
+> [!CRITICAL]
+> ## 🤖 AI Quick Contract (For All Coding Agents: Human & AI)
+>
+> 1. **Always prioritize maintainability, optimization, and stability.**
+>    - Prefer simple, readable, and predictable code over “clever” but fragile solutions.
+>    - Do not introduce unnecessary complexity only to save a few lines or micro-optimize.
+>    - Never break existing working features without a clear reason and a migration/rollback plan.
+>
+> 2. **This file (`spec.md`) is the Single Source of Truth for this project.**
+>    - If actual code and this document disagree, **update this document first**, then align the code.
+>    - When you make a meaningful change to any of the following, you **MUST** update `spec.md`:
+>      - Folder structure or file placement rules
+>      - Quiz data model (v1/v2 formats, question types, required fields)
+>      - Core behavior of shared modules:
+>        - `quiz-app.js`, `quiz-v2.js` (rendering, grading, state management)
+>        - `quiz-config.js`, `nav-config.js` (navigation & module registration)
+>        - `ai-chat.js` (AI chat behavior or API integration)
+>
+> 3. **When NOT strictly required to update `spec.md` (optional changes):**
+>    - Small UI text copy changes (Korean or English)
+>    - Minor layout tweaks that do not change workflows or structure
+>    - Internal refactors that keep the same external behavior and public API
+>    → For these, updating this file is **recommended but not mandatory**.
+>
+> 4. **Language Rules (MANDATORY)**
+>    - All **code, comments, variable names, function names, and documentation inside code files** must be written in **ENGLISH**.
+>    - **Korean is allowed ONLY for:**
+>      - Web UI text visible to users (buttons, labels, messages, prompts)
+>      - Reference materials in the `resources/` folder
+>      - Quiz question prompts and explanations shown in the UI
+>
+> 5. **If you are a new agent (or new to this project):**
+>    - Open this file and **first read all sections whose titles end with:**
+>      - `[AI MUST READ]`
+>      - `[AI MUST READ WHEN EDITING]`
+>    - At minimum, read:
+>      - Section 0 – How to Use This Document        `[AI MUST READ]`
+>      - Section 2 – File Structure                  `[AI MUST READ]`
+>      - Section 4 – Quiz Data Model                 `[AI MUST READ]`
+>      - Section 5 – Core Modules                    `[AI MUST READ]`
+>      - Section 7 – AI Agent Guidelines             `[AI MUST READ]`
 
 ---
 
-## 0. How to Use This Document
+> [!NOTE]
+> **Purpose of this Document**
+>
+> - Enable **humans/AI** new to this project to quickly understand the structure.
+> - Provide a reference for **safely adding** new quizzes (MCQ/short answer/essay/fill-in-the-blank).
+> - Prevent changes that would silently break folder structure, quiz data model, or shared modules.
 
-1. **Understand Overall Structure**: Read sections 1-3 to grasp file structure and design system.
-2. **Check Data Model**: Read section 4 and follow the quiz data schema.
-3. **Understand Core Modules**: Section 5 explains the roles of `quiz-app.js` and `ai-chat.js`.
-4. **Use Task-Specific Workflows**: From section 6:
-   - Add new round → 6.1
-   - Add new question type → 6.2
-   - Modify AI features → 6.3
-5. **Always Use This Document as Reference**
+---
+
+## 0. How to Use This Document  [AI MUST READ]
+
+1. **Understand Overall Structure**  
+   Read sections **1–3** to grasp the file structure and design system.
+
+2. **Check Data Model**  
+   Read **section 4** and follow the quiz data schema.
+
+3. **Understand Core Modules**  
+   Section **5** explains the roles of `quiz-app.js` and `ai-chat.js`.
+
+4. **Use Task-Specific Workflows**  
+   From **section 6**:
+   - Add new round → 6.1  
+   - Add new question type → 6.2  
+   - Modify AI features → 6.3  
+
+5. **Always Use This Document as Reference**  
    If actual code differs from this document, **update this document first**, then align code/workflows.
 
 ---
 
-## 1. System Overview
+## 1. System Overview  [REFERENCE]
 
 ### 1.1 Current Features
 
@@ -69,7 +106,8 @@
 - **Processing**: AI parser or script converts to common **Quiz Data Model (v2)**
 - **Output**: Auto-generate responsive web quiz pages
 
-**Support Various Question Types**:
+**Support Various Question Types:**
+
 - Code fill-in-the-blank (currently implemented)
 - Multiple Choice (MCQ)
 - Short Answer
@@ -77,10 +115,11 @@
 
 ---
 
-## 2. File Structure
+## 2. File Structure  [AI MUST READ]
 
 > [!IMPORTANT]
 > **Follow folder placement rules strictly!**
+>
 > - `quizzes/` = Quiz files only (HTML, question data JS)
 > - `resources/` = Reference materials only (OCR, CSV, documents)
 > - `shared/` = Shared scripts/styles
@@ -110,7 +149,7 @@ testpractice-main/
 │           └── linked-list-set2.js          # Set 2: 변수/조건식 (21문제)
 │
 ├── resources/                   # 📚 Reference materials folder
-│   ├── README.md                    # Usage guide
+│   ├── README.md                # Usage guide
 │   │
 │   ├── database/                # DB subject references
 │   │   ├── userTbl.csv          # User table sample
@@ -135,18 +174,18 @@ testpractice-main/
 │   └── img.png                  # App icon
 │
 └── .agent/workflows/            # AI agent workflows
-```
+````
 
 ### 2.1 File Placement Rules
 
-| File Type | Location | Example |
-|----------|----------|---------|
-| Quiz HTML pages | `quizzes/subject/` | `database-set1.html` |
-| Question data JS | `quizzes/subject/data/` | `set1.js` |
-| OCR, CSV, documents | `resources/subject/` | `userTbl.csv` |
-| Backup files (.bak) | `resources/subject/` | - |
-| Shared scripts | `shared/` | `quiz-app.js` |
-| Project docs | `resources/` (root) | This file |
+| File Type           | Location                | Example               |
+| ------------------- | ----------------------- | --------------------- |
+| Quiz HTML pages     | `quizzes/subject/`      | `database-set1.html`  |
+| Question data JS    | `quizzes/subject/data/` | `set1.js`             |
+| OCR, CSV, documents | `resources/subject/`    | `userTbl.csv`         |
+| Backup files (.bak) | `resources/subject/`    | -                     |
+| Shared scripts      | `shared/`               | `quiz-app.js`         |
+| Project docs        | `resources/` (root)     | This file (`spec.md`) |
 
 ### 2.2 Adding New Subject Procedure
 
@@ -158,18 +197,18 @@ testpractice-main/
 
 ### 2.3 Core File Roles
 
-| File | Role | Modification Notes |
-|------|------|---------------------|
-| `quiz-config.js` | Subject/set registration, folder path definitions | `quizzes/` prefix required for folder |
-| `quiz-app.js` | v1 quiz rendering, grading, state management | Maintain function separation |
-| `quiz-v2.js` | v2 quiz (essay, MCQ, etc.) | Extend when adding new types |
-| `nav-config.js` | Sidebar menu structure definition | LocalStorage integration |
-| `ai-chat.js` | Gemini API integration, chat UI | API key in LocalStorage |
-| `styles.css` | Global design system | Use CSS variables only |
+| File             | Role                                   | Modification Notes                    |
+| ---------------- | -------------------------------------- | ------------------------------------- |
+| `quiz-config.js` | Subject/set registration, folder paths | `quizzes/` prefix required for folder |
+| `quiz-app.js`    | v1 quiz rendering, grading, state      | Maintain function separation          |
+| `quiz-v2.js`     | v2 quiz (essay, MCQ, etc.)             | Extend when adding new types          |
+| `nav-config.js`  | Sidebar menu structure definition      | LocalStorage integration              |
+| `ai-chat.js`     | Gemini API integration, chat UI        | API key in LocalStorage               |
+| `styles.css`     | Global design system                   | Use CSS variables only                |
 
 ---
 
-## 3. Design System
+## 3. Design System  [REFERENCE]
 
 ### 3.1 Color Tokens (CSS Variables)
 
@@ -232,23 +271,23 @@ testpractice-main/
 
 ### 3.2 Syntax Highlighting (Atom One Dark)
 
-| Token | Color | Usage |
-|-------|-------|-------|
-| `.keyword` | `#C678DD` | `def`, `class`, `if`, etc. |
-| `.function` | `#61AFEF` | Function names |
-| `.string` | `#98C379` | Strings |
-| `.number` | `#D19A66` | Numbers |
-| `.comment` | `#5C6370` | Comments |
-| `.builtin` | `#E5C07B` | Built-in functions |
-| `.variable` | `#E06C75` | Variable names |
+| Token       | Color     | Usage                      |
+| ----------- | --------- | -------------------------- |
+| `.keyword`  | `#C678DD` | `def`, `class`, `if`, etc. |
+| `.function` | `#61AFEF` | Function names             |
+| `.string`   | `#98C379` | Strings                    |
+| `.number`   | `#D19A66` | Numbers                    |
+| `.comment`  | `#5C6370` | Comments                   |
+| `.builtin`  | `#E5C07B` | Built-in functions         |
+| `.variable` | `#E06C75` | Variable names             |
 
 ### 3.3 Fonts
 
-| Usage | Font | Notes |
-|-------|------|-------|
-| UI Text | `Inter`, `Noto Sans KR` | Modern, clean |
-| Code | `JetBrains Mono` | Monospace |
-| Korean special | `BMJua` | Friendly feel |
+| Usage          | Font                    | Notes         |
+| -------------- | ----------------------- | ------------- |
+| UI Text        | `Inter`, `Noto Sans KR` | Modern, clean |
+| Code           | `JetBrains Mono`        | Monospace     |
+| Korean special | `BMJua`                 | Friendly feel |
 
 ### 3.4 Input Field State Classes
 
@@ -262,30 +301,33 @@ testpractice-main/
 ### 3.5 Layout Patterns
 
 **Main Page (`quiz.html`)**:
-- Hero section: Badge + Title + Stats pill
-- Card grid: Round-based navigation cards
-- Tips section: Keyboard shortcuts
+
+* Hero section: Badge + Title + Stats pill
+* Card grid: Round-based navigation cards
+* Tips section: Keyboard shortcuts
 
 **Quiz Page (`quiz-N.html`)**:
-- Header: Round title + subtitle
-- Code block: Code with blanks
-- Controls: Grade/Answer/Reset buttons
-- Score display: Current score / Total
-- Answer table: Toggleable
+
+* Header: Round title + subtitle
+* Code block: Code with blanks
+* Controls: Grade/Answer/Reset buttons
+* Score display: Current score / Total
+* Answer table: Toggleable
 
 **Responsive Breakpoints**:
-- `≥ 1024px`: Fixed sidebar, 3-column card grid
-- `768px ~ 1023px`: Collapsed sidebar, 2-column grid
-- `≤ 767px`: Overlay sidebar, 1-column grid
+
+* `≥ 1024px`: Fixed sidebar, 3-column card grid
+* `768px ~ 1023px`: Collapsed sidebar, 2-column grid
+* `≤ 767px`: Overlay sidebar, 1-column grid
 
 ---
 
-## 4. Quiz Data Model
+## 4. Quiz Data Model  [AI MUST READ]
 
 ### 4.1 v1 Format (Currently in Use)
 
 > [!NOTE]
-> Existing 6 rounds use v1 format. Keep as-is without migration.
+> Existing v1 rounds use this format. Keep as-is without migration.
 
 ```javascript
 // File: data/quiz-N-data.js
@@ -300,9 +342,10 @@ const quizNData = {
 ```
 
 **Blank Rules**:
-- Format: `( N )` (N starts from 1)
-- Spaces included: Space required inside parentheses
-- Rendered as `<input>` tags
+
+* Format: `( N )` (N starts from 1)
+* Spaces included: Space required inside parentheses
+* Rendered as `<input>` tags
 
 ### 4.2 v2 Format (For New Rounds)
 
@@ -452,7 +495,7 @@ export const quizRound = {
 
 ---
 
-## 5. Core Modules
+## 5. Core Modules  [AI MUST READ]
 
 ### 5.1 quiz-app.js
 
@@ -460,22 +503,24 @@ export const quizRound = {
 
 **Main Functions**:
 
-| Function | Role | Call Timing |
-|----------|------|-------------|
-| `renderQuiz(quizId, data)` | Render code, replace `( N )` with input | Page load |
-| `checkAnswers(quizId, data)` | Batch grading (Ctrl+Enter) | Button/shortcut |
-| `handleEnterKey(input, quizId, data)` | Individual grading (Enter) | Key event |
-| `showAllAnswers(quizId, data)` | Show all answers | Button |
-| `resetQuiz(quizId, data)` | Reset quiz | Button |
-| `reviewWrong(quizId, data, mode)` | Run review mode | Button |
+| Function                              | Role                                    | Call Timing     |
+| ------------------------------------- | --------------------------------------- | --------------- |
+| `renderQuiz(quizId, data)`            | Render code, replace `( N )` with input | Page load       |
+| `checkAnswers(quizId, data)`          | Batch grading (Ctrl+Enter)              | Button/shortcut |
+| `handleEnterKey(input, quizId, data)` | Individual grading (Enter)              | Key event       |
+| `showAllAnswers(quizId, data)`        | Show all answers                        | Button          |
+| `resetQuiz(quizId, data)`             | Reset quiz                              | Button          |
+| `reviewWrong(quizId, data, mode)`     | Run review mode                         | Button          |
 
 **State Management**:
+
 ```javascript
 const inputStates = new Map();  // Grading state for each input
 const wasEverWrong = new Set(); // Track inputs that were ever wrong
 ```
 
 **v2 Extension Points**:
+
 ```javascript
 // Add type-based renderer branching
 function renderQuizRound(round) {
@@ -495,6 +540,7 @@ function renderQuizRound(round) {
 **Role**: Sidebar navigation structure definition
 
 **Structure**:
+
 ```javascript
 const DEFAULT_NAV_CONFIG = {
     subjects: [
@@ -513,39 +559,42 @@ const DEFAULT_NAV_CONFIG = {
 ```
 
 **LocalStorage Integration**:
-- Storage key: `quiz_nav_config`
-- Can be modified via admin UI (Sidebar → ⚙️ Admin)
+
+* Storage key: `quiz_nav_config`
+* Can be modified via admin UI (Sidebar → ⚙️ Admin)
 
 ### 5.3 ai-chat.js
 
 **Role**: Gemini AI Chat Panel
 
 **Features**:
-- `Ctrl+L`: Toggle chat panel
-- Gemini 2.5 Flash API calls
-- API key stored in LocalStorage (`gemini_api_key`)
+
+* `Ctrl+L`: Toggle chat panel
+* Gemini 2.5 Flash API calls
+* API key stored in LocalStorage (`gemini_api_key`)
 
 **Main Functions**:
-| Function | Role |
-|----------|------|
-| `toggleChatPanel()` | Open/close panel |
-| `sendChatMessage()` | Send user message |
-| `callGeminiAPI(userMessage)` | API call |
-| `showApiKeyModal()` | API key settings modal |
+
+| Function                     | Role                   |
+| ---------------------------- | ---------------------- |
+| `toggleChatPanel()`          | Open/close panel       |
+| `sendChatMessage()`          | Send user message      |
+| `callGeminiAPI(userMessage)` | API call               |
+| `showApiKeyModal()`          | API key settings modal |
 
 ---
 
-## 6. Workflows
+## 6. Workflows  [AI MUST READ WHEN EDITING]
 
 ### 6.1 Adding New Round (v1) Procedure
 
 > [!NOTE]
-> Use when adding rounds in existing fill-in-the-blank format
+> Use when adding rounds in existing fill-in-the-blank format.
 
 #### Step 1: Create Data File
 
 ```bash
-# File: linked_list_quiz/data/quiz-7-data.js
+# File: quizzes/linked_list/data/quiz-7-data.js
 ```
 
 ```javascript
@@ -568,24 +617,28 @@ Copy `quiz-6.html` to `quiz-7.html` and modify:
 <title>7회차: [Title] | 연결 리스트 퀴즈</title>
 <h1>7회차: [Title]</h1>
 <p class="subtitle">[Description]</p>
+
 <script src="data/quiz-7-data.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         renderQuiz('7', quiz7Data);
     });
 </script>
+
 <!-- Also update score-total to / [blank count] -->
 ```
 
 #### Step 3: Register in Sidebar
 
 **Method A (Admin UI)**:
+
 1. Click ☰ on any quiz page
 2. Click ⚙️ Admin
 3. ➕ Add Page
 4. Fill form and save
 
 **Method B (Direct code modification)**:
+
 ```javascript
 // Add to DEFAULT_NAV_CONFIG.subjects array in nav-config.js
 { id: 'quiz-7', title: '7회차: [Title]', count: [blank count] }
@@ -593,29 +646,29 @@ Copy `quiz-6.html` to `quiz-7.html` and modify:
 
 #### Step 4: Test
 
-- [ ] Desktop rendering check
-- [ ] Mobile responsive check
-- [ ] Enter key individual grading works
-- [ ] Ctrl+Enter batch grading works
-- [ ] Review mode works
+* [ ] Desktop rendering check
+* [ ] Mobile responsive check
+* [ ] Enter key individual grading works
+* [ ] Ctrl+Enter batch grading works
+* [ ] Review mode works
 
 ---
 
 ### 6.2 Adding New Round (v2) Procedure
 
 > [!IMPORTANT]
-> Use when mixing various question types
+> Use when mixing various question types.
 
 #### Step 1: Create v2 Directory (First time only)
 
 ```bash
-mkdir linked_list_quiz/data/v2
+mkdir -p quizzes/linked_list/data/v2
 ```
 
 #### Step 2: Create Data File
 
 ```javascript
-// File: linked_list_quiz/data/v2/linked-list-7.js
+// File: quizzes/linked_list/data/v2/linked-list-7.js
 
 export const quizRound = {
     id: 'linked-list-7',
@@ -664,7 +717,7 @@ function renderMcqQuestion(q) { /* ... */ }
 
 #### Step 1: Define Data Model
 
-Add new type schema in section 4.2
+Add new type schema in section 4.2.
 
 #### Step 2: Add Renderer Function
 
@@ -697,23 +750,98 @@ function gradeNewTypeQuestion(q, userAnswer) {
 
 ---
 
-## 7. AI Agent Guidelines
+### 6.4 AI Quiz Generation & File Naming Rules  [AI MUST READ WHEN EDITING]
+
+When an AI agent creates new quiz questions/sets, it must follow these rules.
+
+#### 6.4.1 Subject detection
+
+* If the user mentions **"연결 리스트" / "linked list" / Python linked list code** →
+
+  * `subject` id: `linked-list`
+  * Base folder: `quizzes/linked_list/`
+  * Data folder: `quizzes/linked_list/data/`
+  * Resources folder: `resources/linked_list/`
+
+* If the user mentions **"데이터베이스" / "SQL" / INSERT/UPDATE/DELETE / JOIN 등 DB 관련 키워드** →
+
+  * `subject` id: `database`
+  * Base folder: `quizzes/database/`
+  * Data folder: `quizzes/database/data/`
+  * Resources folder: `resources/database/`
+
+* If the subject is completely new (not `linked-list` / `database`), the agent must:
+
+  * Create a new slug from the subject name (e.g. `algorithms`, `network`, etc.)
+  * Assume these folders:
+
+    * `quizzes/<slug>/`
+    * `quizzes/<slug>/data/`
+    * `resources/<slug>/`
+
+#### 6.4.2 File naming conventions
+
+* **Database sets (set-based quizzes)**:
+
+  * HTML file:
+
+    * `quizzes/database/database-set<N>.html`
+  * Data file:
+
+    * `quizzes/database/data/set<N>.js`
+    * Exports: `const setN = { setId: 'set-N', questions: [...] };`
+
+* **Linked-list rounds (round-based quizzes)**:
+
+  * HTML file:
+
+    * `quizzes/linked_list/quiz-<N>.html`
+  * Data file:
+
+    * `quizzes/linked_list/data/quiz-<N>-data.js`
+    * Exports: `const quizNData = { id: 'N', title: 'Round N: ...', ... };`
+
+* **New subjects**:
+
+  * Follow the **database** naming pattern by default:
+
+    * HTML: `quizzes/<slug>/<slug>-set<N>.html`
+    * Data: `quizzes/<slug>/data/set<N>.js`
+    * Data export name: `const setN = { ... };`
+
+#### 6.4.3 Expectations for answers in this chat
+
+* Whenever you (AI) generate new quizzes or quiz data files, you must:
+
+  * Explicitly show the **intended relative folder path and filename** as a comment before the code block.
+  * Example:
+
+    * `// File: quizzes/database/data/set3.js`
+    * `// File: quizzes/linked_list/quiz-11.html`
+* If the subject is ambiguous, you must:
+
+  * State which subject you assumed (e.g. `subject: 'database'` or `'linked-list'`), and
+  * Use the corresponding folder and naming rules above.
+
+---
+
+## 7. AI Agent Guidelines  [AI MUST READ]
 
 ### 7.1 Basic Principles
 
-- This document is **always the Single Source of Truth**.
-- If code and document differ, **update document first**, then align code.
-- Existing v1 format (`quiz-*-data.js`) is **legacy** - treat as read-only reference.
+* This document is **always the Single Source of Truth**.
+* If code and document differ, **update document first**, then align code.
+* Existing v1 format (`quiz-*-data.js`) is **legacy** – treat as read-only reference.
 
 ### 7.2 Code Writing Rules
 
-| Item | Rule |
-|------|------|
-| **Variable/Function names** | camelCase, English |
-| **Comments** | English |
-| **UI Text** | Korean |
-| **Colors** | CSS variables only |
-| **HTML Classes** | kebab-case |
+| Item                    | Rule               |
+| ----------------------- | ------------------ |
+| Variable/Function names | camelCase, English |
+| Comments                | English            |
+| UI Text                 | Korean             |
+| Colors                  | CSS variables only |
+| HTML Classes            | kebab-case         |
 
 ### 7.3 Modification Checklist
 
@@ -724,10 +852,10 @@ function gradeNewTypeQuestion(q, userAnswer) {
 
 ### 7.4 Prohibited Actions
 
-- ❌ Hardcoding colors instead of CSS variables
-- ❌ Changing existing v1 data file format
-- ❌ Changing `quiz-app.js` function signatures (add v2 extension functions separately)
-- ❌ Using emojis in quiz page headers
+* ❌ Hardcoding colors instead of CSS variables
+* ❌ Changing existing v1 data file format
+* ❌ Changing `quiz-app.js` function signatures (add v2 extension functions separately)
+* ❌ Using emojis in quiz page headers
 
 ### 7.5 Adding New Quizzes (Mandatory)
 
@@ -735,58 +863,69 @@ function gradeNewTypeQuestion(q, userAnswer) {
 > **New quizzes MUST be integrated into the existing folder structure and config.**
 
 **Folder Organization Rules:**
+
 1. Quiz files (`*.html`) → `quizzes/subject/` (e.g., `quizzes/database/`, `quizzes/linked_list/`)
 2. Question data (`*.js`) → `quizzes/subject/data/`
 3. Reference materials → `resources/subject/`
 4. Register in `quiz-config.js` to appear in web UI (folder → file navigation)
 
 **When creating a new quiz:**
+
 ```javascript
 // Add to QUIZ_CONFIG.modules[].quizzes array in quiz-config.js
-{ id: 'new-quiz', title: '새 퀴즈', subtitle: '설명', count: 10, icon: '📝', file: 'new-quiz.html' }
+{
+    id: 'new-quiz',
+    title: '새 퀴즈',
+    subtitle: '설명',
+    count: 10,
+    icon: '📝',
+    file: 'new-quiz.html'
+}
 ```
 
 **When adding a new subject (folder):**
+
 1. Create `quizzes/new_subject/` and `quizzes/new_subject/data/`
 2. Create `resources/new_subject/` for reference materials
 3. Add new module entry in `quiz-config.js`
 
 **UI Display:**
-- Main page: Modules appear as folders, quizzes as files inside folders
-- Sidebar: Auto-generated from `quiz-config.js`
+
+* Main page: Modules appear as folders, quizzes as files inside folders
+* Sidebar: Auto-generated from `quiz-config.js`
 
 ---
 
-## 8. Quick Reference
+## 8. Quick Reference  [REFERENCE]
 
 ### Keyboard Shortcuts
 
-| Key | Function |
-|-----|----------|
-| `Enter` | Individual grading |
-| `Enter` x2 | Show answer (when wrong) |
-| `Ctrl+Enter` | Batch grading |
-| `Ctrl+L` | Toggle AI chat |
+| Key          | Function                 |
+| ------------ | ------------------------ |
+| `Enter`      | Individual grading       |
+| `Enter` x2   | Show answer (when wrong) |
+| `Ctrl+Enter` | Batch grading            |
+| `Ctrl+L`     | Toggle AI chat           |
 
 ### Status Colors
 
-| Color | Meaning | CSS Class |
-|-------|---------|-----------|
-| 🔵 Blue | Default/focus | `.blank-input` |
-| 🟢 Green | Correct (locked) | `.correct` |
-| 🟡 Yellow | Fixed (locked) | `.retry` |
-| 🔴 Red | Wrong/answer revealed | `.wrong` |
+| Color     | Meaning               | CSS Class      |
+| --------- | --------------------- | -------------- |
+| 🔵 Blue   | Default/focus         | `.blank-input` |
+| 🟢 Green  | Correct (locked)      | `.correct`     |
+| 🟡 Yellow | Fixed (locked)        | `.retry`       |
+| 🔴 Red    | Wrong/answer revealed | `.wrong`       |
 
 ### Key LocalStorage Keys
 
-| Key | Usage |
-|-----|-------|
+| Key               | Usage             |
+| ----------------- | ----------------- |
 | `quiz_nav_config` | Sidebar structure |
-| `gemini_api_key` | Gemini API key |
+| `gemini_api_key`  | Gemini API key    |
 
 ---
 
-## 9. Problem Prompt Template (문제 프롬프트)
+## 9. Problem Prompt Template (문제 프롬프트)  [REFERENCE]
 
 > [!TIP]
 > 다른 AI에게 문제를 요청할 때 아래 프롬프트를 복사해서 사용하세요.
@@ -794,7 +933,7 @@ function gradeNewTypeQuestion(q, userAnswer) {
 
 ### 9.1 Full Prompt (Copy & Paste)
 
-```
+````markdown
 나는 빈칸 채우기, 객관식, 주관식, 서술형 문제를 지원하는 퀴즈 웹앱을 만들고 있어.
 문제를 만들어주면 내 앱에 바로 넣을 수 있게 아래 JSON 형식으로 정확히 맞춰서 줘.
 
@@ -816,9 +955,10 @@ function gradeNewTypeQuestion(q, userAnswer) {
         { index: 1, answer: "N'홍길동'" }
     ]
 }
-```
+````
 
 ### 2. mcq (객관식)
+
 4지선다 또는 5지선다 객관식
 
 ```javascript
@@ -832,6 +972,7 @@ function gradeNewTypeQuestion(q, userAnswer) {
 ```
 
 ### 3. short (주관식/단답형)
+
 여러 정답을 허용하는 단답형
 
 ```javascript
@@ -844,6 +985,7 @@ function gradeNewTypeQuestion(q, userAnswer) {
 ```
 
 ### 4. essay (서술형)
+
 AI 채점용 키워드 기반 서술형
 
 ```javascript
@@ -875,6 +1017,7 @@ const setN = {
 ---
 
 ## 빈칸 규칙 (code-fill)
+
 1. 빈칸 형식: `( N )` (괄호 안 공백 필수!)
 2. 빈칸 번호는 1부터 시작
 3. blanks 배열의 index와 코드의 ( N )이 일치해야 함
@@ -883,18 +1026,19 @@ const setN = {
 
 [요청 사항]
 예: "SQL INSERT/UPDATE/DELETE 문제 10개 만들어줘. 빈칸 5개, 객관식 3개, 주관식 2개로 섞어서."
+
 ```
 
 ### 9.2 Quick Reference Table
 
-| Type | 용도 | 필수 필드 |
-|------|------|-----------|
-| `code-fill` | 코드 빈칸 | `language`, `code`, `blanks[]` |
-| `mcq` | 객관식 | `options[]`, `correctIndex` |
-| `short` | 주관식 | `acceptableAnswers[]` |
-| `essay` | 서술형 | `rubric[]`, `maxLength` |
+| Type       | 용도           | 필수 필드                        |
+|------------|----------------|----------------------------------|
+| `code-fill`| 코드 빈칸      | `language`, `code`, `blanks[]`  |
+| `mcq`      | 객관식         | `options[]`, `correctIndex`     |
+| `short`    | 주관식         | `acceptableAnswers[]`           |
+| `essay`    | 서술형         | `rubric[]`, `maxLength`         |
 
 ---
 
-> **Last Updated**: 2025-12-09
-> **Version**: v2.2 (Problem Prompt Template Added)
+> **Last Updated**: 2025-12-10  
+> **Version**: v2.4 (AI Quick Contract + AI Quiz Generation & File Naming Rules added)
