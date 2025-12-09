@@ -416,18 +416,18 @@ body {
 
 /* View mode - Small icons */
 .file-grid.view-small {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
 }
 
 .file-grid.view-medium {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
 }
 
 .file-grid.view-large {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
 }
 
 .file-grid.view-list {
@@ -438,8 +438,8 @@ body {
 .file-card {
     background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
-    padding: 24px 20px;
+    border-radius: 12px;
+    padding: 14px 12px;
     text-decoration: none;
     color: #e2e8f0;
     transition: all 0.25s ease;
@@ -447,7 +447,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 6px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -479,14 +479,14 @@ body {
 }
 
 .file-icon {
-    font-size: 2.8rem;
+    font-size: 1.6rem;
     position: relative;
     z-index: 1;
 }
 
 .file-name {
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: 0.8rem;
     word-break: break-word;
     position: relative;
     z-index: 1;
@@ -509,17 +509,17 @@ body {
 
 /* Small icon view */
 .view-small .file-card {
-    padding: 16px 12px;
-    gap: 8px;
-    border-radius: 14px;
+    padding: 8px 6px;
+    gap: 4px;
+    border-radius: 8px;
 }
 
 .view-small .file-icon {
-    font-size: 2rem;
+    font-size: 1.2rem;
 }
 
 .view-small .file-name {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
 }
 
 .view-small .file-meta,
@@ -530,16 +530,16 @@ body {
 
 /* Medium icon view */
 .view-medium .file-card {
-    padding: 24px 16px;
-    gap: 10px;
+    padding: 12px 10px;
+    gap: 6px;
 }
 
 .view-medium .file-icon {
-    font-size: 2.6rem;
+    font-size: 1.5rem;
 }
 
 .view-medium .file-name {
-    font-size: 1.05rem;
+    font-size: 0.75rem;
 }
 
 .view-medium .file-meta {
@@ -548,17 +548,16 @@ body {
 
 /* Large icon view */
 .view-large .file-card {
-    padding: 32px 20px;
-    gap: 14px;
-    aspect-ratio: 1;
+    padding: 16px 14px;
+    gap: 8px;
 }
 
 .view-large .file-icon {
-    font-size: 3.2rem;
+    font-size: 2rem;
 }
 
 .view-large .file-name {
-    font-size: 1.15rem;
+    font-size: 0.85rem;
 }
 
 /* List view */
