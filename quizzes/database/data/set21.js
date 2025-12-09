@@ -19,7 +19,7 @@ const set21 = {
         { "id": "q4-3", "type": "short", "prompt": "[주제4] 반올림 함수 ROUND(123.4567, 2)의 실행 결과는?", "acceptableAnswers": ["123.46"] },
         { "id": "q4-4", "type": "mcq", "prompt": "[주제4] 날짜에 특정 기간을 더하는 함수는?", "options": ["DATEADD", "DATEDIFF", "GETDATE", "YEAR"], "correctIndex": 0 },
         { "id": "q5-1", "type": "short", "prompt": "[주제5] 날짜와 시각(시,분,초,밀리초)을 모두 저장할 수 있는 SQL Server의 데이터 타입은? (DATETIME 제외)", "acceptableAnswers": ["DATETIME2", "datetime2"] },
-        { "id": "q5-2", "type": "essay", "prompt": "[주제5] CHAR(5)와 VARCHAR(5)에 똑같이 'ABC'를 저장했을 때, 내부 저장 방식의 차이를 설명하세요.", "rubric": ["CHAR는 5바이트 고정(공백채움)", "VARCHAR는 실제 데이터 길이만큼만 사용", "공간 효율 차이"], "maxLength": 150 },
+        { "id": "q5-2", "type": "essay", "prompt": "[주제5] CHAR(5)와 VARCHAR(5)에 똑같이 'ABC'를 저장했을 때, 내부 저장 방식의 차이를 설명하세요.", "rubric": ["CHAR는 5바이트 고정(공백채움)", "VARCHAR는 실제 데이터 길이만큼만 사용", "공간 효율 차이"], "answer": "CHAR(5)에 'ABC'를 저장하면 5바이트 고정 길이로 저장되며, 나머지 2바이트는 공백으로 채워집니다('ABC  '). 반면 VARCHAR(5)에 'ABC'를 저장하면 실제 데이터 길이인 3바이트만 사용하여 저장 공간이 절약됩니다.", "maxLength": 150 },
         { "id": "q5-3", "type": "mcq", "prompt": "[주제5] 0 또는 1의 값만 가질 수 있는 논리형 데이터 타입은?", "options": ["INT", "BIT", "TINYINT", "BINARY"], "correctIndex": 1 },
         { "id": "q5-4", "type": "short", "prompt": "[주제5] 유니코드 문자열을 저장하며, 가변 길이를 지원하는 데이터 타입은?", "acceptableAnswers": ["NVARCHAR", "nvarchar"] },
         { "id": "q6-1", "type": "code-fill", "prompt": "[주제6] 'average'라는 컬럼을 만듭니다. 000.0 (총 4자리, 소수점 1자리) 형태의 실수를 저장하려면 빈칸에 무엇을 써야 합니까?", "language": "sql", "code": "CREATE TABLE gradeTbl (\n    average ( 1 ) NULL\n);", "blanks": [{ "index": 1, "answer": "DECIMAL(4, 1)" }] },
@@ -29,6 +29,6 @@ const set21 = {
         { "id": "q7-1", "type": "mcq", "prompt": "[주제7] userTbl(10명)과 buyTbl(12건)을 LEFT OUTER JOIN 했습니다. 이때 생성되는 총 행(Row)의 개수는?\n(힌트: 구매 내역 12건 + 구매 안 한 회원 5명)", "options": ["10", "12", "17", "22"], "correctIndex": 2 },
         { "id": "q7-2", "type": "short", "prompt": "[주제7] 다음 쿼리의 실행 결과에서 출력되는 회원의 이름은 누구인가?\n\nSELECT U.name \nFROM userTbl U \nLEFT JOIN buyTbl B ON U.userID = B.userID \nWHERE B.prodName IS NULL AND U.addr = '경남';", "acceptableAnswers": ["윤종신"] },
         { "id": "q7-3", "type": "code-fill", "prompt": "[주제7] 두 테이블을 JOIN할 때, 양쪽 테이블에 모두 데이터가 있는 경우만 출력하는 조인 방식은?", "language": "sql", "code": "SELECT * FROM TableA ( 1 ) JOIN TableB ON TableA.ID = TableB.ID;", "blanks": [{ "index": 1, "answer": "INNER" }] },
-        { "id": "q7-4", "type": "essay", "prompt": "[주제7] CROSS JOIN(상호 조인)을 수행했을 때 결과 행의 개수가 어떻게 계산되는지 설명하세요. (userTbl 10행, buyTbl 12행일 때 예시 포함)", "rubric": ["두 테이블 행의 곱", "10 * 12 = 120행", "모든 경우의 수 조합"], "maxLength": 150 }
+        { "id": "q7-4", "type": "essay", "prompt": "[주제7] CROSS JOIN(상호 조인)을 수행했을 때 결과 행의 개수가 어떻게 계산되는지 설명하세요. (userTbl 10행, buyTbl 12행일 때 예시 포함)", "rubric": ["두 테이블 행의 곱", "10 * 12 = 120행", "모든 경우의 수 조합"], "answer": "CROSS JOIN은 두 테이블의 모든 가능한 조합(Cartesian Product)을 생성합니다. 결과 행의 개수는 두 테이블 행 개수의 곱으로 계산됩니다. userTbl(10행)과 buyTbl(12행)을 CROSS JOIN하면 10 × 12 = 120행이 생성됩니다.", "maxLength": 150 }
     ]
 };

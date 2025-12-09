@@ -430,10 +430,21 @@ function gradeV2CodeFill(input, round) {
     const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
 
     if (state === 'graded' && input.classList.contains('wrong')) {
-        input.value = correctAnswer;
-        input.readOnly = true;
-        v2States.set(key, 'shown');
-        moveToNextV2Input(input);
+        // Second Enter: check if user fixed it
+        if (isCorrect) {
+            // User corrected the answer - show as retry (yellow)
+            input.classList.remove('wrong');
+            input.classList.add('retry');
+            input.readOnly = true;
+            v2States.set(key, 'correct');
+            moveToNextV2Input(input);
+        } else {
+            // Still wrong - show correct answer
+            input.value = correctAnswer;
+            input.readOnly = true;
+            v2States.set(key, 'shown');
+            moveToNextV2Input(input);
+        }
     } else if (!state || state !== 'correct') {
         input.classList.remove('correct', 'wrong', 'retry');
         if (userAnswer) {
@@ -449,6 +460,7 @@ function gradeV2CodeFill(input, round) {
             }
         }
     }
+
     updateV2Score();
     saveV2Progress();
 }
@@ -498,11 +510,21 @@ function gradeV2Short(input, round) {
     );
 
     if (state === 'graded' && input.classList.contains('wrong')) {
-        // Second Enter on wrong answer: show correct answer and move to next
-        input.value = question.acceptableAnswers[0];
-        input.readOnly = true;
-        v2States.set(key, 'shown');
-        moveToNextV2Input(input);
+        // Second Enter on wrong answer: check if user fixed it
+        if (isCorrect) {
+            // User corrected the answer - show as retry (yellow)
+            input.classList.remove('wrong');
+            input.classList.add('retry');
+            input.readOnly = true;
+            v2States.set(key, 'correct');
+            moveToNextV2Input(input);
+        } else {
+            // Still wrong - show correct answer and move to next
+            input.value = question.acceptableAnswers[0];
+            input.readOnly = true;
+            v2States.set(key, 'shown');
+            moveToNextV2Input(input);
+        }
     } else if (!state || state !== 'correct') {
         input.classList.remove('correct', 'wrong', 'retry');
         if (userAnswer) {
@@ -518,6 +540,7 @@ function gradeV2Short(input, round) {
             }
         }
     }
+
     updateV2Score();
     saveV2Progress();
 }
@@ -621,80 +644,72 @@ function moveToNextV2Blank(currentInput) {
 }
 
 /**
- * Move focus to next input field (blank or short answer)
+ * Move focus to next input field (blank, short answer, or unanswered MCQ)
  * Works for all question types with input fields
  * Fixed: Now correctly finds next input even when current input was just made readonly
+ * Enhanced: Also includes unanswered MCQ questions in focus navigation
  */
 function moveToNextV2Input(currentInput) {
-    // Get ALL inputs (including readonly) to find current position
-    const allInputs = Array.from(document.querySelectorAll('.v2-blank, .v2-short'));
-    const currentIndex = allInputs.indexOf(currentInput);
-
-    if (currentIndex < 0) return;
-
-    // Find next non-readonly input after current position
-    for (let i = currentIndex + 1; i < allInputs.length; i++) {
-        if (!allInputs[i].readOnly) {
-            allInputs[i].focus();
-            return;
-        }
-    }
-
-    // No more editable inputs - move to next question
-    const card = currentInput.closest('.question-card');
-    if (card) {
-        moveToNextQuestion(card);
-    }
-}
-
-/**
- * Move focus to the next question card
- * Handles all question types: code-fill, mcq, short, essay
- * @param {HTMLElement} currentCard - Current question card element
- */
-function moveToNextQuestion(currentCard) {
+    // Get current question card
+    const currentCard = currentInput.closest('.question-card');
     if (!currentCard) return;
 
-    const nextCard = currentCard.nextElementSibling;
-    if (!nextCard || !nextCard.classList.contains('question-card')) {
-        // No more questions - show completion message briefly
-        return;
+    // Get all question cards in order
+    const allCards = Array.from(document.querySelectorAll('.question-card'));
+    const currentCardIndex = allCards.indexOf(currentCard);
+
+    // First: try to find next input within the same card
+    const sameCardInputs = Array.from(currentCard.querySelectorAll('.v2-blank, .v2-short'));
+    const currentInputIndex = sameCardInputs.indexOf(currentInput);
+
+    for (let i = currentInputIndex + 1; i < sameCardInputs.length; i++) {
+        if (!sameCardInputs[i].readOnly) {
+            sameCardInputs[i].focus();
+            return;
+        }
     }
 
-    // Scroll to next question
-    nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Second: look through remaining question cards for any unanswered question
+    for (let i = currentCardIndex + 1; i < allCards.length; i++) {
+        const card = allCards[i];
+        const questionType = card.dataset.type;
 
-    // Focus on the first interactive element in next question
-    setTimeout(() => {
-        // Try code-fill blanks first
-        const nextBlank = nextCard.querySelector('.v2-blank:not([readonly])');
-        if (nextBlank) {
-            nextBlank.focus();
+        // Check for editable inputs (blank or short)
+        const nextInput = card.querySelector('.v2-blank:not([readonly]), .v2-short:not([readonly])');
+        if (nextInput) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => nextInput.focus(), 100);
             return;
         }
 
-        // Try short answer input
-        const nextShort = nextCard.querySelector('.v2-short:not([readonly])');
-        if (nextShort) {
-            nextShort.focus();
-            return;
+        // Check for unanswered MCQ (no radio buttons checked and not disabled)
+        if (questionType === 'mcq') {
+            const radios = card.querySelectorAll('input[type="radio"]');
+            const anyChecked = Array.from(radios).some(r => r.checked);
+            const allDisabled = Array.from(radios).every(r => r.disabled);
+
+            if (!anyChecked && !allDisabled) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    const firstRadio = card.querySelector('input[type="radio"]:not(:disabled)');
+                    if (firstRadio) firstRadio.focus();
+                }, 100);
+                return;
+            }
         }
 
-        // Try MCQ radio buttons
-        const nextRadio = nextCard.querySelector('input[type="radio"]:not(:disabled)');
-        if (nextRadio) {
-            nextRadio.focus();
+        // Check for essay textarea
+        const nextEssay = card.querySelector('.v2-essay');
+        if (nextEssay && questionType === 'essay') {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => nextEssay.focus(), 100);
             return;
         }
+    }
 
-        // Try essay textarea
-        const nextEssay = nextCard.querySelector('.v2-essay');
-        if (nextEssay) {
-            nextEssay.focus();
-            return;
-        }
-    }, 100); // Small delay to allow scroll animation
+    // No more unanswered questions - quiz complete or at end
 }
+
 
 // Helper: Check if current page is a database quiz (case-insensitive grading)
 function isDatabaseQuiz() {
