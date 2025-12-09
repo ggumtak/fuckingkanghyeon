@@ -71,7 +71,10 @@ const QUIZ_CONFIG = {
                 { id: 'set18', title: '세트 18', subtitle: '종합 연습 4', count: 33, icon: '📋', file: 'database-set18.html' },
                 { id: 'set19', title: '세트 19', subtitle: '기말 대비 1', count: 28, icon: '🎯', file: 'database-set19.html' },
                 { id: 'set20', title: '세트 20', subtitle: '기말 대비 2', count: 28, icon: '🎯', file: 'database-set20.html' },
-                { id: 'set21', title: '세트 21', subtitle: '실전 응용편', count: 28, icon: '🚀', file: 'database-set21.html' }
+                { id: 'set21', title: '세트 21', subtitle: '실전 응용편', count: 28, icon: '🚀', file: 'database-set21.html' },
+                { id: 'set22', title: '세트 22', subtitle: '함수 결과 예측', count: 30, icon: '🧮', file: 'database-set22.html' },
+                { id: 'set23', title: '세트 23', subtitle: '데이터 타입 설명', count: 30, icon: '📖', file: 'database-set23.html' },
+                { id: 'set24', title: '세트 24', subtitle: '필드 작성 문제', count: 30, icon: '🏗️', file: 'database-set24.html' }
             ]
         },
         {
