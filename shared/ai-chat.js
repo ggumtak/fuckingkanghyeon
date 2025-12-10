@@ -497,15 +497,24 @@ function toggleChatPanel() {
     const panel = document.getElementById('aiChatPanel');
 
     if (chatPanelOpen) {
+        // Save scroll position BEFORE any focus changes
+        const savedScrollY = window.scrollY;
+        const savedScrollX = window.scrollX;
+
         panel.classList.add('open');
         document.body.classList.add('ai-panel-open');
         switchChatTab('chat');
 
-        // Focus with scroll prevention using body overflow lock
+        // Focus chat input without scrolling
         if (hasApiKey()) {
             const chatInput = document.getElementById('chatInput');
             if (chatInput) {
-                chatInput.focus({ preventScroll: true });
+                // Use requestAnimationFrame to ensure DOM is ready
+                requestAnimationFrame(() => {
+                    chatInput.focus({ preventScroll: true });
+                    // Force restore scroll position in case preventScroll didn't work
+                    window.scrollTo(savedScrollX, savedScrollY);
+                });
             }
         }
     } else {

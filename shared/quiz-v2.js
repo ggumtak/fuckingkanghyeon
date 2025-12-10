@@ -24,7 +24,9 @@ function isQuizInputField(el) {
     return el && (
         el.classList.contains('v2-short') ||
         el.classList.contains('v2-blank') ||
-        el.classList.contains('v2-essay')
+        el.classList.contains('v2-essay') ||
+        el.classList.contains('short-answer-input') ||
+        el.classList.contains('blank-input')
     );
 }
 
