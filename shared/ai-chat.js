@@ -527,6 +527,48 @@ function bindChatKeyboard() {
             }
         }
     });
+
+    // Click outside to close (but not when dragging)
+    let isDragging = false;
+    let mouseDownTarget = null;
+
+    document.addEventListener('mousedown', (e) => {
+        mouseDownTarget = e.target;
+        isDragging = false;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (mouseDownTarget) {
+            isDragging = true;
+        }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+        if (!chatPanelOpen || isDragging) {
+            mouseDownTarget = null;
+            isDragging = false;
+            return;
+        }
+
+        const panel = document.getElementById('aiChatPanel');
+        const modal = document.getElementById('apiKeyModal');
+
+        // Don't close if clicking inside panel or modal
+        if (panel?.contains(e.target) || modal?.contains(e.target)) {
+            mouseDownTarget = null;
+            return;
+        }
+
+        // Don't close if mousedown was inside panel (prevents closing during text selection)
+        if (panel?.contains(mouseDownTarget)) {
+            mouseDownTarget = null;
+            return;
+        }
+
+        // Close panel when clicking outside
+        toggleChatPanel();
+        mouseDownTarget = null;
+    });
 }
 
 // ========== Send Message ==========

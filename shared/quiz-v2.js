@@ -342,14 +342,26 @@ function shuffleV2Quiz() {
     const unanswered = [];
 
     currentV2Round.questions.forEach(q => {
-        const key = q.type === 'mcq' ? `mcq-${q.id}` :
-            q.type === 'short' ? `short-${q.id}` :
-                q.type === 'essay' ? `essay-${q.id}` : q.id;
-        const state = v2States.get(key);
+        let isAnswered = false;
 
-        // Check if question is answered (has any state)
-        if (state === 'correct' || state === 'graded' || state === 'shown' ||
-            state === 'self-correct' || state === 'self-wrong') {
+        if (q.type === 'mcq') {
+            const state = v2States.get(`mcq-${q.id}`);
+            isAnswered = state === 'correct' || state === 'graded';
+        } else if (q.type === 'short') {
+            const state = v2States.get(`short-${q.id}`);
+            isAnswered = state === 'correct' || state === 'graded' || state === 'shown';
+        } else if (q.type === 'essay') {
+            const state = v2States.get(`essay-${q.id}`);
+            isAnswered = state === 'self-correct' || state === 'self-wrong';
+        } else if (q.type === 'code-fill' && q.blanks) {
+            // Check if any blank has been answered
+            isAnswered = q.blanks.some(b => {
+                const state = v2States.get(`${q.id}-${b.index}`);
+                return state === 'correct' || state === 'graded' || state === 'shown';
+            });
+        }
+
+        if (isAnswered) {
             answered.push(q);
         } else {
             unanswered.push(q);
