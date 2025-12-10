@@ -33,8 +33,8 @@ function scrollToUpperCenterV2(element) {
         // MCQ cards: show near top so all options are visible
         scrollPercent = isMobile ? 0.15 : 0.15;
     } else {
-        // Input fields: slightly below center for comfortable typing
-        scrollPercent = isMobile ? 0.50 : 0.55;
+        // Input fields: slightly above center for comfortable typing
+        scrollPercent = isMobile ? 0.45 : 0.45;
     }
 
     let targetY = window.scrollY + rect.top - (viewportHeight * scrollPercent);
