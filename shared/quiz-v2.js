@@ -257,11 +257,20 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
             'essay': '서술형'
         };
 
+        // Extract chapter info from question ID (e.g., "ch04-q08" -> "Ch.04")
+        let chapterBadge = '';
+        const chapterMatch = q.id?.match(/^ch(\d+)/i);
+        if (chapterMatch) {
+            const chapterNum = chapterMatch[1].padStart(2, '0');
+            chapterBadge = `<span class="question-chapter">Ch.${chapterNum}</span>`;
+        }
+
         card.innerHTML = `
             <div class="question-header">
                 <span class="question-number">Q${index + 1}</span>
                 <span class="question-type-badge ${q.type}">${typeBadges[q.type] || q.type}</span>
                 ${q.points ? `<span class="question-points">${q.points}점</span>` : ''}
+                ${chapterBadge}
             </div>
             <div class="question-body"></div>
         `;
