@@ -1902,9 +1902,9 @@ body.ai-panel-open .floating-ai-btn {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    border: 1px solid var(--error);
-    background: rgba(249, 115, 115, 0.15);
-    color: var(--error);
+    border: 1px solid rgba(96, 165, 250, 0.5);
+    background: rgba(96, 165, 250, 0.15);
+    color: #93c5fd;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -1924,9 +1924,11 @@ body.ai-panel-open .floating-ai-btn {
 
 /* ========== Concepts Multi-Select Mode ========== */
 .concepts-edit,
-.concepts-anki {
+.concepts-anki,
+.concepts-clear {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
+    color: var(--text);
 }
 
 .concepts-select-actions {

@@ -312,18 +312,16 @@ function createChatPanel() {
             <div class="concepts-header">
                 <span class="concepts-count" id="conceptsCount">0개의 개념</span>
                 <button class="btn btn-sm concepts-edit" onclick="toggleSelectMode()" title="편집 모드">✏️ 편집</button>
-                <button class="btn btn-sm concepts-export" onclick="exportConceptsCSV()" title="CSV로 내보내기">📥 CSV</button>
                 <button class="btn btn-sm concepts-anki" onclick="exportConceptsAnki()" title="Anki용 내보내기">📚 Anki</button>
                 <button class="btn btn-sm concepts-clear" onclick="clearAllConcepts()" title="전체 삭제">🗑️</button>
             </div>
             <div class="concepts-select-actions" id="conceptsSelectActions" style="display:none;">
                 <span class="selected-count" id="selectedCount">0개 선택됨</span>
-                <button class="btn btn-sm" onclick="exportConceptsCSV()">📥 선택 CSV</button>
                 <button class="btn btn-sm" onclick="exportConceptsAnki()">📚 선택 Anki</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteSelectedConcepts()">🗑️ 삭제</button>
             </div>
             <div class="concepts-list" id="conceptsList">
-                <div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>틀린 문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>
+                <div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>
             </div>
         </div>
         <div class="chat-input-area">
@@ -1085,8 +1083,10 @@ function exportConceptsAnki() {
 
     toExport.forEach(c => {
         const front = (c.title || '').replace(/\t/g, ' ').replace(/\n/g, ' ');
-        // Clean explanation: remove markdown, keep plain text
-        let back = (c.explanation || '')
+        // Use dedicated 'back' field if available, otherwise fall back to explanation
+        let back = c.back || c.explanation || '';
+        // Clean for Anki: remove markdown formatting
+        back = back
             .replace(/```[\s\S]*?```/g, '[코드]')  // Replace code blocks
             .replace(/`([^`]+)`/g, '$1')  // Remove inline code backticks
             .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove bold
@@ -1148,27 +1148,57 @@ async function requestConceptExplanation(questionId, questionText) {
     }
 
     try {
-        const prompt = `다음 문제에 대해 핵심개념을 설명해줘. 형식: "핵심개념: [개념명]" 으로 시작하고, 그 다음 줄에 간단명료한 설명을 해줘. 코드가 있으면 \`\`\`python 코드블록으로 보여줘.
+        // Anki-optimized prompt: generates Front (question/concept) and Back (answer) clearly
+        const prompt = `너는 Anki 플래시카드 작성자야. 다음 문제를 분석해서 암기 카드를 만들어줘.
 
-문제: ${questionText}`;
+**규칙:**
+1. 절대로 "어떤 게 궁금해?" 같은 질문하지 마.
+2. 절대로 문제를 그대로 반복하지 마.
+3. 잡담이나 인사 없이 바로 본론만.
+
+**출력 형식 (정확히 이 형식으로):**
+[앞면]
+(개념을 묻는 질문 or 핵심 개념명)
+
+[뒷면]
+(정답 or 간결한 설명)
+
+[해설]
+(필요시 추가 설명. 코드는 \`\`\`python 블록으로)
+
+---
+
+**문제:**
+${questionText}`;
 
         const response = await callGeminiAPI(prompt);
 
         // Remove loading indicator
         document.getElementById(`concept-loading-${loadingId}`)?.remove();
 
-        // Extract title from response
-        let title = questionText.slice(0, 50) + (questionText.length > 50 ? '...' : '');
-        const titleMatch = response.match(/핵심개념:\s*(.+?)[\n\r]/);
-        if (titleMatch) {
-            title = titleMatch[1].trim();
-        }
+        // Parse Front/Back from response
+        let front = '';
+        let back = '';
+        let explanation = response;
 
-        // Save concept
+        const frontMatch = response.match(/\[앞면\]\s*([\s\S]*?)(?=\[뒷면\]|\[해설\]|$)/i);
+        const backMatch = response.match(/\[뒷면\]\s*([\s\S]*?)(?=\[해설\]|$)/i);
+        const explanationMatch = response.match(/\[해설\]\s*([\s\S]*?)$/i);
+
+        if (frontMatch) front = frontMatch[1].trim();
+        if (backMatch) back = backMatch[1].trim();
+        if (explanationMatch) explanation = explanationMatch[1].trim();
+
+        // Use front as title, combine back + explanation for display
+        const title = front || questionText.slice(0, 50) + (questionText.length > 50 ? '...' : '');
+        const fullExplanation = back + (explanation ? '\n\n---\n' + explanation : '');
+
+        // Save concept with separate front/back for Anki export
         const concept = {
             questionId,
-            title,
-            explanation: response,
+            title,  // This is the "Front" for Anki
+            back,   // This is the "Back" for Anki
+            explanation: fullExplanation,  // Full display content
             timestamp: new Date().toLocaleString('ko-KR')
         };
 
