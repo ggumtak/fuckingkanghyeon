@@ -472,11 +472,19 @@ function toggleChatPanel() {
     const panel = document.getElementById('aiChatPanel');
 
     if (chatPanelOpen) {
+        // Save scroll position before opening
+        const scrollY = window.scrollY;
+
         panel.classList.add('open');
         document.body.classList.add('ai-panel-open');
         if (hasApiKey()) {
-            document.getElementById('chatInput').focus();
+            const chatInput = document.getElementById('chatInput');
+            // Use preventScroll to avoid scrolling when focusing
+            chatInput.focus({ preventScroll: true });
         }
+
+        // Restore scroll position (in case focus caused scroll)
+        window.scrollTo(0, scrollY);
     } else {
         panel.classList.remove('open');
         document.body.classList.remove('ai-panel-open');

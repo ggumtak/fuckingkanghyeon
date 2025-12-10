@@ -876,14 +876,16 @@ function bindV2Events(round) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 gradeV2Short(input, round);
-            } else if (e.key === "'" || e.key === '"') {
-                // Auto-complete quotes: ' -> '' with cursor in between
+            } else if (e.key === "'" || e.key === '"' || e.key === '(' || e.key === '[') {
+                // Auto-complete quotes and brackets with cursor in between
                 e.preventDefault();
                 const start = input.selectionStart;
                 const end = input.selectionEnd;
                 const value = input.value;
-                const quote = e.key;
-                input.value = value.slice(0, start) + quote + quote + value.slice(end);
+                const char = e.key;
+                const pairs = { "'": "'", '"': '"', '(': ')', '[': ']' };
+                const closing = pairs[char];
+                input.value = value.slice(0, start) + char + closing + value.slice(end);
                 input.setSelectionRange(start + 1, start + 1);
             }
         });
