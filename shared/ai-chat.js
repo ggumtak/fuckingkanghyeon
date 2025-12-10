@@ -1088,7 +1088,8 @@ function exportConceptsCSV() {
     link.click();
 }
 
-// Export to Anki-compatible TSV (Tab-separated: Front<TAB>Back)
+// Export to Anki-compatible TSV (Tab-separated: Front<TAB>Back<TAB>Extra)
+// Anki imports TAB-separated files with 3 fields: Front, Back, Extra (for extra info)
 function exportConceptsAnki() {
     const toExport = isSelectMode && selectedIndices.size > 0
         ? Array.from(selectedIndices).map(i => savedConcepts[i]).filter(Boolean)
@@ -1100,31 +1101,47 @@ function exportConceptsAnki() {
     }
 
     // Anki TSV format: Front<TAB>Back<TAB>Extra (3 columns, no headers)
+    // - TAB (\t) separates fields
+    // - Newlines within fields must be converted to <br> (HTML)
+    // - TAB characters within fields must be removed/replaced
     let tsv = '';
 
     toExport.forEach(c => {
-        // Front: title (concept question)
-        const front = (c.title || '').replace(/\t/g, ' ').replace(/\n/g, ' ');
+        // Field 1: Front (앞면) - concept name/question
+        const front = escapeAnkiField(c.title || '');
 
-        // Back: short answer (use dedicated 'back' field)
-        let back = (c.back || '').replace(/\t/g, ' ').replace(/\n/g, '<br>');
+        // Field 2: Back (뒷면) - short answer
+        const back = escapeAnkiField(c.back || '');
 
-        // Extra: detailed explanation with code preserved
-        let extra = (c.extra || c.explanation || '')
-            .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')  // Convert code blocks to HTML
-            .replace(/`([^`]+)`/g, '<code>$1</code>')  // Convert inline code
-            .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')  // Convert bold
-            .replace(/\n+/g, '<br>')  // Convert newlines to HTML breaks
-            .replace(/\t/g, ' ');
+        // Field 3: Extra (해설) - detailed explanation with HTML formatting
+        let extra = c.extra || c.explanation || '';
+        // Convert markdown code blocks to HTML
+        extra = extra
+            .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+        extra = escapeAnkiField(extra);
 
+        // Write line: Front<TAB>Back<TAB>Extra
         tsv += `${front}\t${back}\t${extra}\n`;
     });
 
+    // Create downloadable TSV file
     const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `핵심개념_Anki_${new Date().toISOString().slice(0, 10)}.txt`;
+    link.download = `핵심개념_Anki_${new Date().toISOString().slice(0, 10)}.tsv`;
     link.click();
+}
+
+// Escape field content for Anki TSV export
+// - Replace tabs with spaces (TAB is field separator)
+// - Replace newlines with <br> (Anki supports HTML)
+function escapeAnkiField(text) {
+    if (!text) return '';
+    return text
+        .replace(/\t/g, '    ')  // Replace tabs with 4 spaces
+        .replace(/\r?\n/g, '<br>');  // Convert newlines to HTML breaks
 }
 
 // Delete selected concepts
@@ -1173,29 +1190,22 @@ async function requestConceptExplanation(questionId, questionText) {
     }
 
     try {
-        // Anki 3-field prompt in English: Front (short concept) / Back (answer) / Extra (explanation)
-        const prompt = `You are an Anki flashcard writer. Create a flashcard from the following question.
-Respond in Korean.
+        // Anki 3-field prompt: Front (concept name) / Back (answer) / Extra (explanation)
+        const prompt = `다음 문제에 대한 플래시카드를 만들어줘.
 
-**STRICT RULES:**
-1. [앞면] MUST be ONE LINE ONLY, max 20 characters. NO CODE EVER.
-2. [뒷면] is the answer, ONE LINE ONLY. NO CODE.
-3. [해설] contains detailed explanation with code examples if needed.
-4. NO chitchat, NO "what do you want to know?" questions.
+**반드시 아래 형식을 따라줘:**
 
-**OUTPUT FORMAT (exactly like this):**
 [앞면]
-(Core concept name - e.g., "NumPy 팬시 인덱싱", "문자열 replace")
+핵심 개념 이름 (간단하게: 예) "리스트 컴프리헨션", "클래스 생성자")
 
 [뒷면]
-(Answer in one line - e.g., "array([2, 4, 6, 3])", "replace() 함수")
+정답 한 줄 (예: "2", "append()", "[150, 170]")
 
 [해설]
-(Detailed explanation with code examples)
+자세한 설명 (코드 예시 포함 가능)
 
 ---
-
-**Question:**
+문제:
 ${questionText}`;
 
         const response = await callGeminiAPI(prompt);
@@ -1208,16 +1218,38 @@ ${questionText}`;
         let back = '';
         let extra = '';
 
-        const frontMatch = response.match(/\[앞면\]\s*([\s\S]*?)(?=\[뒷면\]|\[해설\]|$)/i);
-        const backMatch = response.match(/\[뒷면\]\s*([\s\S]*?)(?=\[해설\]|$)/i);
-        const extraMatch = response.match(/\[해설\]\s*([\s\S]*?)$/i);
+        // Try structured parsing first
+        const frontMatch = response.match(/\[앞면\]\s*\n*([^\[\n]+)/i);
+        const backMatch = response.match(/\[뒷면\]\s*\n*([^\[\n]+)/i);
+        const extraMatch = response.match(/\[해설\]\s*\n*([\s\S]+?)(?:\n---|\n\n\n|$)/i);
 
         if (frontMatch) front = frontMatch[1].trim();
         if (backMatch) back = backMatch[1].trim();
         if (extraMatch) extra = extraMatch[1].trim();
 
-        // Fallback if parsing fails
-        const title = front || questionText.slice(0, 50) + (questionText.length > 50 ? '...' : '');
+        // Fallback: if front is empty, extract from response differently
+        if (!front) {
+            // Try to get first non-empty line as front
+            const lines = response.split('\n').filter(l => l.trim() && !l.startsWith('['));
+            if (lines.length > 0) {
+                front = lines[0].replace(/^[-*#\d.)\s]+/, '').trim().slice(0, 50);
+            }
+            // If still empty, use question text
+            if (!front) {
+                front = questionText.slice(0, 40) + '...';
+            }
+            // Use rest as extra if no structured parsing worked
+            if (!back && !extra && lines.length > 1) {
+                back = lines[1]?.replace(/^[-*#\d.)\s]+/, '').trim() || '';
+                extra = lines.slice(2).join('\n').trim();
+            }
+        }
+
+        // Clean up front - remove any tags/markers
+        front = front.replace(/^\*\*|\*\*$/g, '').replace(/^#+\s*/, '').trim();
+
+        // Default title
+        const title = front || questionText.slice(0, 40) + '...';
 
         // Save concept with 3-field structure for Anki export
         const concept = {
@@ -1225,7 +1257,7 @@ ${questionText}`;
             title,   // Front (앞면)
             back,    // Back (뒷면)
             extra,   // Extra (해설)
-            explanation: back + (extra ? '\n\n---\n\n' + extra : ''),  // Display content
+            explanation: back + (extra ? '\n\n---\n\n' + extra : '') || response, // Display content, fallback to full response
             timestamp: new Date().toLocaleString('ko-KR')
         };
 

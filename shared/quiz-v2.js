@@ -15,26 +15,55 @@ const MAX_UNDO_HISTORY = 20;
 
 // ========== Global Auto-Pairing (Event Delegation) ==========
 // This ensures auto-pairing works for ALL inputs including dynamically created ones
-document.addEventListener('keydown', (e) => {
-    const target = e.target;
-    // Only apply to v2-short and v2-blank inputs
-    if (!target.classList.contains('v2-short') && !target.classList.contains('v2-blank')) {
-        return;
+// Works with both <input> and <textarea> elements
+// Uses both keydown (desktop) and beforeinput (mobile) for cross-platform support
+
+const AUTO_PAIRS = { '[': ']', '{': '}', "'": "'", '"': '"' };
+
+function isQuizInputField(el) {
+    return el && (
+        el.classList.contains('v2-short') ||
+        el.classList.contains('v2-blank') ||
+        el.classList.contains('v2-essay')
+    );
+}
+
+function handleAutoPair(target, char) {
+    if (!AUTO_PAIRS[char]) return false;
+
+    const start = target.selectionStart;
+    const end = target.selectionEnd;
+    const value = target.value;
+    const opening = char;
+    const closing = AUTO_PAIRS[opening];
+
+    // Skip auto-close if the next character is already the closing char (jump over it)
+    if (start === end && value[start] === closing && (opening === closing)) {
+        target.setSelectionRange(start + 1, start + 1);
+        return true;
     }
 
-    // Auto-pair: ' " ( [ {
-    const pairs = { "'": "'", '"': '"', '(': ')', '[': ']', '{': '}' };
-    if (pairs[e.key]) {
+    target.value = value.slice(0, start) + opening + closing + value.slice(end);
+    target.setSelectionRange(start + 1, start + 1);
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
+}
+
+// Desktop: keydown event
+document.addEventListener('keydown', (e) => {
+    if (!isQuizInputField(e.target)) return;
+    if (AUTO_PAIRS[e.key]) {
         e.preventDefault();
-        const start = target.selectionStart;
-        const end = target.selectionEnd;
-        const value = target.value;
-        const opening = e.key;
-        const closing = pairs[opening];
-        target.value = value.slice(0, start) + opening + closing + value.slice(end);
-        target.setSelectionRange(start + 1, start + 1);
-        // Trigger input event for any listeners
-        target.dispatchEvent(new Event('input', { bubbles: true }));
+        handleAutoPair(e.target, e.key);
+    }
+});
+
+// Mobile: beforeinput event (needed for mobile keyboards that don't fire keydown)
+document.addEventListener('beforeinput', (e) => {
+    if (!isQuizInputField(e.target)) return;
+    if (e.inputType === 'insertText' && e.data && AUTO_PAIRS[e.data]) {
+        e.preventDefault();
+        handleAutoPair(e.target, e.data);
     }
 });
 
