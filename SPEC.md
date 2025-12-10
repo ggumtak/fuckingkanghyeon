@@ -338,35 +338,10 @@ testpractice-main/
 
 ## 4. Quiz Data Model  [AI MUST READ]
 
-### 4.1 v1 Format (Currently in Use)
-
-> [!NOTE]
-> Existing v1 rounds use this format. Keep as-is without migration.
-
-```javascript
-// File: data/quiz-N-data.js
-const quizNData = {
-    id: 'N',                           // Round number (string)
-    title: 'Round N: Title',           // Display title
-    total: 46,                         // Number of blanks
-    answers: ['ans1', 'ans2', ...],    // Answer array (in order)
-    code: `<span class="keyword">def</span>...( 1 )...`
-    // ( N ) format for blanks, HTML spans for syntax highlighting
-};
-```
-
-**Blank Rules**:
-
-* Format: `( N )` (N starts from 1)
-* Spaces included: Space required inside parentheses
-* Rendered as `<input>` tags
-
-### 4.2 v2 Format (For New Rounds)
-
 > [!IMPORTANT]
-> Use this format for newly created rounds.
+> All quizzes use the v2 format. The v1 format has been deprecated and removed.
 
-#### 4.2.1 QuizRound
+### 4.1 Quiz Data Structure
 
 ```javascript
 // File: data/v2/linked-list-N.js
@@ -519,32 +494,34 @@ export const quizRound = {
 
 ## 5. Core Modules  [AI MUST READ]
 
-### 5.1 quiz-app.js
+### 5.1 quiz-v2.js
 
-**Role**: Fill-in-the-blank quiz rendering, grading, state management
+**Role**: Quiz rendering, grading, state management for all question types
 
 **Main Functions**:
 
-| Function                              | Role                                    | Call Timing     |
-| ------------------------------------- | --------------------------------------- | --------------- |
-| `renderQuiz(quizId, data)`            | Render code, replace `( N )` with input | Page load       |
-| `checkAnswers(quizId, data)`          | Batch grading (Ctrl+Enter)              | Button/shortcut |
-| `handleEnterKey(input, quizId, data)` | Individual grading (Enter)              | Key event       |
-| `showAllAnswers(quizId, data)`        | Show all answers                        | Button          |
-| `resetQuiz(quizId, data)`             | Reset quiz                              | Button          |
-| `reviewWrong(quizId, data, mode)`     | Run review mode                         | Button          |
+| Function                    | Role                                    | Call Timing     |
+| --------------------------- | --------------------------------------- | --------------- |
+| `renderQuizRound(round)`    | Render all questions in a quiz round   | Page load       |
+| `gradeV2CodeFill(input)`    | Grade code-fill blank                  | Enter key       |
+| `gradeV2Mcq(radio)`         | Grade MCQ selection                    | Click/key       |
+| `gradeV2Short(input)`       | Grade short answer                     | Enter key       |
+| `gradeAllV2()`              | Batch grading (Ctrl+Enter)             | Button/shortcut |
+| `showAllV2Answers()`        | Show all answers                       | Button          |
+| `resetV2Quiz()`             | Reset quiz                             | Button          |
+| `reviewWrongV2()`           | Review wrong answers only              | Button          |
 
 **State Management**:
 
 ```javascript
-const inputStates = new Map();  // Grading state for each input
-const wasEverWrong = new Set(); // Track inputs that were ever wrong
+const v2States = new Map();     // Grading state for each input
+const v2WasEverWrong = new Set(); // Track inputs that were ever wrong
+let currentV2Round = null;       // Current quiz round data
 ```
 
-**v2 Extension Points**:
+**Question Type Rendering**:
 
 ```javascript
-// Add type-based renderer branching
 function renderQuizRound(round) {
     round.questions.forEach(q => {
         switch (q.type) {
@@ -556,6 +533,7 @@ function renderQuizRound(round) {
     });
 }
 ```
+
 
 ### 5.2 nav-config.js
 
@@ -1066,4 +1044,4 @@ const setN = {
 ---
 
 > **Last Updated**: 2025-12-10  
-> **Version**: v2.5 (Swipe Navigation + MCQ Keyboard Nav + Quiz Shuffle + Quote Auto-Complete)
+> **Version**: v3.0 (v1 engine removed, v2-only system)

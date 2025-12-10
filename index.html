@@ -64,34 +64,60 @@
         let historyIndex = -1;
 
         function getProgress(quizId) {
-            // quiz-app.js uses format: quiz_progress_{quizNumber}
-            // Extract quiz number from quizId like "quiz-1" or just use "1"
-            const quizNum = quizId.replace(/[^0-9]/g, '') || quizId;
-            const data = localStorage.getItem(`quiz_progress_${quizNum}`);
+            // quizId format: moduleId_quizId (e.g., "computational_math_set1")
+            // v2 storage format: v2_quiz_progress_{setId} where setId = "set-1"
+            const parts = quizId.split('_');
+            let configSetId = parts.length > 1 ? parts.slice(1).join('_') : quizId;
 
-            if (!data) return { solved: 0, total: 0 };
+            // Convert config format (set1) to data format (set-1)
+            // Handle patterns like: set1 -> set-1, set-all -> set-all
+            let setId = configSetId;
+            const setMatch = configSetId.match(/^set(\d+)$/);
+            if (setMatch) {
+                setId = `set-${setMatch[1]}`;
+            }
 
-            try {
-                const progress = JSON.parse(data);
-                // Count correct answers from saved states
-                let solved = 0;
-                let total = 0;
+            // Also try the web_projecting format: web-set-1
+            const webMatch = configSetId.match(/^set(\d+)$/);
+            const webSetId = webMatch ? `web-set-${webMatch[1]}` : null;
 
-                if (progress.states) {
-                    for (const blankNum in progress.states) {
-                        total++;
-                        const state = progress.states[blankNum];
-                        // correct state with classList including 'correct' or 'retry' means solved
-                        if (state && state.state === 'correct') {
-                            solved++;
+            // Try v2 format with converted setId
+            let v2Data = localStorage.getItem(`v2_quiz_progress_${setId}`);
+
+            // Fallback: try web format for web_projecting
+            if (!v2Data && webSetId) {
+                v2Data = localStorage.getItem(`v2_quiz_progress_${webSetId}`);
+            }
+
+            // Fallback: try original configSetId
+            if (!v2Data) {
+                v2Data = localStorage.getItem(`v2_quiz_progress_${configSetId}`);
+            }
+
+            if (v2Data) {
+                try {
+                    const progress = JSON.parse(v2Data);
+                    let correct = 0, total = 0;
+
+                    if (progress.states) {
+                        for (const key in progress.states) {
+                            const state = progress.states[key];
+                            if (state === 'correct' || state === 'self-correct') {
+                                correct++;
+                                total++;
+                            } else if (state === 'graded' || state === 'self-wrong' || state === 'wrong') {
+                                total++;
+                            }
                         }
                     }
-                }
 
-                return { solved, total };
-            } catch (e) {
-                return { solved: 0, total: 0 };
+                    return { solved: correct, total: total };
+                } catch (e) {
+                    console.warn('Failed to parse v2 progress:', e);
+                }
             }
+
+            return { solved: 0, total: 0 };
         }
 
         function updateNavButtons() {
