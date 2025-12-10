@@ -112,7 +112,10 @@ const QUIZ_CONFIG = {
             folder: 'quizzes/web_projecting',
             type: 'v2',
             quizzes: [
-                { id: 'set1', title: '객관식 세트 1', subtitle: 'RFP/WBS/IA/UX/페르소나', count: 30, icon: '📋', file: 'web-set1.html' }
+                { id: 'set1', title: '세트 1', subtitle: 'RFP/WBS/IA/UX/페르소나', count: 30, icon: '📋', file: 'web-set1.html' },
+                { id: 'set2', title: '세트 2', subtitle: 'RFP/WBS 심화', count: 30, icon: '📝', file: 'web-set2.html' },
+                { id: 'set3', title: '세트 3', subtitle: 'IA 정보구조 심화', count: 30, icon: '🗺️', file: 'web-set3.html' },
+                { id: 'set4', title: '세트 4', subtitle: 'UI/UX 심화', count: 30, icon: '🎨', file: 'web-set4.html' }
             ]
         }
     ]

@@ -266,6 +266,9 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
 
     updateV2Score();
 
+    // Add shuffle button if not already present
+    addShuffleButton();
+
     // Auto-generate prev/next navigation if function available
     if (typeof createBottomNavigation === 'function') {
         createBottomNavigation();
@@ -273,8 +276,63 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
 }
 
 /**
- * Render code-fill question (SQL blanks)
+ * Fisher-Yates shuffle algorithm
  */
+function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+/**
+ * Shuffle current quiz questions and re-render
+ */
+function shuffleV2Quiz() {
+    if (!currentV2Round) return;
+
+    // Clear current progress
+    v2States.clear();
+    v2WasEverWrong.clear();
+    localStorage.removeItem(getV2StorageKey());
+
+    // Shuffle questions
+    const shuffled = shuffleArray(currentV2Round.questions);
+    const shuffledRound = {
+        ...currentV2Round,
+        questions: shuffled
+    };
+
+    // Re-render with shuffled questions
+    renderQuizRound(shuffledRound);
+}
+
+/**
+ * Add shuffle button to controls section
+ */
+function addShuffleButton() {
+    const controls = document.querySelector('.controls');
+    if (!controls) return;
+
+    // Skip if already added
+    if (controls.querySelector('.btn-shuffle')) return;
+
+    const shuffleBtn = document.createElement('button');
+    shuffleBtn.className = 'btn btn-secondary btn-shuffle';
+    shuffleBtn.innerHTML = '🔀 섞기';
+    shuffleBtn.title = '문제 순서 랜덤 섞기';
+    shuffleBtn.onclick = shuffleV2Quiz;
+    shuffleBtn.style.cssText = 'background: var(--accent-dim, rgba(168, 199, 250, 0.12)); border-color: var(--accent, #A8C7FA);';
+
+    // Insert at the beginning of controls
+    controls.insertBefore(shuffleBtn, controls.firstChild);
+}
+
+/**
+     * Render code-fill question (SQL blanks)
+     */
 function renderCodeFillQuestion(q, container) {
     const prompt = document.createElement('div');
     prompt.className = 'question-prompt';

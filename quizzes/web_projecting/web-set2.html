@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹기획 세트 2 | 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="../../shared/quiz-v2-styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>웹기획 세트 2: 객관식</h1>
+            <p class="subtitle">RFP/WBS 심화</p>
+        </header>
+        <a href="../../index.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <div id="v2-quiz-container"></div>
+        <div class="controls">
+            <button class="btn btn-primary" onclick="gradeAllV2()">✅ 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllV2Answers()">💡 전체 정답</button>
+            <button class="btn btn-primary" onclick="reviewWrongV2()">🔄 틀린 문제 복습</button>
+            <button class="btn btn-secondary" onclick="resetV2Quiz()">🔃 초기화</button>
+        </div>
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="v2-score">0</span><span class="score-total"> / <span
+                        id="v2-total">0</span></span></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="../../shared/quiz-v2.js"></script>
+    <script src="data/set2.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof set2 !== 'undefined') {
+                renderQuizRound(set2);
+            }
+        });
+    </script>
+</body>
+
+</html>
