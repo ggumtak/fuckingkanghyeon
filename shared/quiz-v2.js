@@ -178,7 +178,10 @@ function restoreV2Progress() {
                     }
                 }
             } else if (key.includes('-')) {
-                const [qId, blankIdx] = key.split('-');
+                // Handle keys like "ch04-q08-1" where last part after - is blank index
+                const lastDashIdx = key.lastIndexOf('-');
+                const qId = key.substring(0, lastDashIdx);
+                const blankIdx = key.substring(lastDashIdx + 1);
                 const input = document.querySelector(`.v2-blank[data-question="${qId}"][data-blank="${blankIdx}"]`);
                 if (input && data) {
                     input.value = data.value || '';
