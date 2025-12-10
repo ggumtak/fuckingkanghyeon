@@ -497,7 +497,7 @@ function toggleChatPanel() {
     const panel = document.getElementById('aiChatPanel');
 
     if (chatPanelOpen) {
-        // Save scroll position before opening
+        // Save scroll position before any DOM changes
         const scrollY = window.scrollY;
 
         panel.classList.add('open');
@@ -506,16 +506,17 @@ function toggleChatPanel() {
         // Always switch to chat tab when opening via toggle (Ctrl+L)
         switchChatTab('chat');
 
-        if (hasApiKey()) {
-            const chatInput = document.getElementById('chatInput');
-            // Use preventScroll and setTimeout for reliable focus
-            setTimeout(() => {
-                chatInput.focus({ preventScroll: true });
-            }, 50);
-        }
-
-        // Restore scroll position (in case focus caused scroll)
-        window.scrollTo(0, scrollY);
+        // Focus and restore scroll in same frame
+        setTimeout(() => {
+            if (hasApiKey()) {
+                const chatInput = document.getElementById('chatInput');
+                if (chatInput) {
+                    chatInput.focus({ preventScroll: true });
+                }
+            }
+            // Restore scroll position after focus
+            window.scrollTo(0, scrollY);
+        }, 10);
     } else {
         panel.classList.remove('open');
         document.body.classList.remove('ai-panel-open');
@@ -1180,32 +1181,29 @@ async function requestConceptExplanation(questionId, questionText) {
     }
 
     try {
-        // Anki 3-field prompt: Front (question) / Back (answer) / Extra (detailed explanation)
-        const prompt = `너는 Anki 플래시카드 작성자야. 다음 문제를 분석해서 3면 암기 카드를 만들어줘.
+        // Anki 3-field prompt in English: Front (short concept) / Back (answer) / Extra (explanation)
+        const prompt = `You are an Anki flashcard writer. Create a flashcard from the following question.
+Respond in Korean.
 
-**규칙:**
-1. 절대로 "어떤 게 궁금해?" 같은 질문하지 마.
-2. 문제를 그대로 반복하지 마.
-3. 잡담이나 인사 없이 바로 본론만.
+**STRICT RULES:**
+1. [앞면] MUST be ONE LINE ONLY, max 20 characters. NO CODE EVER.
+2. [뒷면] is the answer, ONE LINE ONLY. NO CODE.
+3. [해설] contains detailed explanation with code examples if needed.
+4. NO chitchat, NO "what do you want to know?" questions.
 
-**출력 형식 (정확히 이 형식으로):**
+**OUTPUT FORMAT (exactly like this):**
 [앞면]
-핵심 개념명 or 개념을 묻는 짧은 질문 (1줄)
+(Core concept name - e.g., "NumPy 팬시 인덱싱", "문자열 replace")
 
 [뒷면]
-정답 or 핵심 답변 (1-2줄, 최대한 간결하게)
+(Answer in one line - e.g., "array([2, 4, 6, 3])", "replace() 함수")
 
 [해설]
-자세한 설명 (코드 포함 가능)
-
-**코드 문제 처리:**
-- 앞면: 코드가 무엇을 하는지 묻는 질문
-- 뒷면: 출력값 or 핵심 동작 (함수명, 결과값 등)
-- 해설: 코드 동작 원리 설명, 필요시 코드 블록(\`\`\`python)
+(Detailed explanation with code examples)
 
 ---
 
-**문제:**
+**Question:**
 ${questionText}`;
 
         const response = await callGeminiAPI(prompt);
