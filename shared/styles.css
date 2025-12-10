@@ -1848,15 +1848,16 @@ body.ai-panel-open .floating-ai-btn {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--bg-tertiary);
+    padding: 8px 12px;
+    background: transparent;
     border-bottom: 1px solid var(--border);
 }
 
 .concept-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
 }
 
 .concept-delete {
@@ -1873,24 +1874,22 @@ body.ai-panel-open .floating-ai-btn {
 }
 
 .concept-content {
-    padding: 12px 14px;
-    font-size: 0.88rem;
-    line-height: 1.6;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    line-height: 1.5;
     color: var(--text-secondary);
 }
 
 .concept-content code {
     background: var(--code-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 1px 4px;
+    border-radius: 3px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85em;
 }
 
 .concept-meta {
-    padding: 6px 14px 10px;
-    font-size: 0.75rem;
-    color: var(--text-muted);
+    display: none;
 }
 
 .concept-loading {
@@ -1926,8 +1925,17 @@ body.ai-panel-open .floating-ai-btn {
 .concepts-edit,
 .concepts-anki,
 .concepts-clear {
-    background: var(--bg-secondary);
+    background: transparent;
     border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    padding: 3px 8px;
+}
+
+.concepts-edit:hover,
+.concepts-anki:hover,
+.concepts-clear:hover {
+    background: var(--hover-bg);
     color: var(--text);
 }
 

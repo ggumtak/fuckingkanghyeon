@@ -502,10 +502,16 @@ function toggleChatPanel() {
 
         panel.classList.add('open');
         document.body.classList.add('ai-panel-open');
+
+        // Always switch to chat tab when opening via toggle (Ctrl+L)
+        switchChatTab('chat');
+
         if (hasApiKey()) {
             const chatInput = document.getElementById('chatInput');
-            // Use preventScroll to avoid scrolling when focusing
-            chatInput.focus({ preventScroll: true });
+            // Use preventScroll and setTimeout for reliable focus
+            setTimeout(() => {
+                chatInput.focus({ preventScroll: true });
+            }, 50);
         }
 
         // Restore scroll position (in case focus caused scroll)
@@ -1078,21 +1084,25 @@ function exportConceptsAnki() {
         return;
     }
 
-    // Anki TSV format: Front<TAB>Back (no headers)
+    // Anki TSV format: Front<TAB>Back<TAB>Extra (3 columns, no headers)
     let tsv = '';
 
     toExport.forEach(c => {
+        // Front: title (concept question)
         const front = (c.title || '').replace(/\t/g, ' ').replace(/\n/g, ' ');
-        // Use dedicated 'back' field if available, otherwise fall back to explanation
-        let back = c.back || c.explanation || '';
-        // Clean for Anki: remove markdown formatting
-        back = back
-            .replace(/```[\s\S]*?```/g, '[코드]')  // Replace code blocks
-            .replace(/`([^`]+)`/g, '$1')  // Remove inline code backticks
-            .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove bold
-            .replace(/\n+/g, '<br>')  // Convert newlines to HTML breaks for Anki
+
+        // Back: short answer (use dedicated 'back' field)
+        let back = (c.back || '').replace(/\t/g, ' ').replace(/\n/g, '<br>');
+
+        // Extra: detailed explanation with code preserved
+        let extra = (c.extra || c.explanation || '')
+            .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')  // Convert code blocks to HTML
+            .replace(/`([^`]+)`/g, '<code>$1</code>')  // Convert inline code
+            .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')  // Convert bold
+            .replace(/\n+/g, '<br>')  // Convert newlines to HTML breaks
             .replace(/\t/g, ' ');
-        tsv += `${front}\t${back}\n`;
+
+        tsv += `${front}\t${back}\t${extra}\n`;
     });
 
     const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' });
@@ -1148,23 +1158,28 @@ async function requestConceptExplanation(questionId, questionText) {
     }
 
     try {
-        // Anki-optimized prompt: generates Front (question/concept) and Back (answer) clearly
-        const prompt = `너는 Anki 플래시카드 작성자야. 다음 문제를 분석해서 암기 카드를 만들어줘.
+        // Anki 3-field prompt: Front (question) / Back (answer) / Extra (detailed explanation)
+        const prompt = `너는 Anki 플래시카드 작성자야. 다음 문제를 분석해서 3면 암기 카드를 만들어줘.
 
 **규칙:**
 1. 절대로 "어떤 게 궁금해?" 같은 질문하지 마.
-2. 절대로 문제를 그대로 반복하지 마.
+2. 문제를 그대로 반복하지 마.
 3. 잡담이나 인사 없이 바로 본론만.
 
 **출력 형식 (정확히 이 형식으로):**
 [앞면]
-(개념을 묻는 질문 or 핵심 개념명)
+핵심 개념명 or 개념을 묻는 짧은 질문 (1줄)
 
 [뒷면]
-(정답 or 간결한 설명)
+정답 or 핵심 답변 (1-2줄, 최대한 간결하게)
 
 [해설]
-(필요시 추가 설명. 코드는 \`\`\`python 블록으로)
+자세한 설명 (코드 포함 가능)
+
+**코드 문제 처리:**
+- 앞면: 코드가 무엇을 하는지 묻는 질문
+- 뒷면: 출력값 or 핵심 동작 (함수명, 결과값 등)
+- 해설: 코드 동작 원리 설명, 필요시 코드 블록(\`\`\`python)
 
 ---
 
@@ -1176,29 +1191,29 @@ ${questionText}`;
         // Remove loading indicator
         document.getElementById(`concept-loading-${loadingId}`)?.remove();
 
-        // Parse Front/Back from response
+        // Parse Front/Back/Extra from response
         let front = '';
         let back = '';
-        let explanation = response;
+        let extra = '';
 
         const frontMatch = response.match(/\[앞면\]\s*([\s\S]*?)(?=\[뒷면\]|\[해설\]|$)/i);
         const backMatch = response.match(/\[뒷면\]\s*([\s\S]*?)(?=\[해설\]|$)/i);
-        const explanationMatch = response.match(/\[해설\]\s*([\s\S]*?)$/i);
+        const extraMatch = response.match(/\[해설\]\s*([\s\S]*?)$/i);
 
         if (frontMatch) front = frontMatch[1].trim();
         if (backMatch) back = backMatch[1].trim();
-        if (explanationMatch) explanation = explanationMatch[1].trim();
+        if (extraMatch) extra = extraMatch[1].trim();
 
-        // Use front as title, combine back + explanation for display
+        // Fallback if parsing fails
         const title = front || questionText.slice(0, 50) + (questionText.length > 50 ? '...' : '');
-        const fullExplanation = back + (explanation ? '\n\n---\n' + explanation : '');
 
-        // Save concept with separate front/back for Anki export
+        // Save concept with 3-field structure for Anki export
         const concept = {
             questionId,
-            title,  // This is the "Front" for Anki
-            back,   // This is the "Back" for Anki
-            explanation: fullExplanation,  // Full display content
+            title,   // Front (앞면)
+            back,    // Back (뒷면)
+            extra,   // Extra (해설)
+            explanation: back + (extra ? '\n\n---\n\n' + extra : ''),  // Display content
             timestamp: new Date().toLocaleString('ko-KR')
         };
 
