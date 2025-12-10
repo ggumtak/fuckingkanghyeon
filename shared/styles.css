@@ -1353,6 +1353,26 @@ pre {
     font-size: 0.85em;
 }
 
+/* Chat code blocks with syntax highlighting */
+.chat-code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 8px 0;
+    overflow-x: auto;
+}
+
+.chat-code-block code {
+    background: transparent !important;
+    padding: 0 !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 .message-content.error {
     color: var(--error);
     font-size: 0.85rem;

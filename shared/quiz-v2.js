@@ -9,6 +9,10 @@ const v2States = new Map();
 const v2WasEverWrong = new Set();
 let currentV2Round = null;
 
+// Undo history for grading (Ctrl+Z support)
+const v2UndoHistory = [];
+const MAX_UNDO_HISTORY = 20;
+
 // ========== Scroll Utility ==========
 /**
  * Scroll element to optimal position in viewport
@@ -823,6 +827,12 @@ function gradeV2CodeFill(input, round) {
 
     const key = `${questionId}-${blankIndex}`;
     const state = v2States.get(key);
+
+    // Save undo state before first grading (not on retry/show answer)
+    if (!state || state !== 'correct') {
+        saveUndoState(input, 'blank', { stateKey: key });
+    }
+
     const userAnswer = input.value.trim();
     const correctAnswer = blank.answer;
     const isCorrect = userAnswer && normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
@@ -870,9 +880,13 @@ function gradeV2Mcq(radio, round) {
     if (!question) return;
 
     const card = document.getElementById(`q-${questionId}`);
+    const key = `mcq-${questionId}`;
+
+    // Save undo state before grading
+    saveUndoState(radio, 'mcq', { stateKey: key });
+
     const selectedIndex = parseInt(radio.value);
     const isCorrect = selectedIndex === question.correctIndex;
-    const key = `mcq-${questionId}`;
 
     card.querySelectorAll('.mcq-option').forEach(opt => opt.classList.remove('correct', 'wrong'));
     const selectedLabel = radio.closest('.mcq-option');
@@ -903,6 +917,12 @@ function gradeV2Short(input, round) {
 
     const key = `short-${questionId}`;
     const state = v2States.get(key);
+
+    // Save undo state before first grading (not on retry/show answer)
+    if (!state || state !== 'correct') {
+        saveUndoState(input, 'short', { stateKey: key });
+    }
+
     const userAnswer = input.value.trim();
     const isCorrect = userAnswer && question.acceptableAnswers.some(ans =>
         question.caseSensitive ? userAnswer === ans : normalizeAnswer(userAnswer) === normalizeAnswer(ans)
@@ -1499,6 +1519,131 @@ document.addEventListener('DOMContentLoaded', () => {
     initFloatingReferencePanel();
 });
 
+// ========== Undo Grading System (Ctrl+Z) ==========
+/**
+ * Save current state of an element before grading for undo
+ */
+function saveUndoState(element, type, extraData = {}) {
+    const state = {
+        type, // 'blank', 'short', 'mcq'
+        element,
+        timestamp: Date.now(),
+        value: element.value || '',
+        classes: [...element.classList],
+        readOnly: element.readOnly || false,
+        disabled: element.disabled || false,
+        ...extraData
+    };
+
+    // For MCQ, also save radio states
+    if (type === 'mcq') {
+        const card = element.closest('.question-card');
+        if (card) {
+            state.cardClasses = [...card.classList];
+            state.radioStates = [];
+            card.querySelectorAll('input[type="radio"]').forEach(radio => {
+                const option = radio.closest('.mcq-option');
+                state.radioStates.push({
+                    radio,
+                    checked: radio.checked,
+                    disabled: radio.disabled,
+                    optionClasses: option ? [...option.classList] : []
+                });
+            });
+        }
+    }
+
+    v2UndoHistory.push(state);
+    if (v2UndoHistory.length > MAX_UNDO_HISTORY) {
+        v2UndoHistory.shift();
+    }
+}
+
+/**
+ * Undo the last grading action (Ctrl+Z)
+ */
+function undoLastGrading() {
+    if (v2UndoHistory.length === 0) {
+        console.log('No grading history to undo');
+        return false;
+    }
+
+    const state = v2UndoHistory.pop();
+
+    if (state.type === 'blank' || state.type === 'short') {
+        const input = state.element;
+        if (!input) return false;
+
+        // Restore previous state
+        input.value = state.value;
+        input.className = state.classes.join(' ');
+        input.readOnly = state.readOnly;
+
+        // Remove state from v2States if exists
+        if (state.stateKey) {
+            v2States.delete(state.stateKey);
+        }
+
+        // Focus the input
+        input.focus();
+
+    } else if (state.type === 'mcq') {
+        // Restore radio and option states
+        if (state.radioStates) {
+            state.radioStates.forEach(rs => {
+                rs.radio.checked = rs.checked;
+                rs.radio.disabled = rs.disabled;
+                const option = rs.radio.closest('.mcq-option');
+                if (option) {
+                    option.className = rs.optionClasses.join(' ');
+                }
+            });
+        }
+
+        // Restore card classes
+        const card = state.element?.closest('.question-card');
+        if (card && state.cardClasses) {
+            card.className = state.cardClasses.join(' ');
+        }
+
+        // Remove state from v2States
+        if (state.stateKey) {
+            v2States.delete(state.stateKey);
+        }
+
+        // Focus the card
+        if (card) card.focus();
+    }
+
+    // Update score display
+    updateV2Score();
+    saveV2Progress();
+
+    console.log('Grading undone');
+    return true;
+}
+
+// Global Ctrl+Z handler for quiz pages
+document.addEventListener('keydown', (e) => {
+    // Ctrl+Z to undo last grading
+    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+        // Don't prevent default for text inputs that aren't graded
+        const activeEl = document.activeElement;
+        const isTextInput = activeEl?.tagName === 'INPUT' || activeEl?.tagName === 'TEXTAREA';
+
+        if (isTextInput && !activeEl.readOnly) {
+            // Allow normal undo for editable inputs
+            return;
+        }
+
+        // Otherwise, undo last grading
+        if (v2UndoHistory.length > 0) {
+            e.preventDefault();
+            undoLastGrading();
+        }
+    }
+});
+
 // Export v2 functions
 if (typeof window !== 'undefined') {
     window.renderQuizRound = renderQuizRound;
@@ -1507,4 +1652,5 @@ if (typeof window !== 'undefined') {
     window.showAllV2Answers = showAllV2Answers;
     window.reviewWrongV2 = reviewWrongV2;
     window.toggleReferencePanel = toggleReferencePanel;
+    window.undoLastGrading = undoLastGrading;
 }

@@ -230,10 +230,10 @@ const set9 = {
         {
             id: "ch09-q08",
             type: "mcq",
-            prompt: "다음 코드의 결과로 옳은 것은?\n\n```python\na = np.array([1, 2, 3, 4, 5])\nb = np.array([2, 4, 6, 8, 10])\nprint(np.sum(a + b))\n```",
+            prompt: "다음 코드의 결과로 옳은 것은?\n\n```python\na = np.array([1, 2, 3, 4, 5])\nb = np.array([2, 4, 6, 8, 10])\nprint(np.sum(a * b))\n```",
             options: ["① 130", "② 110", "③ 100", "④ 45"],
-            correctIndex: 3,
-            explanation: "a+b = [3, 6, 9, 12, 15]. 합계: 3+6+9+12+15 = 45"
+            correctIndex: 1,
+            explanation: "a*b = [2, 8, 18, 32, 50]. 합계: 2+8+18+32+50 = 110"
         }
     ]
 };
