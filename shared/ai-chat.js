@@ -57,6 +57,7 @@ const BASE_SYSTEM_PROMPT = `너는 에일리야. Python 코딩 퀴즈 앱에 통
 /**
  * Extract current page quiz context from DOM
  * Works for any quiz page automatically
+ * Now includes full v2 quiz questions data
  */
 function getCurrentPageContext() {
     const context = {
@@ -66,7 +67,8 @@ function getCurrentPageContext() {
         code: '',
         answers: [],
         currentScore: '',
-        totalQuestions: 0
+        totalQuestions: 0,
+        questions: [] // v2 quiz questions array
     };
 
     // Get header info
@@ -76,19 +78,34 @@ function getCurrentPageContext() {
     const subtitle = document.querySelector('.subtitle, header p');
     if (subtitle) context.subtitle = subtitle.textContent.trim();
 
-    // Get code from pre element (the quiz code block)
+    // Get code from pre element (the quiz code block) - for v1 quizzes
     const codeBlock = document.querySelector('.code-block pre, pre[id^="code-"]');
     if (codeBlock) {
-        // Get text content without input values interfering
-        context.code = codeBlock.textContent.trim().slice(0, 2000); // Limit to 2000 chars
+        context.code = codeBlock.textContent.trim().slice(0, 2000);
     }
 
-    // Get answers from answer grid
+    // Get answers from answer grid - for v1 quizzes
     const answerItems = document.querySelectorAll('.answer-item');
     answerItems.forEach(item => {
         context.answers.push(item.textContent.trim());
     });
     context.totalQuestions = context.answers.length;
+
+    // Get v2 quiz questions data if available (global currentV2Round)
+    if (typeof currentV2Round !== 'undefined' && currentV2Round?.questions) {
+        context.questions = currentV2Round.questions.map((q, idx) => ({
+            num: idx + 1,
+            id: q.id,
+            type: q.type,
+            prompt: q.prompt,
+            answer: q.type === 'mcq'
+                ? (q.options?.[q.correctIndex] || '')
+                : (q.acceptableAnswers?.join(' / ') || q.modelAnswer || ''),
+            options: q.options || null,
+            explanation: q.explanation || ''
+        }));
+        context.totalQuestions = context.questions.length;
+    }
 
     // Get current score
     const scoreEl = document.querySelector('.score-num');
@@ -102,6 +119,7 @@ function getCurrentPageContext() {
 
 /**
  * Build dynamic system prompt with current page context
+ * Includes full v2 quiz questions so AI can answer 'what is question N?'
  */
 function buildSystemPrompt() {
     const ctx = getCurrentPageContext();
@@ -109,7 +127,7 @@ function buildSystemPrompt() {
     let prompt = BASE_SYSTEM_PROMPT;
 
     // Add current page context if available
-    if (ctx.roundName || ctx.code) {
+    if (ctx.roundName || ctx.code || ctx.questions.length > 0) {
         prompt += `\n\n=== 현재 페이지 정보 ===`;
 
         if (ctx.roundName) {
@@ -124,17 +142,35 @@ function buildSystemPrompt() {
         if (ctx.totalQuestions) {
             prompt += `\n총 문제 수: ${ctx.totalQuestions}개`;
         }
+
+        // v2 quiz: Include full questions data
+        if (ctx.questions.length > 0) {
+            prompt += `\n\n=== 문제 목록 (전체) ===`;
+            ctx.questions.forEach(q => {
+                prompt += `\n\n[${q.num}번] ${q.prompt}`;
+                if (q.type === 'mcq' && q.options) {
+                    prompt += `\n보기: ${q.options.join(' / ')}`;
+                }
+                prompt += `\n정답: ${q.answer}`;
+                if (q.explanation) {
+                    prompt += `\n해설: ${q.explanation}`;
+                }
+            });
+            prompt += `\n\n[중요] 사용자가 "N번 문제 뭐야?", "N번 정답 알려줘" 등을 물으면 위 데이터에서 바로 찾아서 답해줘!`;
+        }
+
+        // v1 quiz: old format
         if (ctx.code) {
             prompt += `\n\n현재 퀴즈 코드:\n\`\`\`python\n${ctx.code}\n\`\`\``;
         }
-        if (ctx.answers.length > 0) {
-            prompt += `\n\n정답 목록 (참고용, 사용자에게 직접 공개하지 말 것):\n${ctx.answers.slice(0, 20).join(', ')}`;
-            if (ctx.answers.length > 20) {
-                prompt += ` ... 외 ${ctx.answers.length - 20}개`;
+        if (ctx.answers.length > 0 && ctx.questions.length === 0) {
+            prompt += `\n\n정답 목록:\n${ctx.answers.slice(0, 30).join(', ')}`;
+            if (ctx.answers.length > 30) {
+                prompt += ` ... 외 ${ctx.answers.length - 30}개`;
             }
         }
 
-        prompt += `\n\n사용자가 현재 문제에 대해 물어볼 수 있습니다. 힌트를 주되 직접적인 정답은 피하세요.`;
+        prompt += `\n\n사용자가 문제 내용이나 정답을 물어보면 바로 알려줘. 힌트만 원하면 힌트를 주고.`;
     }
 
     return prompt;
