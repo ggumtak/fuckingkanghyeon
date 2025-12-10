@@ -1199,23 +1199,26 @@ async function requestConceptExplanation(questionId, questionText) {
     }
 
     try {
-        // Anki 3-field prompt: Front (concept name) / Back (answer) / Extra (explanation)
-        const prompt = `다음 문제에 대한 플래시카드를 만들어줘.
+        // Strict Anki flashcard prompt - forces structured output
+        const prompt = `[시스템 지시] 플래시카드 형식으로만 응답해. 다른 말 금지.
 
-**반드시 아래 형식을 따라줘:**
+문제: ${questionText}
+
+**필수 형식 (이대로만 출력):**
 
 [앞면]
-핵심 개념 이름 (간단하게: 예) "리스트 컴프리헨션", "클래스 생성자")
+핵심개념명 (3~20자, 예: "리스트 슬라이싱", "for-range 반복문")
 
 [뒷면]
-정답 한 줄 (예: "2", "append()", "[150, 170]")
+정답 (한 줄, 예: "2", "[1,2,3]", "append()")
 
 [해설]
-자세한 설명 (코드 예시 포함 가능)
+설명 (코드 포함 가능)
 
----
-문제:
-${questionText}`;
+**주의:**
+- 이모티콘 금지
+- 인사말/질문 금지
+- 반드시 [앞면], [뒷면], [해설] 태그 사용`;
 
         const response = await callGeminiAPI(prompt);
 
@@ -1236,26 +1239,36 @@ ${questionText}`;
         if (backMatch) back = backMatch[1].trim();
         if (extraMatch) extra = extraMatch[1].trim();
 
-        // Fallback: if front is empty, extract from response differently
-        if (!front) {
-            // Try to get first non-empty line as front
-            const lines = response.split('\n').filter(l => l.trim() && !l.startsWith('['));
-            if (lines.length > 0) {
-                front = lines[0].replace(/^[-*#\d.)\s]+/, '').trim().slice(0, 50);
-            }
-            // If still empty, use question text
-            if (!front) {
-                front = questionText.slice(0, 40) + '...';
-            }
-            // Use rest as extra if no structured parsing worked
-            if (!back && !extra && lines.length > 1) {
-                back = lines[1]?.replace(/^[-*#\d.)\s]+/, '').trim() || '';
-                extra = lines.slice(2).join('\n').trim();
+        // Clean up front - remove any tags/markers/emojis at start
+        front = front.replace(/^[\*\#\s\-\.]+/, '').replace(/^\*\*|\*\*$/g, '').trim();
+
+        // If front is too short (less than 3 chars) or just emojis, it's invalid
+        const isValidFront = front.length >= 3 && !/^[\p{Emoji}\s]+$/u.test(front);
+
+        // Fallback: extract concept name from question if front is invalid
+        if (!isValidFront) {
+            // Try to extract a meaningful concept name from the question
+            // Look for keywords or the first meaningful part
+            const questionClean = questionText
+                .replace(/```[\s\S]*?```/g, '')  // Remove code blocks
+                .replace(/다음.*?(은|를|의|에서)/g, '')  // Remove "다음 코드의" etc
+                .replace(/[^\w가-힣\s]/g, ' ')  // Keep only letters
+                .trim();
+
+            // Get first 2-4 meaningful words as concept name
+            const words = questionClean.split(/\s+/).filter(w => w.length > 1).slice(0, 4);
+            front = words.join(' ').slice(0, 30) || questionText.slice(0, 30);
+
+            // If still no good front, use back's first part or question start
+            if (front.length < 3) {
+                front = back ? back.slice(0, 30) : questionText.slice(0, 30) + '...';
             }
         }
 
-        // Clean up front - remove any tags/markers
-        front = front.replace(/^\*\*|\*\*$/g, '').replace(/^#+\s*/, '').trim();
+        // Use full response as extra if parsing failed completely
+        if (!back && !extra) {
+            extra = response;
+        }
 
         // Default title
         const title = front || questionText.slice(0, 40) + '...';
