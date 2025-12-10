@@ -925,13 +925,14 @@ function renderConceptsList() {
     } else {
         list.innerHTML = savedConcepts.map((c, i) => `
             <div class="concept-item ${selectedIndices.has(i) ? 'selected' : ''}" data-index="${i}">
-                <div class="concept-header">
-                    ${isSelectMode ? `<input type="checkbox" class="concept-checkbox" ${selectedIndices.has(i) ? 'checked' : ''} onchange="toggleConceptSelection(${i})">` : ''}
+                <div class="concept-header" onclick="toggleConceptExpand(${i})">
+                    ${isSelectMode ? `<input type="checkbox" class="concept-checkbox" ${selectedIndices.has(i) ? 'checked' : ''} onchange="event.stopPropagation(); toggleConceptSelection(${i})">` : '<span class="concept-expand-icon">▶</span>'}
                     <span class="concept-title">${escapeHtml(c.title || '문제 ' + (i + 1))}</span>
-                    ${!isSelectMode ? `<button class="concept-delete" onclick="deleteConcept(${i})" title="삭제">×</button>` : ''}
+                    ${!isSelectMode ? `<button class="concept-delete" onclick="event.stopPropagation(); deleteConcept(${i})" title="삭제">×</button>` : ''}
                 </div>
-                <div class="concept-content">${formatAIResponse(c.explanation)}</div>
-                <div class="concept-meta">${c.timestamp || ''}</div>
+                <div class="concept-body" style="display: none;">
+                    <div class="concept-content">${formatAIResponse(c.explanation)}</div>
+                </div>
             </div>
         `).join('');
 
@@ -939,7 +940,28 @@ function renderConceptsList() {
         bindConceptLongPress();
     }
 
-    if (count) count.textContent = `${savedConcepts.length}개의 개념`;
+    if (count) count.textContent = `${savedConcepts.length}개`;
+}
+
+// Toggle concept expand/collapse
+function toggleConceptExpand(index) {
+    if (isSelectMode) return; // Don't expand in select mode
+
+    const item = document.querySelector(`.concept-item[data-index="${index}"]`);
+    if (!item) return;
+
+    const body = item.querySelector('.concept-body');
+    const icon = item.querySelector('.concept-expand-icon');
+
+    if (body.style.display === 'none') {
+        body.style.display = 'block';
+        if (icon) icon.textContent = '▼';
+        item.classList.add('expanded');
+    } else {
+        body.style.display = 'none';
+        if (icon) icon.textContent = '▶';
+        item.classList.remove('expanded');
+    }
 }
 
 // Bind long-press events for mobile multi-select
@@ -1258,6 +1280,7 @@ if (typeof window !== 'undefined') {
     window.deleteSelectedConcepts = deleteSelectedConcepts;
     window.toggleSelectMode = toggleSelectMode;
     window.toggleConceptSelection = toggleConceptSelection;
+    window.toggleConceptExpand = toggleConceptExpand;
     window.requestConceptExplanation = requestConceptExplanation;
     window.addConceptButton = addConceptButton;
 }
