@@ -123,8 +123,35 @@ function getV2StorageKey() {
     return `v2_quiz_progress_${setId}`;
 }
 
-// Save v2 quiz progress to localStorage
+// Debounce timer for save operations
+let saveProgressTimer = null;
+
+// Debounced save - batches frequent saves together to reduce performance impact
+function saveV2ProgressDebounced() {
+    if (saveProgressTimer) clearTimeout(saveProgressTimer);
+    saveProgressTimer = setTimeout(() => {
+        saveV2ProgressNow();
+    }, 500);
+}
+
+// Immediate save (for page unload or critical saves)
+function saveV2ProgressNow() {
+    if (saveProgressTimer) clearTimeout(saveProgressTimer);
+    saveV2ProgressInternal();
+}
+
+// Alias for backwards compatibility - use debounced version by default
 function saveV2Progress() {
+    saveV2ProgressDebounced();
+}
+
+// Save before page unload
+window.addEventListener('beforeunload', () => {
+    if (currentV2Round) saveV2ProgressNow();
+});
+
+// Internal save implementation
+function saveV2ProgressInternal() {
     if (!currentV2Round) return;
 
     const progress = {
@@ -384,6 +411,7 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
 
 /**
  * Bind click events for ? (concept help) buttons
+ * Opens AI chat with pre-filled hint request
  */
 function bindConceptButtons(round) {
     document.querySelectorAll('.concept-help-btn').forEach(btn => {
@@ -393,12 +421,27 @@ function bindConceptButtons(round) {
             if (!card) return;
 
             const questionId = card.dataset.questionId;
-            const question = round.questions.find(q => q.id === questionId);
-            const promptEl = card.querySelector('.question-prompt');
-            const questionText = question?.prompt || promptEl?.textContent || '문제 설명 없음';
+            const headerEl = card.querySelector('.question-header');
+            const qNumMatch = headerEl?.textContent.match(/Q(\d+)/);
+            const qNum = qNumMatch ? qNumMatch[1] : questionId;
 
-            if (typeof requestConceptExplanation === 'function') {
-                requestConceptExplanation(questionId, questionText);
+            // Open AI chat panel and pre-fill hint request
+            if (typeof toggleChatPanel === 'function') {
+                // Open chat panel if not open
+                const panel = document.getElementById('aiChatPanel');
+                if (!panel?.classList.contains('open')) {
+                    toggleChatPanel();
+                }
+                // Switch to chat tab (not concepts)
+                if (typeof switchChatTab === 'function') {
+                    switchChatTab('chat');
+                }
+                // Pre-fill chat input with hint request
+                const chatInput = document.getElementById('chatInput');
+                if (chatInput) {
+                    chatInput.value = `Q${qNum} 문제 힌트만 줘`;
+                    chatInput.focus();
+                }
             } else {
                 alert('AI 채팅 기능을 사용할 수 없습니다.');
             }
@@ -487,16 +530,7 @@ function addShuffleButton() {
     shuffleBtn.onclick = shuffleV2Quiz;
     shuffleBtn.style.cssText = 'background: var(--accent-dim, rgba(168, 199, 250, 0.12)); border-color: var(--accent, #A8C7FA);';
 
-    // Add reset button at top too
-    const resetBtn = document.createElement('button');
-    resetBtn.className = 'btn btn-secondary btn-reset-top';
-    resetBtn.innerHTML = '🔃 초기화';
-    resetBtn.title = '모든 문제 초기화';
-    resetBtn.onclick = resetV2Quiz;
-    resetBtn.style.cssText = 'background: var(--bg-tertiary, #282A2C); border-color: var(--border, #444746);';
-
-    // Insert at the beginning of controls
-    controls.insertBefore(resetBtn, controls.firstChild);
+    // Insert shuffle button at the beginning of controls (don't add reset - it's already in HTML)
     controls.insertBefore(shuffleBtn, controls.firstChild);
 
     // Add floating scroll buttons

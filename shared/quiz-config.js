@@ -108,9 +108,19 @@ if (typeof window !== 'undefined') {
 
 /**
  * Get current page info (module and quiz index)
+ * Result is cached for performance since URL doesn't change during session
  */
+let _cachedPageInfo = null;
+let _cachedPathname = null;
+
 function getCurrentPageInfo() {
-    const path = window.location.pathname;
+    // Return cached result if pathname hasn't changed
+    if (_cachedPathname === window.location.pathname && _cachedPageInfo !== null) {
+        return _cachedPageInfo;
+    }
+
+    _cachedPathname = window.location.pathname;
+    const path = _cachedPathname;
     const filename = path.split('/').pop();
 
     for (const module of QUIZ_CONFIG.modules) {
@@ -121,11 +131,13 @@ function getCurrentPageInfo() {
                 const quiz = quizzes[i];
                 const expectedFile = quiz.file || `quiz-${quiz.id}.html`;
                 if (filename === expectedFile) {
-                    return { module, quizIndex: i, quiz };
+                    _cachedPageInfo = { module, quizIndex: i, quiz };
+                    return _cachedPageInfo;
                 }
             }
         }
     }
+    _cachedPageInfo = null;
     return null;
 }
 
