@@ -1921,3 +1921,50 @@ body.ai-panel-open .floating-ai-btn {
     color: #131314;
     border-color: var(--accent);
 }
+
+/* ========== Concepts Multi-Select Mode ========== */
+.concepts-edit,
+.concepts-anki {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+}
+
+.concepts-select-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.selected-count {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.concepts-select-actions .btn-danger {
+    background: rgba(249, 115, 115, 0.15);
+    color: var(--error);
+    border-color: var(--error);
+}
+
+.concept-item.selected {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+}
+
+.concept-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.concept-item .concept-header {
+    display: flex;
+    align-items: center;
+}

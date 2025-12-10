@@ -311,8 +311,16 @@ function createChatPanel() {
         <div class="concepts-tab-content" id="conceptsTabContent" style="display:none;">
             <div class="concepts-header">
                 <span class="concepts-count" id="conceptsCount">0개의 개념</span>
+                <button class="btn btn-sm concepts-edit" onclick="toggleSelectMode()" title="편집 모드">✏️ 편집</button>
                 <button class="btn btn-sm concepts-export" onclick="exportConceptsCSV()" title="CSV로 내보내기">📥 CSV</button>
+                <button class="btn btn-sm concepts-anki" onclick="exportConceptsAnki()" title="Anki용 내보내기">📚 Anki</button>
                 <button class="btn btn-sm concepts-clear" onclick="clearAllConcepts()" title="전체 삭제">🗑️</button>
+            </div>
+            <div class="concepts-select-actions" id="conceptsSelectActions" style="display:none;">
+                <span class="selected-count" id="selectedCount">0개 선택됨</span>
+                <button class="btn btn-sm" onclick="exportConceptsCSV()">📥 선택 CSV</button>
+                <button class="btn btn-sm" onclick="exportConceptsAnki()">📚 선택 Anki</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSelectedConcepts()">🗑️ 삭제</button>
             </div>
             <div class="concepts-list" id="conceptsList">
                 <div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>틀린 문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>
@@ -909,21 +917,64 @@ function renderConceptsList() {
     if (!list) return;
 
     if (savedConcepts.length === 0) {
-        list.innerHTML = '<div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>틀린 문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>';
+        list.innerHTML = '<div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>';
     } else {
         list.innerHTML = savedConcepts.map((c, i) => `
-            <div class="concept-item">
+            <div class="concept-item ${selectedIndices.has(i) ? 'selected' : ''}" data-index="${i}">
                 <div class="concept-header">
+                    ${isSelectMode ? `<input type="checkbox" class="concept-checkbox" ${selectedIndices.has(i) ? 'checked' : ''} onchange="toggleConceptSelection(${i})">` : ''}
                     <span class="concept-title">${escapeHtml(c.title || '문제 ' + (i + 1))}</span>
-                    <button class="concept-delete" onclick="deleteConcept(${i})" title="삭제">×</button>
+                    ${!isSelectMode ? `<button class="concept-delete" onclick="deleteConcept(${i})" title="삭제">×</button>` : ''}
                 </div>
                 <div class="concept-content">${formatAIResponse(c.explanation)}</div>
                 <div class="concept-meta">${c.timestamp || ''}</div>
             </div>
         `).join('');
+
+        // Bind long-press events for mobile (enters select mode)
+        bindConceptLongPress();
     }
 
     if (count) count.textContent = `${savedConcepts.length}개의 개념`;
+}
+
+// Bind long-press events for mobile multi-select
+function bindConceptLongPress() {
+    document.querySelectorAll('.concept-item').forEach(item => {
+        let timer = null;
+
+        item.addEventListener('touchstart', (e) => {
+            timer = setTimeout(() => {
+                if (!isSelectMode) {
+                    isSelectMode = true;
+                    renderConceptsList();
+                    updateSelectModeUI();
+                }
+                const index = parseInt(item.dataset.index);
+                if (!isNaN(index)) {
+                    toggleConceptSelection(index);
+                }
+            }, 500); // 500ms long press
+        }, { passive: true });
+
+        item.addEventListener('touchend', () => {
+            if (timer) clearTimeout(timer);
+        });
+
+        item.addEventListener('touchmove', () => {
+            if (timer) clearTimeout(timer);
+        });
+
+        // Click to toggle in select mode
+        item.addEventListener('click', (e) => {
+            if (isSelectMode && !e.target.classList.contains('concept-checkbox') && !e.target.classList.contains('concept-delete')) {
+                const index = parseInt(item.dataset.index);
+                if (!isNaN(index)) {
+                    toggleConceptSelection(index);
+                }
+            }
+        });
+    });
 }
 
 // Delete a concept
@@ -942,17 +993,69 @@ function clearAllConcepts() {
     }
 }
 
-// Export concepts to CSV
+// Multi-select mode state
+let isSelectMode = false;
+let selectedIndices = new Set();
+let longPressTimer = null;
+
+// Toggle select mode (for desktop edit button)
+function toggleSelectMode() {
+    isSelectMode = !isSelectMode;
+    selectedIndices.clear();
+    renderConceptsList();
+    updateSelectModeUI();
+}
+
+// Update select mode UI
+function updateSelectModeUI() {
+    const editBtn = document.querySelector('.concepts-edit');
+    const exportBtn = document.querySelector('.concepts-export');
+    const selectActions = document.getElementById('conceptsSelectActions');
+
+    if (isSelectMode) {
+        if (editBtn) editBtn.innerHTML = '✓ 완료';
+        if (selectActions) selectActions.style.display = 'flex';
+    } else {
+        if (editBtn) editBtn.innerHTML = '✏️ 편집';
+        if (selectActions) selectActions.style.display = 'none';
+    }
+}
+
+// Toggle concept selection
+function toggleConceptSelection(index) {
+    if (selectedIndices.has(index)) {
+        selectedIndices.delete(index);
+    } else {
+        selectedIndices.add(index);
+    }
+
+    const item = document.querySelector(`.concept-item[data-index="${index}"]`);
+    if (item) {
+        item.classList.toggle('selected', selectedIndices.has(index));
+    }
+
+    // Update selected count
+    const selectedCount = document.getElementById('selectedCount');
+    if (selectedCount) {
+        selectedCount.textContent = `${selectedIndices.size}개 선택됨`;
+    }
+}
+
+// Export concepts to CSV (all or selected)
 function exportConceptsCSV() {
-    if (savedConcepts.length === 0) {
+    const toExport = isSelectMode && selectedIndices.size > 0
+        ? Array.from(selectedIndices).map(i => savedConcepts[i]).filter(Boolean)
+        : savedConcepts;
+
+    if (toExport.length === 0) {
         alert('내보낼 핵심개념이 없습니다.');
         return;
     }
 
-    // CSV header
+    // CSV with BOM for Excel compatibility
     let csv = '\uFEFF제목,핵심개념,날짜\n';
 
-    savedConcepts.forEach(c => {
+    toExport.forEach(c => {
         const title = (c.title || '').replace(/"/g, '""');
         const explanation = (c.explanation || '').replace(/"/g, '""').replace(/\n/g, ' ');
         const timestamp = c.timestamp || '';
@@ -964,6 +1067,55 @@ function exportConceptsCSV() {
     link.href = URL.createObjectURL(blob);
     link.download = `핵심개념_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
+}
+
+// Export to Anki-compatible TSV (Tab-separated: Front<TAB>Back)
+function exportConceptsAnki() {
+    const toExport = isSelectMode && selectedIndices.size > 0
+        ? Array.from(selectedIndices).map(i => savedConcepts[i]).filter(Boolean)
+        : savedConcepts;
+
+    if (toExport.length === 0) {
+        alert('내보낼 핵심개념이 없습니다.');
+        return;
+    }
+
+    // Anki TSV format: Front<TAB>Back (no headers)
+    let tsv = '';
+
+    toExport.forEach(c => {
+        const front = (c.title || '').replace(/\t/g, ' ').replace(/\n/g, ' ');
+        // Clean explanation: remove markdown, keep plain text
+        let back = (c.explanation || '')
+            .replace(/```[\s\S]*?```/g, '[코드]')  // Replace code blocks
+            .replace(/`([^`]+)`/g, '$1')  // Remove inline code backticks
+            .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove bold
+            .replace(/\n+/g, '<br>')  // Convert newlines to HTML breaks for Anki
+            .replace(/\t/g, ' ');
+        tsv += `${front}\t${back}\n`;
+    });
+
+    const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `핵심개념_Anki_${new Date().toISOString().slice(0, 10)}.txt`;
+    link.click();
+}
+
+// Delete selected concepts
+function deleteSelectedConcepts() {
+    if (selectedIndices.size === 0) return;
+    if (!confirm(`${selectedIndices.size}개의 핵심개념을 삭제하시겠습니까?`)) return;
+
+    // Delete from highest index to lowest to avoid index shifting
+    const indices = Array.from(selectedIndices).sort((a, b) => b - a);
+    indices.forEach(i => savedConcepts.splice(i, 1));
+
+    selectedIndices.clear();
+    isSelectMode = false;
+    saveConcepts();
+    renderConceptsList();
+    updateSelectModeUI();
 }
 
 // Request AI explanation for a question (called from ? button)
@@ -1055,8 +1207,12 @@ function addConceptButton(card, questionText) {
 if (typeof window !== 'undefined') {
     window.switchChatTab = switchChatTab;
     window.exportConceptsCSV = exportConceptsCSV;
+    window.exportConceptsAnki = exportConceptsAnki;
     window.clearAllConcepts = clearAllConcepts;
     window.deleteConcept = deleteConcept;
+    window.deleteSelectedConcepts = deleteSelectedConcepts;
+    window.toggleSelectMode = toggleSelectMode;
+    window.toggleConceptSelection = toggleConceptSelection;
     window.requestConceptExplanation = requestConceptExplanation;
     window.addConceptButton = addConceptButton;
 }
