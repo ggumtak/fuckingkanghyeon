@@ -76,12 +76,17 @@
             return arr;
         }
 
-        // Shuffle and re-render (preserves progress)
+        // Shuffle using shared smart-shuffle (answered questions go to end)
         function shuffleQuestions() {
-            const shuffled = shuffleArray(getAllQuestions());
-            const setAll = { setId: "set-all", questions: shuffled };
-            // Progress is preserved - uses shared shuffleV2Quiz logic
-            renderQuizRound(setAll);
+            // Use the shared shuffleV2Quiz function from quiz-v2.js
+            if (typeof shuffleV2Quiz === 'function') {
+                shuffleV2Quiz();
+            } else {
+                // Fallback: simple shuffle if shared function not available
+                const shuffled = shuffleArray(getAllQuestions());
+                const setAll = { setId: "set-all", questions: shuffled };
+                renderQuizRound(setAll);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {

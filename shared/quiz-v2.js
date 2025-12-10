@@ -274,6 +274,7 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
                 <span class="question-type-badge ${q.type}">${typeBadges[q.type] || q.type}</span>
                 ${q.points ? `<span class="question-points">${q.points}점</span>` : ''}
                 ${chapterBadge}
+                <button type="button" class="concept-help-btn" title="AI 핵심개념 설명 받기">?</button>
             </div>
             <div class="question-body"></div>
         `;
@@ -304,6 +305,9 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
     // Bind v2 events
     bindV2Events(round);
 
+    // Bind concept help button events
+    bindConceptButtons(round);
+
     // Restore saved progress from localStorage
     restoreV2Progress();
 
@@ -316,6 +320,30 @@ function renderQuizRound(round, containerId = 'v2-quiz-container') {
     if (typeof createBottomNavigation === 'function') {
         createBottomNavigation();
     }
+}
+
+/**
+ * Bind click events for ? (concept help) buttons
+ */
+function bindConceptButtons(round) {
+    document.querySelectorAll('.concept-help-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = btn.closest('.question-card');
+            if (!card) return;
+
+            const questionId = card.dataset.questionId;
+            const question = round.questions.find(q => q.id === questionId);
+            const promptEl = card.querySelector('.question-prompt');
+            const questionText = question?.prompt || promptEl?.textContent || '문제 설명 없음';
+
+            if (typeof requestConceptExplanation === 'function') {
+                requestConceptExplanation(questionId, questionText);
+            } else {
+                alert('AI 채팅 기능을 사용할 수 없습니다.');
+            }
+        });
+    });
 }
 
 /**
