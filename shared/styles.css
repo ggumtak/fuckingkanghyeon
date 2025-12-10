@@ -1893,6 +1893,13 @@ body.ai-panel-open .floating-ai-btn {
     border-top: 1px solid var(--border);
 }
 
+.concept-back {
+    padding: 10px 12px 0;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 500;
+}
+
 .concept-content {
     padding: 10px 12px;
     font-size: 0.8rem;

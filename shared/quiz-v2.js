@@ -13,6 +13,31 @@ let currentV2Round = null;
 const v2UndoHistory = [];
 const MAX_UNDO_HISTORY = 20;
 
+// ========== Global Auto-Pairing (Event Delegation) ==========
+// This ensures auto-pairing works for ALL inputs including dynamically created ones
+document.addEventListener('keydown', (e) => {
+    const target = e.target;
+    // Only apply to v2-short and v2-blank inputs
+    if (!target.classList.contains('v2-short') && !target.classList.contains('v2-blank')) {
+        return;
+    }
+
+    // Auto-pair: ' " ( [ {
+    const pairs = { "'": "'", '"': '"', '(': ')', '[': ']', '{': '}' };
+    if (pairs[e.key]) {
+        e.preventDefault();
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        const value = target.value;
+        const opening = e.key;
+        const closing = pairs[opening];
+        target.value = value.slice(0, start) + opening + closing + value.slice(end);
+        target.setSelectionRange(start + 1, start + 1);
+        // Trigger input event for any listeners
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+});
+
 // ========== Scroll Utility ==========
 /**
  * Scroll element to optimal position in viewport

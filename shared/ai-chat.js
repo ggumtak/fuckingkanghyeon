@@ -497,8 +497,9 @@ function toggleChatPanel() {
     const panel = document.getElementById('aiChatPanel');
 
     if (chatPanelOpen) {
-        // Save scroll position before any DOM changes
+        // Save scroll position FIRST
         const scrollY = window.scrollY;
+        const scrollX = window.scrollX;
 
         panel.classList.add('open');
         document.body.classList.add('ai-panel-open');
@@ -506,17 +507,26 @@ function toggleChatPanel() {
         // Always switch to chat tab when opening via toggle (Ctrl+L)
         switchChatTab('chat');
 
-        // Focus and restore scroll in same frame
-        setTimeout(() => {
-            if (hasApiKey()) {
-                const chatInput = document.getElementById('chatInput');
-                if (chatInput) {
-                    chatInput.focus({ preventScroll: true });
-                }
+        // Disable smooth scroll temporarily
+        document.documentElement.style.scrollBehavior = 'auto';
+
+        // Focus without scroll - aggressive approach
+        if (hasApiKey()) {
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                // Force scroll position before and after focus
+                window.scrollTo(scrollX, scrollY);
+                chatInput.focus({ preventScroll: true });
+                window.scrollTo(scrollX, scrollY);
             }
-            // Restore scroll position after focus
-            window.scrollTo(0, scrollY);
-        }, 10);
+        }
+
+        // Restore scroll one more time after a frame
+        requestAnimationFrame(() => {
+            window.scrollTo(scrollX, scrollY);
+            // Re-enable smooth scroll
+            document.documentElement.style.scrollBehavior = '';
+        });
     } else {
         panel.classList.remove('open');
         document.body.classList.remove('ai-panel-open');
@@ -932,7 +942,8 @@ function renderConceptsList() {
                     ${!isSelectMode ? `<button class="concept-delete" onclick="event.stopPropagation(); deleteConcept(${i})" title="삭제">×</button>` : ''}
                 </div>
                 <div class="concept-body" style="display: none;">
-                    <div class="concept-content">${formatAIResponse(c.explanation)}</div>
+                    ${c.back ? `<div class="concept-back"><strong>뒷면:</strong> ${escapeHtml(c.back)}</div>` : ''}
+                    <div class="concept-content">${formatAIResponse(c.extra || c.explanation || '(설명 없음)')}</div>
                 </div>
             </div>
         `).join('');
