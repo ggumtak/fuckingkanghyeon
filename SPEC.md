@@ -103,6 +103,11 @@
 - **Completion Modal**: Shows "Next / Retry / Home" buttons when all blanks filled correctly
 - **Floating Navigation Bar**: Quick quiz switching (1-10) at top of quiz pages
 - **Responsive Design**: Optimized for Galaxy S23 Ultra (phone) and Galaxy S7+ (tablet)
+- **Shuffle Questions**: Random question order button on all quiz pages
+- **MCQ Keyboard Navigation**: Number keys (1-4) to select options, auto-advance to next question
+- **Essay Self-Grading**: Ctrl+1 (correct) / Ctrl+2 (wrong) for essay questions
+- **Quote Auto-Complete**: Typing ' or " auto-completes to '' or "" with cursor between
+- **Swipe Navigation**: Swipe/drag from screen edges to navigate between quiz pages (mobile + desktop)
 
 ### 1.2 Long-term Goals
 
@@ -175,6 +180,7 @@ testpractice-main/
 │   ├── quiz-config.js           # 🔑 Subject/set registration
 │   ├── nav-config.js            # Sidebar config
 │   ├── sidebar.js               # Sidebar rendering
+│   ├── swipe-nav.js             # Swipe/drag page navigation
 │   └── ai-chat.js               # AI chat panel
 │
 ├── assets/                      # App icons, images
@@ -922,6 +928,9 @@ When an AI agent creates new quiz questions/sets, it must follow these rules.
 | `Enter` x2   | Show answer (when wrong) |
 | `Ctrl+Enter` | Batch grading            |
 | `Ctrl+L`     | Toggle AI chat           |
+| `1-4` keys   | Select MCQ option (when MCQ card focused) |
+| `Ctrl+1`     | Self-grade essay as correct |
+| `Ctrl+2`     | Self-grade essay as wrong |
 
 ### Status Colors
 
@@ -1057,4 +1066,4 @@ const setN = {
 ---
 
 > **Last Updated**: 2025-12-10  
-> **Version**: v2.4 (AI Quick Contract + AI Quiz Generation & File Naming Rules added)
+> **Version**: v2.5 (Swipe Navigation + MCQ Keyboard Nav + Quiz Shuffle + Quote Auto-Complete)

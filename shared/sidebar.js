@@ -18,7 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
     createSidebar();
     createHamburgerButton();
     createOverlay();
+    loadSwipeNavigation();
 });
+
+// Dynamically load swipe navigation script
+function loadSwipeNavigation() {
+    const script = document.createElement('script');
+    // Determine correct path based on current location
+    const isInSubfolder = window.location.pathname.includes('/quizzes/');
+    script.src = isInSubfolder ? '../../shared/swipe-nav.js' : 'shared/swipe-nav.js';
+    script.async = true;
+    document.body.appendChild(script);
+}
 
 // Create the sidebar HTML structure
 function createSidebar() {

@@ -89,12 +89,12 @@ function getPageUrl(subject, page) {
     const currentFile = pathParts[pathParts.length - 1];
     const currentDirName = pathParts[pathParts.length - 2] || '';
 
-    // Check if we're inside a quiz folder (linked_list, database, etc.)
-    const quizFolders = ['linked_list', 'database', 'computational_math', 'web_projecting'];
+    // Check if we're inside a quiz folder
+    const quizFolders = ['computational_math', 'web_projecting'];
     const isInQuizFolder = quizFolders.includes(currentDirName);
 
-    // Extract target folder name from subject.folder (e.g., 'quizzes/linked_list' -> 'linked_list')
-    const folder = subject.folder || 'quizzes/linked_list';
+    // Extract target folder name from subject.folder
+    const folder = subject.folder || 'quizzes/computational_math';
     const targetFolderName = folder.split('/').pop();
     const file = page.file || `${page.id}.html`;
 
