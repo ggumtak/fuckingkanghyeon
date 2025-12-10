@@ -662,37 +662,38 @@ function gradeV2CodeFill(input, round) {
     const state = v2States.get(key);
     const userAnswer = input.value.trim();
     const correctAnswer = blank.answer;
-    const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
+    const isCorrect = userAnswer && normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
 
-    if (state === 'graded' && input.classList.contains('wrong')) {
-        // Second Enter: check if user fixed it
+    // Already graded wrong -> Second Enter: show answer or accept correction
+    if (state === 'graded') {
         if (isCorrect) {
             // User corrected the answer - show as retry (yellow)
             input.classList.remove('wrong');
             input.classList.add('retry');
             input.readOnly = true;
             v2States.set(key, 'correct');
-            moveToNextV2Input(input);
         } else {
-            // Still wrong - show correct answer
+            // Still wrong or empty - show correct answer
             input.value = correctAnswer;
+            input.classList.remove('retry');
+            input.classList.add('wrong');
             input.readOnly = true;
             v2States.set(key, 'shown');
-            moveToNextV2Input(input);
         }
+        moveToNextV2Input(input);
     } else if (!state || state !== 'correct') {
+        // First Enter: grade the answer
         input.classList.remove('correct', 'wrong', 'retry');
-        if (userAnswer) {
-            if (isCorrect) {
-                input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
-                input.readOnly = true;
-                v2States.set(key, 'correct');
-                moveToNextV2Input(input);
-            } else {
-                input.classList.add('wrong');
-                v2WasEverWrong.add(key);
-                v2States.set(key, 'graded');
-            }
+        if (isCorrect) {
+            input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
+            input.readOnly = true;
+            v2States.set(key, 'correct');
+            moveToNextV2Input(input);
+        } else {
+            // Wrong or empty - mark as graded, need second Enter to show answer
+            input.classList.add('wrong');
+            v2WasEverWrong.add(key);
+            v2States.set(key, 'graded');
         }
     }
 
@@ -740,39 +741,40 @@ function gradeV2Short(input, round) {
     const key = `short-${questionId}`;
     const state = v2States.get(key);
     const userAnswer = input.value.trim();
-    const isCorrect = question.acceptableAnswers.some(ans =>
+    const isCorrect = userAnswer && question.acceptableAnswers.some(ans =>
         question.caseSensitive ? userAnswer === ans : normalizeAnswer(userAnswer) === normalizeAnswer(ans)
     );
 
-    if (state === 'graded' && input.classList.contains('wrong')) {
-        // Second Enter on wrong answer: check if user fixed it
+    // Already graded wrong -> Second Enter: show answer or accept correction
+    if (state === 'graded') {
         if (isCorrect) {
             // User corrected the answer - show as retry (yellow)
             input.classList.remove('wrong');
             input.classList.add('retry');
             input.readOnly = true;
             v2States.set(key, 'correct');
-            moveToNextV2Input(input);
         } else {
-            // Still wrong - show correct answer and move to next
+            // Still wrong or empty - show correct answer
             input.value = question.acceptableAnswers[0];
+            input.classList.remove('retry');
+            input.classList.add('wrong');
             input.readOnly = true;
             v2States.set(key, 'shown');
-            moveToNextV2Input(input);
         }
+        moveToNextV2Input(input);
     } else if (!state || state !== 'correct') {
+        // First Enter: grade the answer
         input.classList.remove('correct', 'wrong', 'retry');
-        if (userAnswer) {
-            if (isCorrect) {
-                input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
-                input.readOnly = true;
-                v2States.set(key, 'correct');
-                moveToNextV2Input(input);
-            } else {
-                input.classList.add('wrong');
-                v2WasEverWrong.add(key);
-                v2States.set(key, 'graded');
-            }
+        if (isCorrect) {
+            input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
+            input.readOnly = true;
+            v2States.set(key, 'correct');
+            moveToNextV2Input(input);
+        } else {
+            // Wrong or empty - mark as graded, need second Enter to show answer
+            input.classList.add('wrong');
+            v2WasEverWrong.add(key);
+            v2States.set(key, 'graded');
         }
     }
 
