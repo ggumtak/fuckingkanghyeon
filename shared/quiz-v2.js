@@ -864,18 +864,8 @@ function bindV2Events(round) {
             } else if (e.key === 'Enter' && e.ctrlKey) {
                 e.preventDefault();
                 gradeAllV2();
-            } else if (e.key === "'" || e.key === '"' || e.key === '(' || e.key === '[' || e.key === '{') {
-                // Auto-complete quotes and brackets with cursor in between
-                e.preventDefault();
-                const start = input.selectionStart;
-                const end = input.selectionEnd;
-                const value = input.value;
-                const char = e.key;
-                const pairs = { "'": "'", '"': '"', '(': ')', '[': ']', '{': '}' };
-                const closing = pairs[char];
-                input.value = value.slice(0, start) + char + closing + value.slice(end);
-                input.setSelectionRange(start + 1, start + 1);
             }
+            // Auto-pairing handled by global event delegation at top of file
         });
     });
 
@@ -946,18 +936,8 @@ function bindV2Events(round) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 gradeV2Short(input, round);
-            } else if (e.key === "'" || e.key === '"' || e.key === '(' || e.key === '[' || e.key === '{') {
-                // Auto-complete quotes and brackets with cursor in between
-                e.preventDefault();
-                const start = input.selectionStart;
-                const end = input.selectionEnd;
-                const value = input.value;
-                const char = e.key;
-                const pairs = { "'": "'", '"': '"', '(': ')', '[': ']', '{': '}' };
-                const closing = pairs[char];
-                input.value = value.slice(0, start) + char + closing + value.slice(end);
-                input.setSelectionRange(start + 1, start + 1);
             }
+            // Auto-pairing handled by global event delegation at top of file
         });
     });
 
