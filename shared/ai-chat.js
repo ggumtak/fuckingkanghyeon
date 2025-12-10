@@ -688,7 +688,14 @@ function addMessageToUI(type, content) {
     }
 
     container.appendChild(msg);
-    container.scrollTop = container.scrollHeight;
+
+    // Auto-scroll to bottom after DOM update
+    setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+        // Also scroll parent container (chatTabContent) if it's the scrolling element
+        const parent = container.parentElement;
+        if (parent) parent.scrollTop = parent.scrollHeight;
+    }, 10);
 }
 
 function showTypingIndicator() {
@@ -706,7 +713,14 @@ function showTypingIndicator() {
         </div>
     `;
     container.appendChild(indicator);
-    container.scrollTop = container.scrollHeight;
+
+    // Auto-scroll to show typing indicator
+    setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+        const parent = container.parentElement;
+        if (parent) parent.scrollTop = parent.scrollHeight;
+    }, 10);
+
     return id;
 }
 
