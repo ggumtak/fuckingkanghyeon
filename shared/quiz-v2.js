@@ -11,10 +11,10 @@ let currentV2Round = null;
 
 // ========== Scroll Utility ==========
 /**
- * Scroll element to upper-center of viewport
- * Desktop (768px+): 35% from top
- * Mobile (<768px): 55% from top (more comfortable for keyboard)
- * Also ensures input doesn't go below keyboard on mobile
+ * Scroll element to optimal position in viewport
+ * - Input fields (blank, short, essay): slightly below center (55%)
+ * - MCQ cards: near top (20%) to show all options
+ * - Mobile adjusts for keyboard
  */
 function scrollToUpperCenterV2(element) {
     if (!element) return;
@@ -24,13 +24,23 @@ function scrollToUpperCenterV2(element) {
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     const isMobile = window.innerWidth < 768;
 
-    // Desktop: 30% from top, Mobile: 40% from top
-    // This positions the element/card with enough context visible above and options below
-    const scrollPercent = isMobile ? 0.40 : 0.30;
+    // Determine scroll position based on element type
+    const isMcqCard = element.classList.contains('question-card') &&
+        element.dataset.type === 'mcq';
+
+    let scrollPercent;
+    if (isMcqCard) {
+        // MCQ cards: show near top so all options are visible
+        scrollPercent = isMobile ? 0.15 : 0.15;
+    } else {
+        // Input fields: slightly below center for comfortable typing
+        scrollPercent = isMobile ? 0.50 : 0.55;
+    }
+
     let targetY = window.scrollY + rect.top - (viewportHeight * scrollPercent);
 
     // Mobile safety: Make sure input is at least 150px above keyboard area
-    if (isMobile) {
+    if (isMobile && !isMcqCard) {
         const maxY = window.scrollY + rect.top - (viewportHeight - 150);
         if (targetY > maxY) {
             targetY = maxY;
