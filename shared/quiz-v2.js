@@ -182,11 +182,27 @@ function restoreV2Progress() {
                 radio.checked = true;
                 // Also apply visual state
                 const option = radio.closest('.mcq-option');
-                const state = v2States.get(`mcq-${name.replace('mcq-', '')}`);
+                const questionId = name.replace('mcq-', '');
+                const state = v2States.get(`mcq-${questionId}`);
                 if (state === 'correct') {
                     option?.classList.add('correct');
-                } else if (state === 'wrong') {
+                } else if (state === 'graded') {
+                    // Wrong answer - show both wrong selection and correct answer
                     option?.classList.add('wrong');
+                    // Find and highlight the correct answer
+                    const card = radio.closest('.question-card');
+                    if (card && currentV2Round) {
+                        const question = currentV2Round.questions.find(q => q.id === questionId);
+                        if (question && typeof question.correctIndex === 'number') {
+                            const correctOption = card.querySelectorAll('.mcq-option')[question.correctIndex];
+                            correctOption?.classList.add('correct');
+                        }
+                    }
+                }
+                // Disable all radios in this MCQ since it's already answered
+                const card = radio.closest('.question-card');
+                if (card) {
+                    card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
                 }
             }
         }
