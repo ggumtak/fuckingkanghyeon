@@ -100,7 +100,9 @@ const QUIZ_CONFIG = {
                 { id: 'set5', title: '세트 5', subtitle: '클래스/모듈', count: 9, icon: '🏗️', file: 'math-set5.html' },
                 { id: 'set6', title: '세트 6', subtitle: 'Pandas 기초', count: 14, icon: '🐼', file: 'math-set6.html' },
                 { id: 'set7', title: '세트 7', subtitle: 'Pandas 심화', count: 11, icon: '📊', file: 'math-set7.html' },
-                { id: 'set8', title: '세트 8', subtitle: 'Numpy', count: 13, icon: '🔢', file: 'math-set8.html' }
+                { id: 'set8', title: '세트 8', subtitle: 'Numpy', count: 13, icon: '🔢', file: 'math-set8.html' },
+                { id: 'set9', title: '세트 9', subtitle: '추가 문제', count: 35, icon: '➕', file: 'math-set9.html' },
+                { id: 'set-all', title: '전체 문제', subtitle: '모든 문제 (섞기 가능)', count: 131, icon: '🎯', file: 'math-all.html' }
             ]
         },
         {

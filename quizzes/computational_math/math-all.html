@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전산수학 전체 문제 | 퀴즈</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="../../shared/quiz-v2-styles.css">
+    <!-- Highlight.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>전산수학 전체 문제</h1>
+            <p class="subtitle">Chapter 01-09 모든 문제 (약 130문제)</p>
+        </header>
+        <a href="../../index.html" class="btn btn-back" style="margin-bottom:20px;">← 메인으로</a>
+
+        <div style="margin-bottom: 16px;">
+            <button class="btn btn-secondary" onclick="shuffleQuestions()"
+                style="background: var(--accent-dim); border-color: var(--accent);">🔀 문제 섞기</button>
+        </div>
+
+        <div id="v2-quiz-container"></div>
+        <div class="controls">
+            <button class="btn btn-primary" onclick="gradeAllV2()">✅ 전체 채점</button>
+            <button class="btn btn-primary" onclick="showAllV2Answers()">💡 전체 정답</button>
+            <button class="btn btn-primary" onclick="reviewWrongV2()">🔄 틀린 문제 복습</button>
+            <button class="btn btn-secondary" onclick="resetV2Quiz()">🔃 초기화</button>
+        </div>
+        <div class="score-display">
+            <div class="score-label">현재 점수</div>
+            <div><span class="score-num" id="v2-score">0</span><span class="score-total"> / <span
+                        id="v2-total">0</span></span></div>
+        </div>
+    </div>
+
+    <script src="../../shared/quiz-config.js"></script>
+    <script src="../../shared/nav-config.js"></script>
+    <script src="../../shared/sidebar.js"></script>
+    <script src="../../shared/ai-chat.js"></script>
+    <script src="../../shared/quiz-v2.js"></script>
+    <!-- Load all set data files -->
+    <script src="data/set1.js"></script>
+    <script src="data/set2.js"></script>
+    <script src="data/set3.js"></script>
+    <script src="data/set4.js"></script>
+    <script src="data/set5.js"></script>
+    <script src="data/set6.js"></script>
+    <script src="data/set7.js"></script>
+    <script src="data/set8.js"></script>
+    <script src="data/set9.js"></script>
+    <script>
+        // Collect all questions from all sets
+        function getAllQuestions() {
+            const allQuestions = [];
+            [set1, set2, set3, set4, set5, set6, set7, set8, set9].forEach(set => {
+                if (set && set.questions) {
+                    allQuestions.push(...set.questions);
+                }
+            });
+            return allQuestions;
+        }
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Shuffle and re-render
+        function shuffleQuestions() {
+            const shuffled = shuffleArray(getAllQuestions());
+            const setAll = { setId: "set-all", questions: shuffled };
+            // Clear progress
+            localStorage.removeItem('v2_quiz_progress_set-all');
+            renderQuizRound(setAll);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const setAll = { setId: "set-all", questions: getAllQuestions() };
+            renderQuizRound(setAll);
+        });
+    </script>
+</body>
+
+</html>
