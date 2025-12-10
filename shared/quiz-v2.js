@@ -926,9 +926,11 @@ function bindV2Events(round) {
 }
 
 function gradeV2CodeFill(input, round) {
+    // Always use currentV2Round to ensure correct question after shuffle
+    const activeRound = currentV2Round || round;
     const questionId = input.dataset.question;
     const blankIndex = parseInt(input.dataset.blank);
-    const question = round.questions.find(q => q.id === questionId);
+    const question = activeRound.questions.find(q => q.id === questionId);
     if (!question?.blanks) return;
 
     const blank = question.blanks.find(b => b.index === blankIndex);
@@ -984,8 +986,10 @@ function gradeV2CodeFill(input, round) {
 }
 
 function gradeV2Mcq(radio, round) {
+    // Always use currentV2Round to ensure correct question after shuffle
+    const activeRound = currentV2Round || round;
     const questionId = radio.dataset.question;
-    const question = round.questions.find(q => q.id === questionId);
+    const question = activeRound.questions.find(q => q.id === questionId);
     if (!question) return;
 
     const card = document.getElementById(`q-${questionId}`);
@@ -1020,8 +1024,10 @@ function gradeV2Mcq(radio, round) {
 }
 
 function gradeV2Short(input, round) {
+    // Always use currentV2Round to ensure correct question after shuffle
+    const activeRound = currentV2Round || round;
     const questionId = input.dataset.question;
-    const question = round.questions.find(q => q.id === questionId);
+    const question = activeRound.questions.find(q => q.id === questionId);
     if (!question?.acceptableAnswers) return;
 
     const key = `short-${questionId}`;
