@@ -24,8 +24,9 @@ function scrollToUpperCenterV2(element) {
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     const isMobile = window.innerWidth < 768;
 
-    // Desktop: 20% (lower on screen), Mobile: 50% (more comfortable for keyboard)
-    const scrollPercent = isMobile ? 0.50 : 0.20;
+    // Desktop: 30% from top, Mobile: 40% from top
+    // This positions the element/card with enough context visible above and options below
+    const scrollPercent = isMobile ? 0.40 : 0.30;
     let targetY = window.scrollY + rect.top - (viewportHeight * scrollPercent);
 
     // Mobile safety: Make sure input is at least 150px above keyboard area
