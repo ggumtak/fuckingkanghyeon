@@ -352,10 +352,15 @@ function renderMcqQuestion(q, container) {
     q.options.forEach((opt, i) => {
         const label = document.createElement('label');
         label.className = 'mcq-option';
+
+        // Remove leading number markers if present (①②③④ or 1. 2. etc.)
+        // Pattern: optional leading number/circle marker followed by space or dot
+        const cleanOpt = opt.replace(/^[①②③④⑤⑥⑦⑧⑨⑩][\s.]?\s*|^\d+[\.\)]\s*/g, '').trim();
+
         label.innerHTML = `
             <input type="radio" name="mcq-${q.id}" value="${i}" data-question="${q.id}">
             <span class="mcq-marker">${String.fromCharCode(9312 + i)}</span>
-            <span class="mcq-text">${escapeHtml(opt)}</span>
+            <span class="mcq-text">${escapeHtml(cleanOpt)}</span>
         `;
         options.appendChild(label);
     });
