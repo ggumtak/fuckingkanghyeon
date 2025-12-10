@@ -24,8 +24,8 @@ function scrollToUpperCenterV2(element) {
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     const isMobile = window.innerWidth < 768;
 
-    // Desktop: 35%, Mobile: 55%
-    const scrollPercent = isMobile ? 0.55 : 0.35;
+    // Desktop: 20% (lower on screen), Mobile: 50% (more comfortable for keyboard)
+    const scrollPercent = isMobile ? 0.50 : 0.20;
     let targetY = window.scrollY + rect.top - (viewportHeight * scrollPercent);
 
     // Mobile safety: Make sure input is at least 150px above keyboard area
@@ -694,8 +694,28 @@ function bindV2Events(round) {
         // Make card focusable
         card.setAttribute('tabindex', '0');
 
-        // Focus: scroll to upper-center
-        card.addEventListener('focus', () => scrollToUpperCenterV2(card));
+        // Track if focus came from mouse click (to avoid scroll interference)
+        let isMouseFocusing = false;
+
+        card.addEventListener('mousedown', () => {
+            isMouseFocusing = true;
+        });
+
+        // Focus: scroll to upper-center ONLY on keyboard focus (Tab), not mouse click
+        card.addEventListener('focus', () => {
+            if (isMouseFocusing) {
+                // Mouse click focus - don't scroll (would interfere with radio selection)
+                isMouseFocusing = false;
+                return;
+            }
+            // Keyboard Tab focus - scroll to show the card
+            setTimeout(() => scrollToUpperCenterV2(card), 50);
+        });
+
+        // Reset flag on mouseup (in case focus didn't happen)
+        card.addEventListener('mouseup', () => {
+            isMouseFocusing = false;
+        });
 
         // Keyboard selection: 1, 2, 3, 4 (or numpad)
         card.addEventListener('keydown', (e) => {
