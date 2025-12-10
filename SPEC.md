@@ -109,9 +109,13 @@
 - **Quote Auto-Complete**: Typing ' or " auto-completes to '' or "" with cursor between
 - **Swipe Navigation**: Swipe/drag from screen edges to navigate between quiz pages (mobile + desktop)
 - **Floating Scroll Buttons**: ▲▼ buttons on right side for quick page navigation (all pages)
-- **Smart Shuffle**: When shuffling, answered questions are placed at the end
+- **Smart Shuffle**: When shuffling, answered questions are placed at the end (progress preserved)
 - **Grading Undo**: `Ctrl+Z` undoes the last grading action (max 20 history)
 - **Top Reset Button**: 🔃 초기화 button at top next to shuffle button
+- **Bracket Auto-Pairing**: `' " ( [ {` all auto-complete with closing pair and cursor between
+- **AI Concept Explanation**: ? button on wrong questions → opens AI explanation in sidebar
+- **Concepts Tab**: Separate tab in AI chat panel for saved concept explanations
+- **Concept CSV Export**: Export saved concepts to CSV file for study materials
 
 ### 1.2 Long-term Goals
 
@@ -585,6 +589,10 @@ const DEFAULT_NAV_CONFIG = {
 | `sendChatMessage()`          | Send user message      |
 | `callGeminiAPI(userMessage)` | API call               |
 | `showApiKeyModal()`          | API key settings modal |
+| `switchChatTab(tab)`         | Switch between 'chat' and 'concepts' tabs |
+| `requestConceptExplanation(qId, text)` | AI generates concept explanation |
+| `addConceptButton(card, text)` | Add ? button to wrong question |
+| `exportConceptsCSV()`        | Export concepts to CSV file |
 
 ---
 

@@ -299,8 +299,24 @@ function createChatPanel() {
                 <button class="chat-close" onclick="toggleChatPanel()" title="닫기">✕</button>
             </div>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            ${hasApiKey() ? getWelcomeHTML() : getSetupHTML()}
+        <div class="chat-tabs">
+            <button class="chat-tab active" data-tab="chat" onclick="switchChatTab('chat')">💬 채팅</button>
+            <button class="chat-tab" data-tab="concepts" onclick="switchChatTab('concepts')">📚 핵심개념</button>
+        </div>
+        <div class="chat-tab-content" id="chatTabContent">
+            <div class="chat-messages" id="chatMessages">
+                ${hasApiKey() ? getWelcomeHTML() : getSetupHTML()}
+            </div>
+        </div>
+        <div class="concepts-tab-content" id="conceptsTabContent" style="display:none;">
+            <div class="concepts-header">
+                <span class="concepts-count" id="conceptsCount">0개의 개념</span>
+                <button class="btn btn-sm concepts-export" onclick="exportConceptsCSV()" title="CSV로 내보내기">📥 CSV</button>
+                <button class="btn btn-sm concepts-clear" onclick="clearAllConcepts()" title="전체 삭제">🗑️</button>
+            </div>
+            <div class="concepts-list" id="conceptsList">
+                <div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>틀린 문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>
+            </div>
         </div>
         <div class="chat-input-area">
             <textarea 
@@ -337,6 +353,9 @@ function createChatPanel() {
 
     // Setup resize functionality
     setupResizeHandle();
+
+    // Load saved concepts
+    loadSavedConcepts();
 }
 
 // ========== Resize Handle ==========
@@ -793,3 +812,209 @@ function loadSession(index) {
 
 // Load sessions on init
 document.addEventListener('DOMContentLoaded', loadChatSessions);
+
+// ========== Concept Explanation System ==========
+const CONCEPTS_STORAGE_KEY = 'ai_saved_concepts';
+let savedConcepts = [];
+
+// Switch between Chat and Concepts tabs
+function switchChatTab(tab) {
+    const chatTab = document.querySelector('.chat-tab[data-tab="chat"]');
+    const conceptsTab = document.querySelector('.chat-tab[data-tab="concepts"]');
+    const chatContent = document.getElementById('chatTabContent');
+    const conceptsContent = document.getElementById('conceptsTabContent');
+    const inputArea = document.querySelector('.chat-input-area');
+
+    if (tab === 'chat') {
+        chatTab?.classList.add('active');
+        conceptsTab?.classList.remove('active');
+        if (chatContent) chatContent.style.display = 'block';
+        if (conceptsContent) conceptsContent.style.display = 'none';
+        if (inputArea) inputArea.style.display = 'flex';
+    } else {
+        chatTab?.classList.remove('active');
+        conceptsTab?.classList.add('active');
+        if (chatContent) chatContent.style.display = 'none';
+        if (conceptsContent) conceptsContent.style.display = 'block';
+        if (inputArea) inputArea.style.display = 'none';
+        renderConceptsList();
+    }
+}
+
+// Load saved concepts from localStorage
+function loadSavedConcepts() {
+    try {
+        const stored = localStorage.getItem(CONCEPTS_STORAGE_KEY);
+        savedConcepts = stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        savedConcepts = [];
+    }
+}
+
+// Save concepts to localStorage
+function saveConcepts() {
+    try {
+        localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(savedConcepts));
+    } catch (e) {
+        console.warn('Failed to save concepts:', e);
+    }
+}
+
+// Render concepts list
+function renderConceptsList() {
+    const list = document.getElementById('conceptsList');
+    const count = document.getElementById('conceptsCount');
+    if (!list) return;
+
+    if (savedConcepts.length === 0) {
+        list.innerHTML = '<div class="concepts-empty">아직 저장된 핵심개념이 없습니다.<br>틀린 문제의 <strong>?</strong> 버튼을 눌러 AI 설명을 받아보세요!</div>';
+    } else {
+        list.innerHTML = savedConcepts.map((c, i) => `
+            <div class="concept-item">
+                <div class="concept-header">
+                    <span class="concept-title">${escapeHtml(c.title || '문제 ' + (i + 1))}</span>
+                    <button class="concept-delete" onclick="deleteConcept(${i})" title="삭제">×</button>
+                </div>
+                <div class="concept-content">${formatAIResponse(c.explanation)}</div>
+                <div class="concept-meta">${c.timestamp || ''}</div>
+            </div>
+        `).join('');
+    }
+
+    if (count) count.textContent = `${savedConcepts.length}개의 개념`;
+}
+
+// Delete a concept
+function deleteConcept(index) {
+    savedConcepts.splice(index, 1);
+    saveConcepts();
+    renderConceptsList();
+}
+
+// Clear all concepts
+function clearAllConcepts() {
+    if (confirm('모든 핵심개념을 삭제하시겠습니까?')) {
+        savedConcepts = [];
+        saveConcepts();
+        renderConceptsList();
+    }
+}
+
+// Export concepts to CSV
+function exportConceptsCSV() {
+    if (savedConcepts.length === 0) {
+        alert('내보낼 핵심개념이 없습니다.');
+        return;
+    }
+
+    // CSV header
+    let csv = '\uFEFF제목,핵심개념,날짜\n';
+
+    savedConcepts.forEach(c => {
+        const title = (c.title || '').replace(/"/g, '""');
+        const explanation = (c.explanation || '').replace(/"/g, '""').replace(/\n/g, ' ');
+        const timestamp = c.timestamp || '';
+        csv += `"${title}","${explanation}","${timestamp}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `핵심개념_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+}
+
+// Request AI explanation for a question (called from ? button)
+async function requestConceptExplanation(questionId, questionText) {
+    if (!hasApiKey()) {
+        showApiKeyModal();
+        return;
+    }
+
+    // Open panel and switch to concepts tab
+    if (!chatPanelOpen) toggleChatPanel();
+    switchChatTab('concepts');
+
+    // Show loading indicator
+    const list = document.getElementById('conceptsList');
+    const loadingId = Date.now();
+    const loadingHTML = `
+        <div class="concept-item concept-loading" id="concept-loading-${loadingId}">
+            <div class="concept-header">
+                <span class="concept-title">🔄 AI가 설명 생성 중...</span>
+            </div>
+            <div class="concept-content typing-dots"><span></span><span></span><span></span></div>
+        </div>
+    `;
+
+    if (list.querySelector('.concepts-empty')) {
+        list.innerHTML = loadingHTML;
+    } else {
+        list.insertAdjacentHTML('afterbegin', loadingHTML);
+    }
+
+    try {
+        const prompt = `다음 문제에 대해 핵심개념을 설명해줘. 형식: "핵심개념: [개념명]" 으로 시작하고, 그 다음 줄에 간단명료한 설명을 해줘. 코드가 있으면 \`\`\`python 코드블록으로 보여줘.
+
+문제: ${questionText}`;
+
+        const response = await callGeminiAPI(prompt);
+
+        // Remove loading indicator
+        document.getElementById(`concept-loading-${loadingId}`)?.remove();
+
+        // Extract title from response
+        let title = questionText.slice(0, 50) + (questionText.length > 50 ? '...' : '');
+        const titleMatch = response.match(/핵심개념:\s*(.+?)[\n\r]/);
+        if (titleMatch) {
+            title = titleMatch[1].trim();
+        }
+
+        // Save concept
+        const concept = {
+            questionId,
+            title,
+            explanation: response,
+            timestamp: new Date().toLocaleString('ko-KR')
+        };
+
+        savedConcepts.unshift(concept);
+        saveConcepts();
+        renderConceptsList();
+
+    } catch (error) {
+        document.getElementById(`concept-loading-${loadingId}`)?.remove();
+        alert('AI 설명 생성 실패: ' + error.message);
+    }
+}
+
+// Add ? button to a question card (called when question is graded wrong)
+function addConceptButton(card, questionText) {
+    // Skip if already has button
+    if (card.querySelector('.concept-help-btn')) return;
+
+    const header = card.querySelector('.question-header');
+    if (!header) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'concept-help-btn';
+    btn.innerHTML = '?';
+    btn.title = 'AI 핵심개념 설명 받기';
+    btn.onclick = (e) => {
+        e.stopPropagation();
+        const qId = card.dataset.questionId || card.id;
+        requestConceptExplanation(qId, questionText);
+    };
+
+    header.appendChild(btn);
+}
+
+// Expose functions globally
+if (typeof window !== 'undefined') {
+    window.switchChatTab = switchChatTab;
+    window.exportConceptsCSV = exportConceptsCSV;
+    window.clearAllConcepts = clearAllConcepts;
+    window.deleteConcept = deleteConcept;
+    window.requestConceptExplanation = requestConceptExplanation;
+    window.addConceptButton = addConceptButton;
+}

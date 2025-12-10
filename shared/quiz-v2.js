@@ -799,14 +799,16 @@ function bindV2Events(round) {
             } else if (e.key === 'Enter' && e.ctrlKey) {
                 e.preventDefault();
                 gradeAllV2();
-            } else if (e.key === "'" || e.key === '"') {
-                // Auto-complete quotes: ' -> '' with cursor in between
+            } else if (e.key === "'" || e.key === '"' || e.key === '(' || e.key === '[' || e.key === '{') {
+                // Auto-complete quotes and brackets with cursor in between
                 e.preventDefault();
                 const start = input.selectionStart;
                 const end = input.selectionEnd;
                 const value = input.value;
-                const quote = e.key;
-                input.value = value.slice(0, start) + quote + quote + value.slice(end);
+                const char = e.key;
+                const pairs = { "'": "'", '"': '"', '(': ')', '[': ']', '{': '}' };
+                const closing = pairs[char];
+                input.value = value.slice(0, start) + char + closing + value.slice(end);
                 input.setSelectionRange(start + 1, start + 1);
             }
         });
@@ -879,14 +881,14 @@ function bindV2Events(round) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 gradeV2Short(input, round);
-            } else if (e.key === "'" || e.key === '"' || e.key === '(' || e.key === '[') {
+            } else if (e.key === "'" || e.key === '"' || e.key === '(' || e.key === '[' || e.key === '{') {
                 // Auto-complete quotes and brackets with cursor in between
                 e.preventDefault();
                 const start = input.selectionStart;
                 const end = input.selectionEnd;
                 const value = input.value;
                 const char = e.key;
-                const pairs = { "'": "'", '"': '"', '(': ')', '[': ']' };
+                const pairs = { "'": "'", '"': '"', '(': ')', '[': ']', '{': '}' };
                 const closing = pairs[char];
                 input.value = value.slice(0, start) + char + closing + value.slice(end);
                 input.setSelectionRange(start + 1, start + 1);
@@ -983,6 +985,13 @@ function gradeV2CodeFill(input, round) {
             input.classList.add('wrong');
             v2WasEverWrong.add(key);
             v2States.set(key, 'graded');
+
+            // Add ? button for AI concept explanation
+            const card = input.closest('.question-card');
+            if (card && typeof addConceptButton === 'function') {
+                const questionText = question.prompt || card.querySelector('.question-prompt')?.textContent || '';
+                addConceptButton(card, questionText);
+            }
         }
     }
 
@@ -1018,6 +1027,12 @@ function gradeV2Mcq(radio, round) {
         v2States.set(key, 'graded');
         const correctOption = card.querySelectorAll('.mcq-option')[question.correctIndex];
         if (correctOption) correctOption.classList.add('correct');
+
+        // Add ? button for AI concept explanation
+        if (typeof addConceptButton === 'function') {
+            const questionText = question.prompt || card.querySelector('.question-prompt')?.textContent || '';
+            addConceptButton(card, questionText);
+        }
     }
 
     card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
@@ -1080,6 +1095,13 @@ function gradeV2Short(input, round) {
             input.classList.add('wrong');
             v2WasEverWrong.add(key);
             v2States.set(key, 'graded');
+
+            // Add ? button for AI concept explanation
+            const card = input.closest('.question-card');
+            if (card && typeof addConceptButton === 'function') {
+                const questionText = question.prompt || card.querySelector('.question-prompt')?.textContent || '';
+                addConceptButton(card, questionText);
+            }
         }
     }
 

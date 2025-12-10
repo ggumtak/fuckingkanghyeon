@@ -76,12 +76,11 @@
             return arr;
         }
 
-        // Shuffle and re-render
+        // Shuffle and re-render (preserves progress)
         function shuffleQuestions() {
             const shuffled = shuffleArray(getAllQuestions());
             const setAll = { setId: "set-all", questions: shuffled };
-            // Clear progress
-            localStorage.removeItem('v2_quiz_progress_set-all');
+            // Progress is preserved - uses shared shuffleV2Quiz logic
             renderQuizRound(setAll);
         }
 
