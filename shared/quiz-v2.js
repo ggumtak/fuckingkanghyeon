@@ -11,14 +11,27 @@ let currentV2Round = null;
 
 // ========== Scroll Utility ==========
 /**
- * Scroll element to center-ish of viewport (about 45% from top)
+ * Scroll element to center-ish of viewport (about 55% from top)
  * More comfortable position for mobile input
  * Uses slow scroll to prevent bounce effect
+ * Also ensures input doesn't go below keyboard on mobile
  */
 function scrollToUpperCenterV2(element) {
     if (!element) return;
     const rect = element.getBoundingClientRect();
-    const targetY = window.scrollY + rect.top - (window.innerHeight * 0.45);
+
+    // Use visualViewport if available (accounts for keyboard on mobile)
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+
+    // Target position: 55% from top of visible viewport
+    let targetY = window.scrollY + rect.top - (viewportHeight * 0.55);
+
+    // Safety: Make sure input is at least 150px above keyboard area (bottom of viewport)
+    const maxY = window.scrollY + rect.top - (viewportHeight - 150);
+    if (targetY > maxY) {
+        targetY = maxY;
+    }
+
     window.scrollTo({
         top: Math.max(0, targetY),
         behavior: 'smooth'
