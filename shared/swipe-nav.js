@@ -2,6 +2,8 @@
  * Swipe Navigation Module
  * Enables swipe gestures from screen edges to navigate between quiz pages
  * Works on both mobile (touch) and desktop (mouse drag)
+ * 
+ * v2: Simplified visual indicator - just a subtle arrow
  */
 
 (function () {
@@ -9,11 +11,10 @@
 
     // Configuration
     const CONFIG = {
-        edgeWidth: 50,           // Width of edge zone in pixels (both sides)
-        minSwipeDistance: 80,    // Minimum swipe distance to trigger navigation
-        maxSwipeTime: 500,       // Maximum time for a valid swipe (ms)
-        indicatorSize: 60,       // Size of the visual indicator
-        feedbackThreshold: 30    // Distance to show visual feedback
+        edgeWidth: 40,           // Width of edge zone in pixels
+        minSwipeDistance: 60,    // Minimum swipe distance to trigger navigation
+        maxSwipeTime: 800,       // Maximum time for a valid swipe (ms)
+        feedbackThreshold: 20    // Distance to show visual feedback
     };
 
     // State
@@ -23,6 +24,7 @@
     let isEdgeSwipe = false;
     let swipeDirection = null; // 'left' or 'right'
     let indicator = null;
+    let styleElement = null;
 
     /**
      * Get current quiz info from QUIZ_CONFIG
@@ -36,7 +38,6 @@
         for (const module of QUIZ_CONFIG.modules) {
             const folderName = module.folder.split('/').pop();
 
-            // Check if we're in this module's folder
             if (path.includes(folderName)) {
                 const quizzes = module.quizzes;
 
@@ -64,7 +65,6 @@
     function getPrevQuizUrl() {
         const info = getCurrentQuizInfo();
         if (!info || info.currentIndex <= 0) return null;
-
         const prevQuiz = info.quizzes[info.currentIndex - 1];
         return prevQuiz.file || `quiz-${prevQuiz.id}.html`;
     }
@@ -75,7 +75,6 @@
     function getNextQuizUrl() {
         const info = getCurrentQuizInfo();
         if (!info || info.currentIndex >= info.quizzes.length - 1) return null;
-
         const nextQuiz = info.quizzes[info.currentIndex + 1];
         return nextQuiz.file || `quiz-${nextQuiz.id}.html`;
     }
@@ -85,101 +84,60 @@
      */
     function isInEdgeZone(x) {
         const screenWidth = window.innerWidth;
-
-        if (x <= CONFIG.edgeWidth) {
-            return 'left';
-        } else if (x >= screenWidth - CONFIG.edgeWidth) {
-            return 'right';
-        }
+        if (x <= CONFIG.edgeWidth) return 'left';
+        if (x >= screenWidth - CONFIG.edgeWidth) return 'right';
         return null;
     }
 
     /**
-     * Create visual indicator element
+     * Create minimal visual indicator
      */
     function createIndicator() {
         if (indicator) return;
 
-        indicator = document.createElement('div');
-        indicator.id = 'swipe-nav-indicator';
-        indicator.innerHTML = `
-            <div class="swipe-arrow"></div>
-            <div class="swipe-label"></div>
-        `;
-        document.body.appendChild(indicator);
-
         // Add styles
-        const style = document.createElement('style');
-        style.textContent = `
-            #swipe-nav-indicator {
+        styleElement = document.createElement('style');
+        styleElement.textContent = `
+            #swipe-indicator {
                 position: fixed;
                 top: 50%;
                 transform: translateY(-50%);
-                width: ${CONFIG.indicatorSize}px;
-                height: ${CONFIG.indicatorSize * 1.5}px;
-                background: rgba(0, 0, 0, 0.7);
-                border-radius: 12px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
+                font-size: 32px;
                 opacity: 0;
                 transition: opacity 0.15s ease;
                 pointer-events: none;
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
+                z-index: 10000;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+                filter: drop-shadow(0 0 4px rgba(255,255,255,0.3));
             }
-            #swipe-nav-indicator.visible {
-                opacity: 1;
-            }
-            #swipe-nav-indicator.left {
-                left: 10px;
-            }
-            #swipe-nav-indicator.right {
-                right: 10px;
-            }
-            #swipe-nav-indicator.ready {
-                background: rgba(76, 175, 80, 0.85);
-            }
-            #swipe-nav-indicator.disabled {
-                background: rgba(100, 100, 100, 0.6);
-            }
-            .swipe-arrow {
-                font-size: 28px;
-                color: white;
-                margin-bottom: 4px;
-            }
-            .swipe-label {
-                font-size: 10px;
-                color: rgba(255, 255, 255, 0.9);
-                text-align: center;
-                max-width: 50px;
-                line-height: 1.2;
-            }
+            #swipe-indicator.left { left: 12px; }
+            #swipe-indicator.right { right: 12px; }
+            #swipe-indicator.visible { opacity: 0.5; }
+            #swipe-indicator.ready { opacity: 0.9; }
+            #swipe-indicator.disabled { opacity: 0.2; }
         `;
-        document.head.appendChild(style);
+        document.head.appendChild(styleElement);
+
+        indicator = document.createElement('div');
+        indicator.id = 'swipe-indicator';
+        document.body.appendChild(indicator);
     }
 
     /**
-     * Show indicator with direction and state
+     * Show indicator
      */
-    function showIndicator(direction, isReady, label) {
+    function showIndicator(direction, isReady, hasTarget) {
         if (!indicator) createIndicator();
 
-        const arrow = indicator.querySelector('.swipe-arrow');
-        const labelEl = indicator.querySelector('.swipe-label');
+        indicator.className = direction;
 
-        indicator.className = 'visible ' + direction;
-
-        if (label === null) {
-            indicator.classList.add('disabled');
-            arrow.textContent = '🚫';
-            labelEl.textContent = '없음';
+        if (!hasTarget) {
+            indicator.classList.add('visible', 'disabled');
+            indicator.textContent = '🚫';
         } else {
+            indicator.classList.add('visible');
             if (isReady) indicator.classList.add('ready');
-            arrow.textContent = direction === 'left' ? '👈' : '👉';
-            labelEl.textContent = isReady ? '놓으면 이동' : (direction === 'left' ? '이전' : '다음');
+            indicator.textContent = direction === 'left' ? '◀' : '▶';
         }
     }
 
@@ -189,6 +147,7 @@
     function hideIndicator() {
         if (indicator) {
             indicator.className = '';
+            indicator.textContent = '';
         }
     }
 
@@ -197,17 +156,14 @@
      */
     function handleStart(x, y) {
         const edge = isInEdgeZone(x);
-        if (!edge) return;
+        if (!edge) return false;
 
         startX = x;
         startY = y;
         startTime = Date.now();
         isEdgeSwipe = true;
         swipeDirection = edge;
-
-        // Show initial indicator
-        const targetUrl = edge === 'left' ? getPrevQuizUrl() : getNextQuizUrl();
-        showIndicator(edge, false, targetUrl);
+        return true;
     }
 
     /**
@@ -226,7 +182,7 @@
         if (absDeltaX > CONFIG.feedbackThreshold && isValidDirection) {
             const targetUrl = swipeDirection === 'left' ? getPrevQuizUrl() : getNextQuizUrl();
             const isReady = absDeltaX >= CONFIG.minSwipeDistance;
-            showIndicator(swipeDirection, isReady, targetUrl);
+            showIndicator(swipeDirection, isReady, targetUrl !== null);
         } else {
             hideIndicator();
         }
@@ -248,22 +204,15 @@
 
         // Check if it's a valid swipe
         if (absDeltaX >= CONFIG.minSwipeDistance &&
-            absDeltaX > absDeltaY * 2 && // More horizontal than vertical
+            absDeltaX > absDeltaY * 1.5 && // More horizontal than vertical
             elapsedTime <= CONFIG.maxSwipeTime) {
 
-            // Determine navigation direction
             if (swipeDirection === 'left' && deltaX > 0) {
-                // Swiped right from left edge -> go to previous
                 const prevUrl = getPrevQuizUrl();
-                if (prevUrl) {
-                    window.location.href = prevUrl;
-                }
+                if (prevUrl) window.location.href = prevUrl;
             } else if (swipeDirection === 'right' && deltaX < 0) {
-                // Swiped left from right edge -> go to next
                 const nextUrl = getNextQuizUrl();
-                if (nextUrl) {
-                    window.location.href = nextUrl;
-                }
+                if (nextUrl) window.location.href = nextUrl;
             }
         }
 
@@ -279,27 +228,55 @@
      * Initialize touch events (mobile)
      */
     function initTouchEvents() {
+        let activeTouchId = null;
+
         document.addEventListener('touchstart', (e) => {
+            if (activeTouchId !== null) return; // Already tracking a touch
+
             const touch = e.touches[0];
-            handleStart(touch.clientX, touch.clientY);
+            if (handleStart(touch.clientX, touch.clientY)) {
+                activeTouchId = touch.identifier;
+            }
         }, { passive: true });
 
         document.addEventListener('touchmove', (e) => {
-            if (!isEdgeSwipe) return;
-            const touch = e.touches[0];
-            handleMove(touch.clientX, touch.clientY);
+            if (activeTouchId === null || !isEdgeSwipe) return;
+
+            // Find our tracked touch
+            let touch = null;
+            for (let i = 0; i < e.touches.length; i++) {
+                if (e.touches[i].identifier === activeTouchId) {
+                    touch = e.touches[i];
+                    break;
+                }
+            }
+            if (touch) {
+                handleMove(touch.clientX, touch.clientY);
+            }
         }, { passive: true });
 
         document.addEventListener('touchend', (e) => {
-            if (!isEdgeSwipe) return;
-            const touch = e.changedTouches[0];
-            handleEnd(touch.clientX, touch.clientY);
-        });
+            if (activeTouchId === null) return;
+
+            // Find our tracked touch in changedTouches
+            let touch = null;
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === activeTouchId) {
+                    touch = e.changedTouches[i];
+                    break;
+                }
+            }
+            if (touch) {
+                handleEnd(touch.clientX, touch.clientY);
+            }
+            activeTouchId = null;
+        }, { passive: true });
 
         document.addEventListener('touchcancel', () => {
             hideIndicator();
             isEdgeSwipe = false;
-        });
+            activeTouchId = null;
+        }, { passive: true });
     }
 
     /**
@@ -309,9 +286,7 @@
         let isMouseDown = false;
 
         document.addEventListener('mousedown', (e) => {
-            // Only primary button
             if (e.button !== 0) return;
-
             isMouseDown = true;
             handleStart(e.clientX, e.clientY);
         });
@@ -323,7 +298,6 @@
 
         document.addEventListener('mouseup', (e) => {
             if (!isMouseDown) return;
-
             isMouseDown = false;
             if (isEdgeSwipe) {
                 handleEnd(e.clientX, e.clientY);
@@ -337,17 +311,15 @@
     }
 
     /**
-     * Initialize the swipe navigation
+     * Initialize
      */
     function init() {
-        // Only initialize on quiz pages (not main page)
         const isMainPage = window.location.pathname.endsWith('index.html') ||
             window.location.pathname === '/' ||
             window.location.pathname.endsWith('/');
 
         if (isMainPage) return;
 
-        // Wait for QUIZ_CONFIG to be available
         if (typeof QUIZ_CONFIG === 'undefined') {
             setTimeout(init, 100);
             return;
@@ -356,23 +328,15 @@
         createIndicator();
         initTouchEvents();
         initMouseEvents();
-
-        console.log('🔄 Swipe navigation initialized');
     }
 
-    // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
 
-    // Export for testing
     if (typeof window !== 'undefined') {
-        window.swipeNav = {
-            getPrevQuizUrl,
-            getNextQuizUrl,
-            getCurrentQuizInfo
-        };
+        window.swipeNav = { getPrevQuizUrl, getNextQuizUrl, getCurrentQuizInfo };
     }
 })();
