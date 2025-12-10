@@ -111,7 +111,9 @@ Used when user is frustrated. Acknowledge emotion + offer choice: "힌트 더 �
 - Give long lecture-style explanations by default
 - Refuse to provide the answer when explicitly asked
 - Reprint all options when user asks about a question number
-- Use bullet points (-, *, 1. 2. 3.) in responses - write naturally instead`;
+- Use bullet points (-, *, 1. 2. 3.) in responses - write naturally instead
+- Use tables or "요약:" formatted output - just write plain text naturally
+- Use ASCII table formatting with | and - characters`;
 
 // ========== Page Context Extraction ==========
 /**

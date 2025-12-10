@@ -329,23 +329,41 @@ function shuffleArray(array) {
 
 /**
  * Shuffle current quiz questions and re-render
+ * Answered questions are placed at the end
  */
 function shuffleV2Quiz() {
     if (!currentV2Round) return;
 
-    // Clear current progress
-    v2States.clear();
-    v2WasEverWrong.clear();
-    localStorage.removeItem(getV2StorageKey());
+    // Separate answered and unanswered questions
+    const answered = [];
+    const unanswered = [];
 
-    // Shuffle questions
-    const shuffled = shuffleArray(currentV2Round.questions);
+    currentV2Round.questions.forEach(q => {
+        const key = q.type === 'mcq' ? `mcq-${q.id}` :
+            q.type === 'short' ? `short-${q.id}` :
+                q.type === 'essay' ? `essay-${q.id}` : q.id;
+        const state = v2States.get(key);
+
+        // Check if question is answered (has any state)
+        if (state === 'correct' || state === 'graded' || state === 'shown' ||
+            state === 'self-correct' || state === 'self-wrong') {
+            answered.push(q);
+        } else {
+            unanswered.push(q);
+        }
+    });
+
+    // Shuffle both groups separately, then combine (unanswered first)
+    const shuffledUnanswered = shuffleArray(unanswered);
+    const shuffledAnswered = shuffleArray(answered);
+    const combined = [...shuffledUnanswered, ...shuffledAnswered];
+
     const shuffledRound = {
         ...currentV2Round,
-        questions: shuffled
+        questions: combined
     };
 
-    // Re-render with shuffled questions
+    // Re-render with shuffled questions (keep progress)
     renderQuizRound(shuffledRound);
 }
 
@@ -366,8 +384,90 @@ function addShuffleButton() {
     shuffleBtn.onclick = shuffleV2Quiz;
     shuffleBtn.style.cssText = 'background: var(--accent-dim, rgba(168, 199, 250, 0.12)); border-color: var(--accent, #A8C7FA);';
 
+    // Add reset button at top too
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'btn btn-secondary btn-reset-top';
+    resetBtn.innerHTML = '🔃 초기화';
+    resetBtn.title = '모든 문제 초기화';
+    resetBtn.onclick = resetV2Quiz;
+    resetBtn.style.cssText = 'background: var(--bg-tertiary, #282A2C); border-color: var(--border, #444746);';
+
     // Insert at the beginning of controls
+    controls.insertBefore(resetBtn, controls.firstChild);
     controls.insertBefore(shuffleBtn, controls.firstChild);
+
+    // Add floating scroll buttons
+    addFloatingScrollButtons();
+}
+
+/**
+ * Add floating up/down scroll navigation buttons (global feature)
+ * These appear on all quiz pages for quick navigation
+ */
+function addFloatingScrollButtons() {
+    // Skip if already added
+    if (document.getElementById('floatingScrollNav')) return;
+
+    const nav = document.createElement('div');
+    nav.id = 'floatingScrollNav';
+    nav.className = 'floating-scroll-nav';
+    nav.innerHTML = `
+        <button class="scroll-nav-btn scroll-up" onclick="scrollToTop()" title="맨 위로">▲</button>
+        <button class="scroll-nav-btn scroll-down" onclick="scrollToBottom()" title="맨 아래로">▼</button>
+    `;
+
+    // Add styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .floating-scroll-nav {
+            position: fixed;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+        .scroll-nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border, #444746);
+            background: var(--bg-secondary, #1E1F20);
+            color: var(--text-muted, #7F848E);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 0.6;
+        }
+        .scroll-nav-btn:hover {
+            background: var(--hover-bg, rgba(255, 255, 255, 0.08));
+            color: var(--text, #E3E3E3);
+            opacity: 1;
+        }
+        @media (max-width: 768px) {
+            .floating-scroll-nav {
+                right: 8px;
+            }
+            .scroll-nav-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(nav);
+}
+
+// Global scroll functions
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollToBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 
 /**
@@ -958,6 +1058,8 @@ function gradeV2Short(input, round) {
         // First Enter: grade the answer
         input.classList.remove('correct', 'wrong', 'retry');
         if (isCorrect) {
+            // Show registered answer instead of user's input
+            input.value = question.acceptableAnswers[0];
             input.classList.add(v2WasEverWrong.has(key) ? 'retry' : 'correct');
             input.readOnly = true;
             v2States.set(key, 'correct');

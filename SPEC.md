@@ -108,6 +108,10 @@
 - **Essay Self-Grading**: Ctrl+1 (correct) / Ctrl+2 (wrong) for essay questions
 - **Quote Auto-Complete**: Typing ' or " auto-completes to '' or "" with cursor between
 - **Swipe Navigation**: Swipe/drag from screen edges to navigate between quiz pages (mobile + desktop)
+- **Floating Scroll Buttons**: ▲▼ buttons on right side for quick page navigation (all pages)
+- **Smart Shuffle**: When shuffling, answered questions are placed at the end
+- **Grading Undo**: `Ctrl+Z` undoes the last grading action (max 20 history)
+- **Top Reset Button**: 🔃 초기화 button at top next to shuffle button
 
 ### 1.2 Long-term Goals
 
