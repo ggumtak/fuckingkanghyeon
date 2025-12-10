@@ -615,6 +615,40 @@ function bindV2Events(round) {
         radio.addEventListener('change', () => gradeV2Mcq(radio, round));
     });
 
+    // MCQ cards: keyboard 1234 selection and focus handling
+    document.querySelectorAll('.question-card[data-type="mcq"]').forEach(card => {
+        // Make card focusable
+        card.setAttribute('tabindex', '0');
+
+        // Focus: scroll to upper-center
+        card.addEventListener('focus', () => scrollToUpperCenterV2(card));
+
+        // Keyboard selection: 1, 2, 3, 4 (or numpad)
+        card.addEventListener('keydown', (e) => {
+            // Skip if already answered (radio buttons disabled)
+            const radios = card.querySelectorAll('input[type="radio"]');
+            if (Array.from(radios).some(r => r.disabled)) return;
+
+            // Map key to option index (1->0, 2->1, etc.)
+            let optionIndex = -1;
+
+            // Standard number keys (both keyboard and mobile)
+            if (['1', '2', '3', '4', '5'].includes(e.key)) {
+                optionIndex = parseInt(e.key) - 1;
+            }
+            // Numpad keys
+            else if (e.code?.startsWith('Numpad') && ['Numpad1', 'Numpad2', 'Numpad3', 'Numpad4', 'Numpad5'].includes(e.code)) {
+                optionIndex = parseInt(e.code.replace('Numpad', '')) - 1;
+            }
+
+            if (optionIndex >= 0 && optionIndex < radios.length) {
+                e.preventDefault();
+                radios[optionIndex].checked = true;
+                radios[optionIndex].dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    });
+
     // v2-short (short answer inputs)
     document.querySelectorAll('.v2-short').forEach(input => {
         // Focus: scroll to upper-center
@@ -658,6 +692,16 @@ function bindV2Events(round) {
                 const quote = e.key;
                 textarea.value = value.slice(0, start) + quote + quote + value.slice(end);
                 textarea.setSelectionRange(start + 1, start + 1);
+            } else if (e.ctrlKey && (e.key === '1' || e.key === '2')) {
+                // Ctrl+1: Self-grade as correct, Ctrl+2: Self-grade as wrong
+                e.preventDefault();
+                const card = textarea.closest('.question-card');
+                if (card) {
+                    const questionId = card.id.replace('q-', '');
+                    const isCorrect = e.key === '1';
+                    selfGradeEssay(questionId, isCorrect);
+                    moveToNextQuestion(card);
+                }
             }
         });
     });
@@ -947,8 +991,8 @@ function moveToNextV2Input(currentInput) {
             if (!anyChecked && !allDisabled) {
                 card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 setTimeout(() => {
-                    const firstRadio = card.querySelector('input[type="radio"]:not(:disabled)');
-                    if (firstRadio) firstRadio.focus();
+                    // Focus the card itself for keyboard 1234 selection
+                    card.focus();
                 }, 250);
                 return;
             }

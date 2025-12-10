@@ -17,6 +17,13 @@
     border-color: var(--accent-border, rgba(168, 199, 250, 0.3));
 }
 
+/* MCQ card focus state - for keyboard navigation */
+.question-card[data-type="mcq"]:focus {
+    outline: none;
+    border-color: var(--accent, #A8C7FA);
+    box-shadow: 0 0 0 3px var(--accent-dim, rgba(168, 199, 250, 0.15));
+}
+
 .question-header {
     display: flex;
     align-items: center;
