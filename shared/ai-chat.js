@@ -497,36 +497,29 @@ function toggleChatPanel() {
     const panel = document.getElementById('aiChatPanel');
 
     if (chatPanelOpen) {
-        // Save scroll position FIRST
-        const scrollY = window.scrollY;
-        const scrollX = window.scrollX;
-
         panel.classList.add('open');
         document.body.classList.add('ai-panel-open');
-
-        // Always switch to chat tab when opening via toggle (Ctrl+L)
         switchChatTab('chat');
 
-        // Disable smooth scroll temporarily
-        document.documentElement.style.scrollBehavior = 'auto';
-
-        // Focus without scroll - aggressive approach
+        // Focus with scroll prevention using body overflow lock
         if (hasApiKey()) {
             const chatInput = document.getElementById('chatInput');
             if (chatInput) {
-                // Force scroll position before and after focus
-                window.scrollTo(scrollX, scrollY);
-                chatInput.focus({ preventScroll: true });
-                window.scrollTo(scrollX, scrollY);
+                // Lock body scroll
+                const scrollY = window.scrollY;
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
+
+                chatInput.focus();
+
+                // Unlock body scroll
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                window.scrollTo(0, scrollY);
             }
         }
-
-        // Restore scroll one more time after a frame
-        requestAnimationFrame(() => {
-            window.scrollTo(scrollX, scrollY);
-            // Re-enable smooth scroll
-            document.documentElement.style.scrollBehavior = '';
-        });
     } else {
         panel.classList.remove('open');
         document.body.classList.remove('ai-panel-open');
