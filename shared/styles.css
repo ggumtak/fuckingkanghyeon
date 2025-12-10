@@ -1902,17 +1902,18 @@ body.ai-panel-open .floating-ai-btn {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--bg-tertiary);
-    color: var(--text-muted);
+    border: 1px solid var(--error);
+    background: rgba(249, 115, 115, 0.15);
+    color: var(--error);
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    margin-left: auto;
+    margin-left: 8px;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .concept-help-btn:hover {
