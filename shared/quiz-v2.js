@@ -1002,6 +1002,61 @@ function moveToNextV2Blank(currentInput) {
 }
 
 /**
+ * Move focus to next unanswered question after current card
+ * Used after MCQ is answered or essay is graded
+ */
+function moveToNextQuestion(currentCard) {
+    if (!currentCard) return;
+
+    // Get all question cards in order
+    const allCards = Array.from(document.querySelectorAll('.question-card'));
+    const currentCardIndex = allCards.indexOf(currentCard);
+
+    // Look through remaining question cards for any unanswered question
+    for (let i = currentCardIndex + 1; i < allCards.length; i++) {
+        const card = allCards[i];
+        const questionType = card.dataset.type;
+
+        // Check for editable inputs (blank or short)
+        const nextInput = card.querySelector('.v2-blank:not([readonly]), .v2-short:not([readonly])');
+        if (nextInput) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => nextInput.focus(), 250);
+            return;
+        }
+
+        // Check for unanswered MCQ (no radio buttons checked and not disabled)
+        if (questionType === 'mcq') {
+            const radios = card.querySelectorAll('input[type="radio"]');
+            const anyChecked = Array.from(radios).some(r => r.checked);
+            const allDisabled = Array.from(radios).every(r => r.disabled);
+
+            if (!anyChecked && !allDisabled) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    // Focus the card itself for keyboard 1234 selection
+                    card.focus();
+                }, 250);
+                return;
+            }
+        }
+
+        // Check for essay textarea (that hasn't been graded yet)
+        if (questionType === 'essay') {
+            const nextEssay = card.querySelector('.v2-essay');
+            const essayState = v2States.get(`essay-${card.id.replace('q-', '')}`);
+            if (nextEssay && essayState !== 'self-correct' && essayState !== 'self-wrong') {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => nextEssay.focus(), 250);
+                return;
+            }
+        }
+    }
+
+    // No more unanswered questions - quiz complete or at end
+}
+
+/**
  * Move focus to next input field (blank, short answer, or unanswered MCQ)
  * Works for all question types with input fields
  * Fixed: Now correctly finds next input even when current input was just made readonly
