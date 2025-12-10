@@ -1239,6 +1239,8 @@ pre {
     flex: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     padding: 16px;
 }
 
@@ -2006,4 +2008,35 @@ body.ai-panel-open .floating-ai-btn {
 .concept-item .concept-header {
     display: flex;
     align-items: center;
+}
+
+/* Concepts tab content - scrollable */
+.concepts-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    display: flex;
+    flex-direction: column;
+}
+
+.concepts-list {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    padding: 8px;
+}
+
+/* Chat tab content - scrollable */
+.chat-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    display: flex;
+    flex-direction: column;
 }

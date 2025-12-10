@@ -18,7 +18,7 @@ const MAX_UNDO_HISTORY = 20;
 // Works with both <input> and <textarea> elements
 // Uses both keydown (desktop) and beforeinput (mobile) for cross-platform support
 
-const AUTO_PAIRS = { '[': ']', '{': '}', "'": "'", '"': '"' };
+const AUTO_PAIRS = { '(': ')', '[': ']', '{': '}', "'": "'", '"': '"' };
 
 function isQuizInputField(el) {
     return el && (
