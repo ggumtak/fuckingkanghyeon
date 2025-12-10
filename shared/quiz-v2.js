@@ -644,6 +644,15 @@ function bindV2Events(round) {
                 if (card) {
                     moveToNextQuestion(card);
                 }
+            } else if (e.key === "'" || e.key === '"') {
+                // Auto-complete quotes: ' -> '' with cursor in between
+                e.preventDefault();
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const value = textarea.value;
+                const quote = e.key;
+                textarea.value = value.slice(0, start) + quote + quote + value.slice(end);
+                textarea.setSelectionRange(start + 1, start + 1);
             }
         });
     });
