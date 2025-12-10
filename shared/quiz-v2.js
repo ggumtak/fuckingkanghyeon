@@ -78,6 +78,10 @@ document.addEventListener('beforeinput', (e) => {
  */
 function scrollToUpperCenterV2(element) {
     if (!element) return;
+
+    // Skip scroll if AI chat panel is open (don't interfere with chat interaction)
+    if (document.body.classList.contains('ai-panel-open')) return;
+
     const rect = element.getBoundingClientRect();
 
     // Use visualViewport if available (accounts for keyboard on mobile)
